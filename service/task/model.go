@@ -10,14 +10,14 @@ type Task struct {
 	CommandType string    `json:"commandType"`
 	Description string    `json:"description"`
 	Status      string    `json:"status"`
-	TaskId      string    `json:"taskId"`
+	Id          string    `json:"taskId"`
 	Response    *Response `json:"response"`
 }
 
 type Response struct {
-	ResourceId *int             `json:"resourceId"`
-	Resource   *json.RawMessage `json:"resource"`
-	Error      *Error           `json:"error"`
+	Id       *int             `json:"resourceId"`
+	Resource *json.RawMessage `json:"resource"`
+	Error    *Error           `json:"error"`
 }
 
 type Error struct {

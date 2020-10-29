@@ -4,18 +4,26 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/avast/retry-go"
 )
+
+type Log interface {
+	Println(v ...interface{})
+}
 
 type Api struct {
 	client  *http.Client
 	baseUrl string
+	logger  Log
 }
 
-func NewApi(client *http.Client, baseUrl string) *Api {
-	return &Api{client: client, baseUrl: baseUrl}
+func NewApi(client *http.Client, baseUrl string, logger Log) *Api {
+	return &Api{client: client, baseUrl: baseUrl, logger: logger}
 }
 
 // WaitForTaskToComplete will poll the task, waiting for the task to finish processing, where it will then return.
@@ -24,24 +32,33 @@ func NewApi(client *http.Client, baseUrl string) *Api {
 // The task will be continuously polled until the task either fails or succeeds - cancellation can be achieved
 // by cancelling the context.
 func (a *Api) WaitForTaskToComplete(ctx context.Context, id string) (*Task, error) {
-	for true {
-		task, err := a.Get(ctx, id)
+	var task *Task
+	err := retry.Do(func() error {
+		var err error
+		task, err = a.Get(ctx, id)
 		if err != nil {
-			return nil, err
+			return retry.Unrecoverable(err)
 		}
 
 		if task.Status == processedState {
-			return task, nil
+			return nil
 		}
 
 		if _, ok := processingStates[task.Status]; !ok {
-			return nil, fmt.Errorf("task %s failed %s - %s", id, task.Status, task.Description)
+			return retry.Unrecoverable(fmt.Errorf("task %s failed %s - %s", id, task.Status, task.Description))
 		}
 
-		time.Sleep(1 * time.Second)
+		return fmt.Errorf("task %s not processed yet: %s", id, task.Status)
+	},
+		retry.Attempts(math.MaxUint64), retry.Delay(1*time.Second), retry.MaxDelay(30*time.Second),
+		retry.LastErrorOnly(true), retry.Context(ctx), retry.OnRetry(func(_ uint, err error) {
+			a.logger.Println(err)
+		}))
+	if err != nil {
+		return nil, err
 	}
 
-	return nil, fmt.Errorf("an infinite loop managed to finish")
+	return task, nil
 }
 
 // Get will retrieve a task. An error will be returned if the task couldn't be retrieved or the task itself

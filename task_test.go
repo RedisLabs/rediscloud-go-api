@@ -1,4 +1,4 @@
-package rediscloud_go_api
+package rediscloud_api
 
 import (
 	"context"
@@ -42,9 +42,9 @@ func TestTask_Get(t *testing.T) {
 		CommandType: "subscriptionCreateRequest",
 		Description: "Task request failed during processing. See error information for failure details.",
 		Status:      "processing-error",
-		TaskId:      "e02b40d6-1395-4861-a3b9-ecf829d835fd",
+		Id:          "e02b40d6-1395-4861-a3b9-ecf829d835fd",
 		Response: &task.Response{
-			ResourceId: &resourceId,
+			Id: &resourceId,
 		},
 	}, actual)
 }
@@ -131,7 +131,7 @@ func TestTask_WaitForIdFromTask(t *testing.T) {
 
 	actual, err := subject.Task.WaitForTaskToComplete(context.TODO(), "task-uuid")
 	require.NoError(t, err)
-	assert.Equal(t, resourceId, *actual.Response.ResourceId)
+	assert.Equal(t, resourceId, *actual.Response.Id)
 
 	var actualResponse string
 	err = json.Unmarshal(*actual.Response.Resource, &actualResponse)

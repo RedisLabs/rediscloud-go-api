@@ -1,4 +1,4 @@
-package rediscloud_go_api
+package rediscloud_api
 
 import (
 	"fmt"

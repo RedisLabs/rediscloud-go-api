@@ -20,12 +20,12 @@ import (
 	"context"
 	"fmt"
 
-	rediscloud_go_api "github.com/RedisLabs/rediscloud-go-api"
+	rediscloud_api "github.com/RedisLabs/rediscloud-go-api"
 )
 
 func main() {
 	// The client will use the credentials from `REDISLABS_API_KEY` and `REDISLABS_SECRET_KEY` by default
-	client := rediscloud_go_api.NewClient()
+	client := rediscloud_api.NewClient()
 
 	task, err := client.Task.Get(context.TODO(), "task-uuid")
 	if err != nil {

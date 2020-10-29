@@ -1,6 +1,7 @@
-package rediscloud_go_api
+package rediscloud_api
 
 import (
+	"log"
 	"net/http"
 	"os"
 
@@ -17,6 +18,7 @@ func NewClient(configs ...Option) Client {
 		userAgent: userAgent,
 		apiKey:    os.Getenv("REDISLABS_API_KEY"),
 		secretKey: os.Getenv("REDISLABS_SECRET_KEY"),
+		logger:    log.New(os.Stderr, "", log.LstdFlags),
 		transport: http.DefaultTransport,
 	}
 
@@ -27,7 +29,7 @@ func NewClient(configs ...Option) Client {
 	client := &http.Client{
 		Transport: config.roundTripper(),
 	}
-	t := task.NewApi(client, config.baseUrl)
+	t := task.NewApi(client, config.baseUrl, config.logger)
 
 	return Client{
 		Task: t,
@@ -39,6 +41,7 @@ type Options struct {
 	apiKey    string
 	secretKey string
 	userAgent string
+	logger    Log
 	transport http.RoundTripper
 }
 
@@ -75,6 +78,17 @@ func AdditionalUserAgent(additional string) Option {
 	return func(options *Options) {
 		options.userAgent += " " + additional
 	}
+}
+
+func Logger(log Log) Option {
+	return func(options *Options) {
+		options.logger = log
+	}
+}
+
+type Log interface {
+	Printf(format string, v ...interface{})
+	Println(v ...interface{})
 }
 
 type credentialTripper struct {
