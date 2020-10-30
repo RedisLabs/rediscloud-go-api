@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -33,7 +32,8 @@ func TestTask_Get(t *testing.T) {
   }
 }`, resourceId)))
 
-	subject := NewClient(BaseUrl(s.URL), Auth("key", "secret"), Transporter(s.Client().Transport))
+	subject, err := NewClient(BaseUrl(s.URL), Auth("key", "secret"), Transporter(s.Client().Transport))
+	require.NoError(t, err)
 
 	actual, err := subject.Task.Get(context.TODO(), "task-uuid")
 	require.NoError(t, err)
@@ -71,7 +71,8 @@ func TestTask_Get_UnwrapsTaskError(t *testing.T) {
   }
 }`))
 
-	subject := NewClient(BaseUrl(s.URL), Auth("key", "secret"), Transporter(s.Client().Transport))
+	subject, err := NewClient(BaseUrl(s.URL), Auth("key", "secret"), Transporter(s.Client().Transport))
+	require.NoError(t, err)
 
 	actual, err := subject.Task.Get(context.TODO(), "task-uuid")
 	assert.Equal(t, &task.Error{
@@ -82,7 +83,7 @@ func TestTask_Get_UnwrapsTaskError(t *testing.T) {
 	assert.Nil(t, actual)
 }
 
-func TestTask_WaitForIdFromTask(t *testing.T) {
+func TestTask_WaitForTaskToComplete(t *testing.T) {
 	resourceId := 100556
 	resource := "oiuygfcvbnmk"
 
@@ -127,7 +128,8 @@ func TestTask_WaitForIdFromTask(t *testing.T) {
   }
 }`, resourceId, resource)))
 
-	subject := NewClient(BaseUrl(s.URL), Auth("key", "secret"), Transporter(s.Client().Transport))
+	subject, err := NewClient(BaseUrl(s.URL), Auth("key", "secret"), Transporter(s.Client().Transport))
+	require.NoError(t, err)
 
 	actual, err := subject.Task.WaitForTaskToComplete(context.TODO(), "task-uuid")
 	require.NoError(t, err)
@@ -138,34 +140,4 @@ func TestTask_WaitForIdFromTask(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, resource, actualResponse)
-}
-
-func testServer(path, apiKey, secretKey string, responses ...string) http.HandlerFunc {
-	responseCount := 0
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			w.WriteHeader(500)
-			return
-		}
-		if r.URL.Path != path {
-			w.WriteHeader(501)
-			return
-		}
-		if r.Header.Get("X-Api-Key") != apiKey {
-			w.WriteHeader(502)
-			return
-		}
-		if r.Header.Get("X-Api-Secret-Key") != secretKey {
-			w.WriteHeader(503)
-			return
-		}
-
-		body := responses[responseCount]
-		responseCount++
-		if responseCount > len(responses)-1 {
-			responseCount = len(responses) - 2
-		}
-		w.WriteHeader(200)
-		_, _ = w.Write([]byte(body))
-	}
 }

@@ -2,10 +2,8 @@ package task
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"math"
-	"net/http"
 	"net/url"
 	"time"
 
@@ -16,14 +14,17 @@ type Log interface {
 	Println(v ...interface{})
 }
 
-type Api struct {
-	client  *http.Client
-	baseUrl string
-	logger  Log
+type HttpClient interface {
+	Get(ctx context.Context, name, path string, responseBody interface{}) error
 }
 
-func NewApi(client *http.Client, baseUrl string, logger Log) *Api {
-	return &Api{client: client, baseUrl: baseUrl, logger: logger}
+type Api struct {
+	client HttpClient
+	logger Log
+}
+
+func NewApi(client HttpClient, logger Log) *Api {
+	return &Api{client: client, logger: logger}
 }
 
 // WaitForTaskToComplete will poll the task, waiting for the task to finish processing, where it will then return.
@@ -64,34 +65,9 @@ func (a *Api) WaitForTaskToComplete(ctx context.Context, id string) (*Task, erro
 // Get will retrieve a task. An error will be returned if the task couldn't be retrieved or the task itself
 // failed.
 func (a *Api) Get(ctx context.Context, id string) (*Task, error) {
-	parsed, err := url.Parse(a.baseUrl)
-	if err != nil {
-		return nil, err
-	}
-
-	parsed.Path += "/tasks/" + url.PathEscape(id)
-
-	u := parsed.String()
-
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request for task %s: %w", id, err)
-	}
-
-	response, err := a.client.Do(request)
-	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve task %s: %w", id, err)
-	}
-
-	if response.StatusCode > 299 {
-		return nil, fmt.Errorf("failed to get task %s: %d", id, response.StatusCode)
-	}
-
-	defer response.Body.Close()
-
 	var task Task
-	if err := json.NewDecoder(response.Body).Decode(&task); err != nil {
-		return nil, fmt.Errorf("failed to decode response for task %s: %w", id, err)
+	if err := a.client.Get(ctx, "retrieve task", "/tasks/"+url.PathEscape(id), &task); err != nil {
+		return nil, err
 	}
 
 	if task.Response.Error != nil {
