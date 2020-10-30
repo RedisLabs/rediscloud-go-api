@@ -19,8 +19,8 @@ func NewClient(configs ...Option) (*Client, error) {
 	config := &Options{
 		baseUrl:   "https://api.redislabs.com/v1",
 		userAgent: userAgent,
-		apiKey:    os.Getenv("REDISLABS_API_KEY"),
-		secretKey: os.Getenv("REDISLABS_SECRET_KEY"),
+		apiKey:    os.Getenv(ApiKeyEnvVar),
+		secretKey: os.Getenv(SecretKeyEnvVar),
 		logger:    log.New(os.Stderr, "", log.LstdFlags),
 		transport: http.DefaultTransport,
 	}
