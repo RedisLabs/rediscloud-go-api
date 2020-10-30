@@ -5,14 +5,17 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/RedisLabs/rediscloud-go-api/internal"
+	"github.com/RedisLabs/rediscloud-go-api/service/account"
 	"github.com/RedisLabs/rediscloud-go-api/service/task"
 )
 
 type Client struct {
-	Task *task.Api
+	Task    *task.Api
+	Account *account.Api
 }
 
-func NewClient(configs ...Option) Client {
+func NewClient(configs ...Option) (*Client, error) {
 	config := &Options{
 		baseUrl:   "https://api.redislabs.com/v1",
 		userAgent: userAgent,
@@ -26,14 +29,22 @@ func NewClient(configs ...Option) Client {
 		option(config)
 	}
 
-	client := &http.Client{
+	httpClient := &http.Client{
 		Transport: config.roundTripper(),
 	}
-	t := task.NewApi(client, config.baseUrl, config.logger)
 
-	return Client{
-		Task: t,
+	client, err := internal.NewHttpClient(httpClient, config.baseUrl)
+	if err != nil {
+		return nil, err
 	}
+
+	t := task.NewApi(client, config.logger)
+	a := account.NewApi(client)
+
+	return &Client{
+		Task:    t,
+		Account: a,
+	}, nil
 }
 
 type Options struct {
