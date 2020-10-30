@@ -24,8 +24,11 @@ import (
 )
 
 func main() {
-	// The client will use the credentials from `REDISLABS_API_KEY` and `REDISLABS_SECRET_KEY` by default
-	client := rediscloud_api.NewClient()
+	// The client will use the credentials from `REDISCLOUD_API_KEY` and `REDISCLOUD_SECRET_KEY` by default
+	client, err := rediscloud_api.NewClient()
+	if err != nil {
+		panic(err)
+	}
 
 	task, err := client.Task.Get(context.TODO(), "task-uuid")
 	if err != nil {
