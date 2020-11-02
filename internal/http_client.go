@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -22,6 +23,22 @@ func NewHttpClient(client *http.Client, baseUrl string) (*HttpClient, error) {
 }
 
 func (c *HttpClient) Get(ctx context.Context, name, path string, responseBody interface{}) error {
+	return c.withoutRequestBody(ctx, http.MethodGet, name, path, responseBody)
+}
+
+func (c *HttpClient) Put(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error {
+	return c.withRequestBody(ctx, http.MethodPut, name, path, requestBody, responseBody)
+}
+
+func (c *HttpClient) Post(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error {
+	return c.withRequestBody(ctx, http.MethodPost, name, path, requestBody, responseBody)
+}
+
+func (c *HttpClient) Delete(ctx context.Context, name, path string, responseBody interface{}) error {
+	return c.withoutRequestBody(ctx, http.MethodDelete, name, path, responseBody)
+}
+
+func (c *HttpClient) withoutRequestBody(ctx context.Context, method, name, path string, responseBody interface{}) error {
 	parsed := new(url.URL)
 	*parsed = *c.baseUrl
 
@@ -29,7 +46,7 @@ func (c *HttpClient) Get(ctx context.Context, name, path string, responseBody in
 
 	u := parsed.String()
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	request, err := http.NewRequestWithContext(ctx, method, u, nil)
 	if err != nil {
 		return fmt.Errorf("failed to create request to %s: %w", name, err)
 	}
@@ -46,7 +63,43 @@ func (c *HttpClient) Get(ctx context.Context, name, path string, responseBody in
 	defer response.Body.Close()
 
 	if err := json.NewDecoder(response.Body).Decode(&responseBody); err != nil {
-		return fmt.Errorf("failed to decode response for %s: %w", name, err)
+		return fmt.Errorf("failed to decode response to %s: %w", name, err)
+	}
+
+	return nil
+}
+
+func (c *HttpClient) withRequestBody(ctx context.Context, method, name, path string, requestBody interface{}, responseBody interface{}) error {
+	parsed := new(url.URL)
+	*parsed = *c.baseUrl
+
+	parsed.Path += path
+
+	u := parsed.String()
+
+	body := bytes.NewBuffer(nil)
+	if err := json.NewEncoder(body).Encode(requestBody); err != nil {
+		return fmt.Errorf("failed to encode request for %s: %w", name, err)
+	}
+
+	request, err := http.NewRequestWithContext(ctx, method, u, body)
+	if err != nil {
+		return fmt.Errorf("failed to create request to %s: %w", name, err)
+	}
+
+	response, err := c.client.Do(request)
+	if err != nil {
+		return fmt.Errorf("failed to %s: %w", name, err)
+	}
+
+	if response.StatusCode > 299 {
+		return fmt.Errorf("failed to %s: %d", name, response.StatusCode)
+	}
+
+	defer response.Body.Close()
+
+	if err := json.NewDecoder(response.Body).Decode(&responseBody); err != nil {
+		return fmt.Errorf("failed to decode response to %s: %w", name, err)
 	}
 
 	return nil

@@ -7,12 +7,14 @@ import (
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 	"github.com/RedisLabs/rediscloud-go-api/service/account"
+	"github.com/RedisLabs/rediscloud-go-api/service/cloud_accounts"
 	"github.com/RedisLabs/rediscloud-go-api/service/task"
 )
 
 type Client struct {
-	Task    *task.Api
-	Account *account.Api
+	Task         *task.Api
+	Account      *account.Api
+	CloudAccount *cloud_accounts.Api
 }
 
 func NewClient(configs ...Option) (*Client, error) {
@@ -40,10 +42,12 @@ func NewClient(configs ...Option) (*Client, error) {
 
 	t := task.NewApi(client, config.logger)
 	a := account.NewApi(client)
+	c := cloud_accounts.NewApi(client, t, config.logger)
 
 	return &Client{
-		Task:    t,
-		Account: a,
+		Task:         t,
+		Account:      a,
+		CloudAccount: c,
 	}, nil
 }
 
