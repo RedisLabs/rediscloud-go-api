@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 )
@@ -56,11 +57,12 @@ func (c *HttpClient) withoutRequestBody(ctx context.Context, method, name, path 
 		return fmt.Errorf("failed to %s: %w", name, err)
 	}
 
-	if response.StatusCode > 299 {
-		return fmt.Errorf("failed to %s: %d", name, response.StatusCode)
-	}
-
 	defer response.Body.Close()
+
+	if response.StatusCode > 299 {
+		body, _ := ioutil.ReadAll(response.Body)
+		return fmt.Errorf("failed to %s: %d - %s", name, response.StatusCode, body)
+	}
 
 	if err := json.NewDecoder(response.Body).Decode(&responseBody); err != nil {
 		return fmt.Errorf("failed to decode response to %s: %w", name, err)
@@ -92,11 +94,12 @@ func (c *HttpClient) withRequestBody(ctx context.Context, method, name, path str
 		return fmt.Errorf("failed to %s: %w", name, err)
 	}
 
-	if response.StatusCode > 299 {
-		return fmt.Errorf("failed to %s: %d", name, response.StatusCode)
-	}
-
 	defer response.Body.Close()
+
+	if response.StatusCode > 299 {
+		body, _ := ioutil.ReadAll(response.Body)
+		return fmt.Errorf("failed to %s: %d - %s", name, response.StatusCode, body)
+	}
 
 	if err := json.NewDecoder(response.Body).Decode(&responseBody); err != nil {
 		return fmt.Errorf("failed to decode response to %s: %w", name, err)
