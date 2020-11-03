@@ -6,7 +6,6 @@ import (
 )
 
 type Log interface {
-	Println(v ...interface{})
 	Printf(format string, args ...interface{})
 }
 
@@ -39,7 +38,7 @@ func (a *Api) Create(ctx context.Context, account CreateCloudAccount) (int, erro
 		return 0, err
 	}
 
-	a.logger.Println("Waiting for cloud account to finish being created")
+	a.logger.Printf("Waiting for task %s to finish creating the cloud account", response.TaskId)
 
 	id, err := a.task.WaitForResourceId(ctx, response.TaskId)
 	if err != nil {
