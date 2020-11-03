@@ -15,7 +15,7 @@ import (
 func TestTask_Get(t *testing.T) {
 	resourceId := 100556
 
-	s := httptest.NewServer(testServer("/tasks/task-uuid", "key", "secret", fmt.Sprintf(`{
+	s := httptest.NewServer(testServer("key", "secret", getRequest(t, "/tasks/task-uuid", fmt.Sprintf(`{
   "taskId": "e02b40d6-1395-4861-a3b9-ecf829d835fd",
   "commandType": "subscriptionCreateRequest",
   "status": "processing-error",
@@ -30,7 +30,7 @@ func TestTask_Get(t *testing.T) {
       "type": "GET"
     }
   }
-}`, resourceId)))
+}`, resourceId))))
 
 	subject, err := NewClient(BaseUrl(s.URL), Auth("key", "secret"), Transporter(s.Client().Transport))
 	require.NoError(t, err)
@@ -50,7 +50,7 @@ func TestTask_Get(t *testing.T) {
 }
 
 func TestTask_Get_UnwrapsTaskError(t *testing.T) {
-	s := httptest.NewServer(testServer("/tasks/task-uuid", "key", "secret", `{
+	s := httptest.NewServer(testServer("key", "secret", getRequest(t, "/tasks/task-uuid", `{
   "taskId": "e02b40d6-1395-4861-a3b9-ecf829d835fd",
   "commandType": "subscriptionCreateRequest",
   "status": "processing-error",
@@ -69,7 +69,7 @@ func TestTask_Get_UnwrapsTaskError(t *testing.T) {
       "type": "GET"
     }
   }
-}`))
+}`)))
 
 	subject, err := NewClient(BaseUrl(s.URL), Auth("key", "secret"), Transporter(s.Client().Transport))
 	require.NoError(t, err)
@@ -87,7 +87,7 @@ func TestTask_WaitForTaskToComplete(t *testing.T) {
 	resourceId := 100556
 	resource := "oiuygfcvbnmk"
 
-	s := httptest.NewServer(testServer("/tasks/task-uuid", "key", "secret", `{
+	s := httptest.NewServer(testServer("key", "secret", getRequest(t, "/tasks/task-uuid", `{
   "taskId": "e02b40d6-1395-4861-a3b9-ecf829d835fd",
   "commandType": "subscriptionCreateRequest",
   "status": "initialized",
@@ -99,7 +99,7 @@ func TestTask_WaitForTaskToComplete(t *testing.T) {
       "type": "GET"
     }
   }
-}`, `{
+}`), getRequest(t, "/tasks/task-uuid", `{
   "taskId": "e02b40d6-1395-4861-a3b9-ecf829d835fd",
   "commandType": "subscriptionCreateRequest",
   "status": "processing-in-progress",
@@ -111,7 +111,7 @@ func TestTask_WaitForTaskToComplete(t *testing.T) {
       "type": "GET"
     }
   }
-}`, fmt.Sprintf(`{
+}`), getRequest(t, "/tasks/task-uuid", fmt.Sprintf(`{
   "taskId": "e02b40d6-1395-4861-a3b9-ecf829d835fd",
   "commandType": "subscriptionCreateRequest",
   "status": "processing-completed",
@@ -126,7 +126,7 @@ func TestTask_WaitForTaskToComplete(t *testing.T) {
       "type": "GET"
     }
   }
-}`, resourceId, resource)))
+}`, resourceId, resource))))
 
 	subject, err := NewClient(BaseUrl(s.URL), Auth("key", "secret"), Transporter(s.Client().Transport))
 	require.NoError(t, err)

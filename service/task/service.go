@@ -27,6 +27,34 @@ func NewApi(client HttpClient, logger Log) *Api {
 	return &Api{client: client, logger: logger}
 }
 
+// WaitForResourceId will poll the task, waiting for the task to finish processing, where it will then return.
+// An error will be returned if the task couldn't be retrieved or the task was not processed successfully.
+//
+// The task will be continuously polled until the task either fails or succeeds - cancellation can be achieved
+// by cancelling the context.
+func (a Api) WaitForResourceId(ctx context.Context, id string) (int, error) {
+	task, err := a.WaitForTaskToComplete(ctx, id)
+	if err != nil {
+		return 0, err
+	}
+
+	return *task.Response.Id, nil
+}
+
+// Wait will poll the task, waiting for the task to finish processing, where it will then return.
+// An error will be returned if the task couldn't be retrieved or the task was not processed successfully.
+//
+// The task will be continuously polled until the task either fails or succeeds - cancellation can be achieved
+// by cancelling the context.
+func (a Api) Wait(ctx context.Context, id string) error {
+	_, err := a.WaitForTaskToComplete(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // WaitForTaskToComplete will poll the task, waiting for the task to finish processing, where it will then return.
 // An error will be returned if the task couldn't be retrieved or the task was not processed successfully.
 //
@@ -66,11 +94,11 @@ func (a *Api) WaitForTaskToComplete(ctx context.Context, id string) (*Task, erro
 // failed.
 func (a *Api) Get(ctx context.Context, id string) (*Task, error) {
 	var task Task
-	if err := a.client.Get(ctx, "retrieve task", "/tasks/"+url.PathEscape(id), &task); err != nil {
+	if err := a.client.Get(ctx, fmt.Sprintf("retrieve task %s", id), "/tasks/"+url.PathEscape(id), &task); err != nil {
 		return nil, err
 	}
 
-	if task.Response.Error != nil {
+	if task.Response != nil && task.Response.Error != nil {
 		return nil, task.Response.Error
 	}
 

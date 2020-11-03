@@ -11,7 +11,7 @@ import (
 )
 
 func TestAccount_ListPayments(t *testing.T) {
-	s := httptest.NewServer(testServer("/payment-methods", "apiKey", "secret", `{
+	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/payment-methods", `{
   "accountId": 1,
   "paymentMethods": [
     {
@@ -37,7 +37,7 @@ func TestAccount_ListPayments(t *testing.T) {
       "type": "GET"
     }
   }
-}`))
+}`)))
 
 	subject, err := NewClient(BaseUrl(s.URL), Auth("apiKey", "secret"), Transporter(s.Client().Transport))
 	require.NoError(t, err)
