@@ -17,7 +17,7 @@ func NewApi(client HttpClient) *Api {
 }
 
 // ListPaymentMethods will return the list of available payment methods.
-func (a *Api) ListPaymentMethods(ctx context.Context) ([]PaymentMethod, error) {
+func (a *Api) ListPaymentMethods(ctx context.Context) ([]*PaymentMethod, error) {
 	var body paymentMethods
 	if err := a.client.Get(ctx, "list payment methods", "/payment-methods", &body); err != nil {
 		return nil, err

@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/RedisLabs/rediscloud-go-api/redis"
 	"github.com/RedisLabs/rediscloud-go-api/service/subscriptions"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -18,6 +19,7 @@ func TestSubscription_Create(t *testing.T) {
   "dryRun": false,
   "paymentMethodId": 2,
   "memoryStorage": "ram",
+  "persistentStorageEncryption": false,
   "cloudProviders": [
     {
       "provider": "AWS",
@@ -36,6 +38,7 @@ func TestSubscription_Create(t *testing.T) {
       "memoryLimitInGb": 1,
       "supportOSSClusterApi": true,
       "dataPersistence": "none",
+      "replication": false,
       "throughputMeasurement": {
         "by": "operations-per-second",
         "value": 10000
@@ -76,36 +79,35 @@ func TestSubscription_Create(t *testing.T) {
 	require.NoError(t, err)
 
 	actual, err := subject.Subscription.Create(context.TODO(), subscriptions.CreateSubscription{
-		Name:                        "Test subscription",
-		DryRun:                      false,
-		PaymentMethodId:             2,
-		MemoryStorage:               "ram",
-		PersistentStorageEncryption: false,
-		CloudProviders: []subscriptions.CreateCloudProvider{
+		Name:                        redis.String("Test subscription"),
+		DryRun:                      redis.Bool(false),
+		PaymentMethodID:             redis.Int(2),
+		MemoryStorage:               redis.String("ram"),
+		PersistentStorageEncryption: redis.Bool(false),
+		CloudProviders: []*subscriptions.CreateCloudProvider{
 			{
-				Provider:       "AWS",
-				CloudAccountId: 1,
-				Regions: []subscriptions.CreateRegion{
+				Provider:       redis.String("AWS"),
+				CloudAccountID: redis.Int(1),
+				Regions: []*subscriptions.CreateRegion{
 					{
-						Region: "eu-west-1",
+						Region: redis.String("eu-west-1"),
 					},
 				},
 			},
 		},
-		Databases: []subscriptions.CreateDatabase{
+		Databases: []*subscriptions.CreateDatabase{
 			{
-				Name:                 "example",
-				Protocol:             "redis",
-				MemoryLimitInGb:      1,
-				SupportOSSClusterApi: true,
-				DataPersistence:      "none",
-				Replication:          false,
+				Name:                 redis.String("example"),
+				Protocol:             redis.String("redis"),
+				MemoryLimitInGb:      redis.Float64(1),
+				SupportOSSClusterApi: redis.Bool(true),
+				DataPersistence:      redis.String("none"),
+				Replication:          redis.Bool(false),
 				ThroughputMeasurement: &subscriptions.CreateThroughput{
-					By:    "operations-per-second",
-					Value: 10000,
+					By:    redis.String("operations-per-second"),
+					Value: redis.Int(10000),
 				},
-				Modules:  []subscriptions.CreateModules{},
-				Quantity: 1,
+				Quantity: redis.Int(1),
 			},
 		},
 	})

@@ -6,13 +6,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/RedisLabs/rediscloud-go-api/redis"
 	"github.com/RedisLabs/rediscloud-go-api/service/databases"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestDatabase_List(t *testing.T) {
-	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/subscriptions/23456/databases", `{
+	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/subscriptions/23456/databases?limit=100&offset=0", `{
   "accountId": 2,
   "subscription": [
     {
@@ -46,25 +47,26 @@ func TestDatabase_List(t *testing.T) {
 	subject, err := NewClient(BaseUrl(s.URL), Auth("apiKey", "secret"), Transporter(s.Client().Transport))
 	require.NoError(t, err)
 
-	actual, err := subject.Database.List(context.TODO(), 23456)
-	require.NoError(t, err)
+	actual := subject.Database.List(context.TODO(), 23456)
 
+	assert.True(t, actual.Next())
+	assert.NoError(t, actual.Err())
 	assert.ElementsMatch(t, []*databases.Database{
 		{
-			ID:       42,
-			Name:     "first-example",
-			Protocol: "redis",
-			Provider: "AWS",
-			Region:   "eu-west-1",
+			ID:       redis.Int(42),
+			Name:     redis.String("first-example"),
+			Protocol: redis.String("redis"),
+			Provider: redis.String("AWS"),
+			Region:   redis.String("eu-west-1"),
 		},
 		{
-			ID:       43,
-			Name:     "second-example",
-			Protocol: "redis",
-			Provider: "AWS",
-			Region:   "eu-west-1",
+			ID:       redis.Int(43),
+			Name:     redis.String("second-example"),
+			Protocol: redis.String("redis"),
+			Provider: redis.String("AWS"),
+			Region:   redis.String("eu-west-1"),
 		},
-	}, actual)
+	}, actual.Value())
 }
 
 func TestDatabase_Get(t *testing.T) {
@@ -130,24 +132,38 @@ func TestDatabase_Get(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, &databases.Database{
-		ID:                     98765,
-		Name:                   "Example",
-		Protocol:               "redis",
-		Provider:               "AWS",
-		Region:                 "eu-west-1",
-		Status:                 "active",
-		MemoryLimitInGb:        7,
-		MemoryUsedInMb:         5,
-		SupportOSSClusterApi:   true,
-		DataPersistence:        "none",
-		Replication:            false,
-		DataEvictionPolicy:     "volatile-random",
-		ActivatedOn:            time.Date(2020, 11, 3, 9, 3, 30, 0, time.UTC),
-		LastModified:           time.Date(2020, 11, 3, 9, 3, 30, 0, time.UTC),
-		MemoryStorage:          "ram",
-		PrivateEndpoint:        "example.net:16668",
-		PublicEndpoint:         "example.com:16668",
-		RedisVersionCompliance: "6.0.5",
+		ID:                     redis.Int(98765),
+		Name:                   redis.String("Example"),
+		Protocol:               redis.String("redis"),
+		Provider:               redis.String("AWS"),
+		Region:                 redis.String("eu-west-1"),
+		Status:                 redis.String("active"),
+		MemoryLimitInGb:        redis.Float64(7),
+		MemoryUsedInMb:         redis.Float64(5),
+		SupportOSSClusterApi:   redis.Bool(true),
+		DataPersistence:        redis.String("none"),
+		Replication:            redis.Bool(false),
+		DataEvictionPolicy:     redis.String("volatile-random"),
+		ActivatedOn:            redis.Time(time.Date(2020, 11, 3, 9, 3, 30, 0, time.UTC)),
+		LastModified:           redis.Time(time.Date(2020, 11, 3, 9, 3, 30, 0, time.UTC)),
+		MemoryStorage:          redis.String("ram"),
+		PrivateEndpoint:        redis.String("example.net:16668"),
+		PublicEndpoint:         redis.String("example.com:16668"),
+		RedisVersionCompliance: redis.String("6.0.5"),
+		ThroughputMeasurement: &databases.Throughput{
+			By:    redis.String("operations-per-second"),
+			Value: redis.Int(10_000),
+		},
+		Clustering: &databases.Clustering{
+			NumberOfShards: redis.Int(1),
+		},
+		Security: &databases.Security{
+			SslClientAuthentication: redis.Bool(false),
+			SourceIps:               redis.StringSlice("0.0.0.0/0"),
+			Password:                redis.String("test"),
+		},
+		Modules: []*databases.Module{},
+		Alerts:  []*databases.Alert{},
 	}, actual)
 }
 

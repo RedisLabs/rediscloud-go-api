@@ -1,6 +1,10 @@
 package task
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/RedisLabs/rediscloud-go-api/redis"
+)
 
 func TestError_StatusCode(t *testing.T) {
 	tests := []struct {
@@ -11,21 +15,21 @@ func TestError_StatusCode(t *testing.T) {
 		{
 			name: "no status code",
 			subject: &Error{
-				Status: "doesn't start with a number",
+				Status: redis.String("doesn't start with a number"),
 			},
 			want: "",
 		},
 		{
 			name: "starts with a status code",
 			subject: &Error{
-				Status: "418 I'm a teapot",
+				Status: redis.String("418 I'm a teapot"),
 			},
 			want: "418",
 		},
 		{
 			name: "includes a number but doesn't start with it",
 			subject: &Error{
-				Status: "The number 42 should not be found",
+				Status: redis.String("The number 42 should not be found"),
 			},
 			want: "",
 		},

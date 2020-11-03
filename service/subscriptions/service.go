@@ -3,6 +3,8 @@ package subscriptions
 import (
 	"context"
 	"fmt"
+
+	"github.com/RedisLabs/rediscloud-go-api/redis"
 )
 
 type Log interface {
@@ -38,9 +40,9 @@ func (a *Api) Create(ctx context.Context, subscription CreateSubscription) (int,
 		return 0, err
 	}
 
-	a.logger.Printf("Waiting for task %s to finish creating the subscription", task.TaskId)
+	a.logger.Printf("Waiting for task %s to finish creating the subscription", task)
 
-	id, err := a.task.WaitForResourceId(ctx, task.TaskId)
+	id, err := a.task.WaitForResourceId(ctx, redis.StringValue(task.ID))
 	if err != nil {
 		return 0, err
 	}
@@ -57,7 +59,7 @@ func (a *Api) Delete(ctx context.Context, id int) error {
 
 	a.logger.Printf("Waiting for subscription %d to finish being deleted", id)
 
-	err = a.task.Wait(ctx, task.TaskId)
+	err = a.task.Wait(ctx, redis.StringValue(task.ID))
 	if err != nil {
 		return err
 	}

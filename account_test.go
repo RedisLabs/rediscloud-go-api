@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/RedisLabs/rediscloud-go-api/redis"
 	"github.com/RedisLabs/rediscloud-go-api/service/account"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -45,16 +46,16 @@ func TestAccount_ListPayments(t *testing.T) {
 	actual, err := subject.Account.ListPaymentMethods(context.TODO())
 	require.NoError(t, err)
 
-	assert.ElementsMatch(t, []account.PaymentMethod{
+	assert.ElementsMatch(t, []*account.PaymentMethod{
 		{
-			Id:                 123,
-			Type:               "Visa",
-			CreditCardEndsWith: 9876,
+			ID:                 redis.Int(123),
+			Type:               redis.String("Visa"),
+			CreditCardEndsWith: redis.Int(9876),
 		},
 		{
-			Id:                 654,
-			Type:               "Mastercard",
-			CreditCardEndsWith: 4567,
+			ID:                 redis.Int(654),
+			Type:               redis.String("Mastercard"),
+			CreditCardEndsWith: redis.Int(4567),
 		},
 	}, actual)
 }
