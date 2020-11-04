@@ -1,9 +1,13 @@
 package rediscloud_api
 
 import (
+	"bytes"
+	"encoding/json"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"os"
+	"strings"
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 	"github.com/RedisLabs/rediscloud-go-api/service/account"
@@ -61,19 +65,23 @@ func NewClient(configs ...Option) (*Client, error) {
 }
 
 type Options struct {
-	baseUrl   string
-	apiKey    string
-	secretKey string
-	userAgent string
-	logger    Log
-	transport http.RoundTripper
+	baseUrl     string
+	apiKey      string
+	secretKey   string
+	userAgent   string
+	logger      Log
+	transport   http.RoundTripper
+	logRequests bool
 }
 
 func (o Options) roundTripper() http.RoundTripper {
 	return &credentialTripper{
-		apiKey:    o.apiKey,
-		secretKey: o.secretKey,
-		wrapped:   o.transport,
+		apiKey:      o.apiKey,
+		secretKey:   o.secretKey,
+		wrapped:     o.transport,
+		logRequests: o.logRequests,
+		logger:      o.logger,
+		userAgent:   o.userAgent,
 	}
 }
 
@@ -89,6 +97,12 @@ func Auth(apiKey string, secretKey string) Option {
 func BaseUrl(url string) Option {
 	return func(options *Options) {
 		options.baseUrl = url
+	}
+}
+
+func LogRequests(enable bool) Option {
+	return func(options *Options) {
+		options.logRequests = enable
 	}
 }
 
@@ -116,17 +130,61 @@ type Log interface {
 }
 
 type credentialTripper struct {
-	apiKey    string
-	secretKey string
-	wrapped   http.RoundTripper
+	apiKey      string
+	secretKey   string
+	wrapped     http.RoundTripper
+	logRequests bool
+	logger      Log
+	userAgent   string
 }
 
 func (c *credentialTripper) RoundTrip(request *http.Request) (*http.Response, error) {
 	request.Header.Set("Accept", "application/json")
+	request.Header.Set("User-Agent", c.userAgent)
+
+	if c.logRequests {
+		data, _ := httputil.DumpRequestOut(request, true)
+		if data != nil {
+			c.logger.Printf(`DEBUG: Request %s:
+---[ REQUEST ]---
+%s`, request.URL.Path, prettyPrint(data))
+		}
+	}
+
+	// Credentials added _after_ the request was logged to avoid accidentally logging them
 	request.Header.Set("X-Api-Key", c.apiKey)
 	request.Header.Set("X-Api-Secret-Key", c.secretKey)
 
-	return c.wrapped.RoundTrip(request)
+	response, err := c.wrapped.RoundTrip(request)
+	if err != nil {
+		return response, err
+	}
+
+	if c.logRequests {
+		data, _ := httputil.DumpResponse(response, true)
+		if data != nil {
+			c.logger.Printf(`DEBUG: Response %s:
+---[ RESPONSE ]---
+%s`, request.URL.Path, prettyPrint(data))
+		}
+	}
+	return response, nil
+}
+
+func prettyPrint(data []byte) string {
+	lines := strings.Split(string(data), "\n")
+	// A JSON body that wasn't indented would have ended up as a single line in the dumped information,
+	// so try and find a line which is valid JSON and then indent it
+	for i, line := range lines {
+		asBytes := []byte(line)
+		if json.Valid(asBytes) {
+			var indented bytes.Buffer
+			if err := json.Indent(&indented, asBytes, "", "  "); err == nil {
+				lines[i] = indented.String()
+			}
+		}
+	}
+	return strings.Join(lines, "\n")
 }
 
 var _ http.RoundTripper = &credentialTripper{}
