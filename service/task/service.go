@@ -2,6 +2,7 @@ package task
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"math"
 	"net/url"
@@ -49,6 +50,20 @@ func (a *API) WaitForResourceId(ctx context.Context, id string) (int, error) {
 // by cancelling the context.
 func (a *API) Wait(ctx context.Context, id string) error {
 	_, err := a.WaitForTaskToComplete(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *API) WaitForResource(ctx context.Context, id string, resource interface{}) error {
+	task, err := a.WaitForTaskToComplete(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(*task.Response.Resource, resource)
 	if err != nil {
 		return err
 	}

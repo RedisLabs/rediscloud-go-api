@@ -83,6 +83,101 @@ func (o CreateModules) String() string {
 	return internal.ToString(o)
 }
 
+type UpdateSubscription struct {
+	Name            *string `json:"name,omitempty"`
+	PaymentMethodID *int    `json:"paymentMethodId,omitempty"`
+}
+
+func (o UpdateSubscription) String() string {
+	return internal.ToString(o)
+}
+
+type Subscription struct {
+	ID                *int           `json:"id,omitempty"`
+	Name              *string        `json:"name,omitempty"`
+	Status            *string        `json:"status,omitempty"`
+	PaymentMethodID   *int           `json:"paymentMethodId,omitempty"`
+	MemoryStorage     *string        `json:"memoryStorage,omitempty"`
+	StorageEncryption *bool          `json:"storageEncryption,omitempty"`
+	NumberOfDatabases *int           `json:"numberOfDatabases"`
+	CloudDetails      []*CloudDetail `json:"cloudDetails,omitempty"`
+}
+
+func (o Subscription) String() string {
+	return internal.ToString(o)
+}
+
+type CloudDetail struct {
+	Provider       *string   `json:"provider,omitempty"`
+	CloudAccountID *int      `json:"cloudAccountId,omitempty"`
+	TotalSizeInGB  *float64  `json:"totalSizeInGb,omitempty"`
+	Regions        []*Region `json:"regions,omitempty"`
+}
+
+func (o CloudDetail) String() string {
+	return internal.ToString(o)
+}
+
+type Region struct {
+	Region                     *string       `json:"region,omitempty"`
+	Networking                 []*Networking `json:"networking,omitempty"`
+	PreferredAvailabilityZones []*string     `json:"preferredAvailabilityZones,omitempty"`
+	MultipleAvailabilityZones  *bool         `json:"multipleAvailabilityZones,omitempty"`
+}
+
+func (o Region) String() string {
+	return internal.ToString(o)
+}
+
+type Networking struct {
+	DeploymentCIDR *string `json:"deploymentCIDR,omitempty"`
+	VPCId          *string `json:"vpcId,omitempty"`
+	SubnetID       *string `json:"subnetId,omitempty"`
+}
+
+func (o Networking) String() string {
+	return internal.ToString(o)
+}
+
+type CIDRWhitelist struct {
+	CIDRIPs          []*string   `json:"cidr_ips,omitempty"`
+	SecurityGroupIDs []*string   `json:"security_group_ids,omitempty"`
+	Errors           interface{} `json:"errors,omitempty"` // TODO the structure of this is undocumented
+}
+
+func (o CIDRWhitelist) String() string {
+	return internal.ToString(o)
+}
+
+type UpdateCIDRWhitelist struct {
+	CIDRIPs          []*string `json:"cidrIps,omitempty"`
+	SecurityGroupIds []*string `json:"securityGroupIds,omitempty"`
+}
+
+func (o UpdateCIDRWhitelist) String() string {
+	return internal.ToString(o)
+}
+
+type CreateVPCPeering struct {
+	Region       *string `json:"region,omitempty"`
+	AWSAccountID *string `json:"awsAccountId,omitempty"`
+	VPCId        *string `json:"vpcId,omitempty"`
+	VPCCidr      *string `json:"vpcCidr,omitempty"`
+}
+
+func (o CreateVPCPeering) String() string {
+	return internal.ToString(o)
+}
+
+type VPCPeering struct {
+	ID     *int    `json:"id,omitempty"`
+	Status *string `json:"status,omitempty"`
+}
+
+func (o VPCPeering) String() string {
+	return internal.ToString(o)
+}
+
 type taskResponse struct {
 	ID *string `json:"taskId,omitempty"`
 }
@@ -90,3 +185,23 @@ type taskResponse struct {
 func (o taskResponse) String() string {
 	return internal.ToString(o)
 }
+
+const (
+	// Active value of the `Status` field in `Subscription`
+	SubscriptionStatusActive = "active"
+	// Pending value of the `Status` field in `Subscription`
+	SubscriptionStatusPending = "pending"
+	// Error value of the `Status` field in `Subscription`
+	SubscriptionStatusError = "error"
+	// Deleting value of the `Status` field in `Subscription`
+	SubscriptionStatusDeleting = "deleting"
+
+	// Active value of the `Status` field in `VPCPeering`
+	VPCPeeringStatusActive = "active"
+	// Inactive value of the `Status` field in `VPCPeering`
+	VPCPeeringStatusInactive = "inactive"
+	// Pending acceptance value of the `Status` field in `VPCPeering`
+	VPCPeeringStatusPendingAcceptance = "pending-acceptance"
+	// Failed value of the `Status` field in `VPCPeering`
+	VPCPeeringStatusFailed = "failed"
+)

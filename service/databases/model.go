@@ -108,3 +108,52 @@ type listDbSubscription struct {
 func (o listDbSubscription) String() string {
 	return internal.ToString(o)
 }
+
+const (
+	// Active value of the `Status` field in `Database`
+	StatusActive = "active"
+	// Draft value of the `Status` field in `Database`
+	StatusDraft = "draft"
+	// Active change pending value of the `Status` field in `Database`
+	StatusActiveChangePending = "active-change-pending"
+	// Error value of the `Status` field in `Database`
+	StatusError = "error"
+)
+
+func MemoryStorage() []string {
+	return []string{
+		"ram",
+		"ram-and-flash",
+	}
+}
+
+func ProtocolValues() []string {
+	return []string{
+		"redis",
+		"memcached",
+	}
+}
+
+func DataPersistenceValues() []string {
+	return []string{
+		"none",
+		"aof-every-1-second",
+		"aof-every-write",
+		"snapshot-every-1-hour",
+		"snapshot-every-6-hours",
+		"snapshot-every-12-hours",
+	}
+}
+
+func DataEvictionValues() []string {
+	return []string{
+		"allkeys-lru",
+		"allkeys-lfu",
+		"allkeys-random",
+		"volatile-lru",
+		"volatile-lfu",
+		"volatile-random",
+		"volatile-ttl",
+		"noeviction",
+	}
+}
