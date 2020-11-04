@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/RedisLabs/rediscloud-go-api/redis"
 	"github.com/RedisLabs/rediscloud-go-api/service/cloud_accounts"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -54,13 +55,13 @@ func TestCloudAccount_Create(t *testing.T) {
 	require.NoError(t, err)
 
 	actual, err := subject.CloudAccount.Create(context.TODO(), cloud_accounts.CreateCloudAccount{
-		AccessKeyId:     "123456",
-		AccessSecretKey: "765432",
-		ConsoleUsername: "foo",
-		ConsolePassword: "bar",
-		Name:            "cumulus nimbus",
-		Provider:        "AWS",
-		SignInLoginUrl:  "http://example.org/foo",
+		AccessKeyID:     redis.String("123456"),
+		AccessSecretKey: redis.String("765432"),
+		ConsoleUsername: redis.String("foo"),
+		ConsolePassword: redis.String("bar"),
+		Name:            redis.String("cumulus nimbus"),
+		Provider:        redis.String("AWS"),
+		SignInLoginURL:  redis.String("http://example.org/foo"),
 	})
 	require.NoError(t, err)
 	assert.Equal(t, expected, actual)
@@ -106,12 +107,12 @@ func TestCloudAccount_Update(t *testing.T) {
 	require.NoError(t, err)
 
 	err = subject.CloudAccount.Update(context.TODO(), 642, cloud_accounts.UpdateCloudAccount{
-		AccessKeyId:     "tfvbjuyg",
-		AccessSecretKey: "gyujmnbvgy",
-		ConsoleUsername: "baz",
-		ConsolePassword: "bar",
-		Name:            "stratocumulus",
-		SignInLoginUrl:  "http://example.org/foo",
+		AccessKeyID:     redis.String("tfvbjuyg"),
+		AccessSecretKey: redis.String("gyujmnbvgy"),
+		ConsoleUsername: redis.String("baz"),
+		ConsolePassword: redis.String("bar"),
+		Name:            redis.String("stratocumulus"),
+		SignInLoginURL:  redis.String("http://example.org/foo"),
 	})
 	require.NoError(t, err)
 }
@@ -138,10 +139,10 @@ func TestCloudAccount_Get(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, &cloud_accounts.CloudAccount{
-		Name:        "Frank",
-		Provider:    "GCP",
-		Status:      "active",
-		AccessKeyId: "keyId",
+		Name:        redis.String("Frank"),
+		Provider:    redis.String("GCP"),
+		Status:      redis.String("active"),
+		AccessKeyID: redis.String("keyId"),
 	}, actual)
 }
 

@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/RedisLabs/rediscloud-go-api/redis"
 	"github.com/RedisLabs/rediscloud-go-api/service/task"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -39,12 +40,12 @@ func TestTask_Get(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, &task.Task{
-		CommandType: "subscriptionCreateRequest",
-		Description: "Task request failed during processing. See error information for failure details.",
-		Status:      "processing-error",
-		Id:          "e02b40d6-1395-4861-a3b9-ecf829d835fd",
+		CommandType: redis.String("subscriptionCreateRequest"),
+		Description: redis.String("Task request failed during processing. See error information for failure details."),
+		Status:      redis.String("processing-error"),
+		ID:          redis.String("e02b40d6-1395-4861-a3b9-ecf829d835fd"),
 		Response: &task.Response{
-			Id: &resourceId,
+			ID: &resourceId,
 		},
 	}, actual)
 }
@@ -76,9 +77,9 @@ func TestTask_Get_UnwrapsTaskError(t *testing.T) {
 
 	actual, err := subject.Task.Get(context.TODO(), "task-uuid")
 	assert.Equal(t, &task.Error{
-		Type:        "SUBSCRIPTION_PI_NOT_FOUND",
-		Description: "Payment info was not found for subscription. Use 'GET /payment-methods' to lookup valid payment methods for current Account",
-		Status:      "400 BAD_REQUEST",
+		Type:        redis.String("SUBSCRIPTION_PI_NOT_FOUND"),
+		Description: redis.String("Payment info was not found for subscription. Use 'GET /payment-methods' to lookup valid payment methods for current Account"),
+		Status:      redis.String("400 BAD_REQUEST"),
 	}, err)
 	assert.Nil(t, actual)
 }
@@ -133,7 +134,7 @@ func TestTask_WaitForTaskToComplete(t *testing.T) {
 
 	actual, err := subject.Task.WaitForTaskToComplete(context.TODO(), "task-uuid")
 	require.NoError(t, err)
-	assert.Equal(t, resourceId, *actual.Response.Id)
+	assert.Equal(t, resourceId, *actual.Response.ID)
 
 	var actualResponse string
 	err = json.Unmarshal(*actual.Response.Resource, &actualResponse)

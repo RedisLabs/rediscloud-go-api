@@ -6,6 +6,10 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 * Basic task API
+* List payment methods through the Accounts API 
+* Cloud accounts API
+* Basic subscription API
+* Basic database API
 
 ### Changed
 

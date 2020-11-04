@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/RedisLabs/rediscloud-go-api/redis"
 	"github.com/avast/retry-go"
 )
 
@@ -18,13 +19,13 @@ type HttpClient interface {
 	Get(ctx context.Context, name, path string, responseBody interface{}) error
 }
 
-type Api struct {
+type API struct {
 	client HttpClient
 	logger Log
 }
 
-func NewApi(client HttpClient, logger Log) *Api {
-	return &Api{client: client, logger: logger}
+func NewAPI(client HttpClient, logger Log) *API {
+	return &API{client: client, logger: logger}
 }
 
 // WaitForResourceId will poll the task, waiting for the task to finish processing, where it will then return.
@@ -32,13 +33,13 @@ func NewApi(client HttpClient, logger Log) *Api {
 //
 // The task will be continuously polled until the task either fails or succeeds - cancellation can be achieved
 // by cancelling the context.
-func (a Api) WaitForResourceId(ctx context.Context, id string) (int, error) {
+func (a *API) WaitForResourceId(ctx context.Context, id string) (int, error) {
 	task, err := a.WaitForTaskToComplete(ctx, id)
 	if err != nil {
 		return 0, err
 	}
 
-	return *task.Response.Id, nil
+	return redis.IntValue(task.Response.ID), nil
 }
 
 // Wait will poll the task, waiting for the task to finish processing, where it will then return.
@@ -46,7 +47,7 @@ func (a Api) WaitForResourceId(ctx context.Context, id string) (int, error) {
 //
 // The task will be continuously polled until the task either fails or succeeds - cancellation can be achieved
 // by cancelling the context.
-func (a Api) Wait(ctx context.Context, id string) error {
+func (a *API) Wait(ctx context.Context, id string) error {
 	_, err := a.WaitForTaskToComplete(ctx, id)
 	if err != nil {
 		return err
@@ -60,7 +61,7 @@ func (a Api) Wait(ctx context.Context, id string) error {
 //
 // The task will be continuously polled until the task either fails or succeeds - cancellation can be achieved
 // by cancelling the context.
-func (a *Api) WaitForTaskToComplete(ctx context.Context, id string) (*Task, error) {
+func (a *API) WaitForTaskToComplete(ctx context.Context, id string) (*Task, error) {
 	var task *Task
 	err := retry.Do(func() error {
 		var err error
@@ -69,15 +70,16 @@ func (a *Api) WaitForTaskToComplete(ctx context.Context, id string) (*Task, erro
 			return retry.Unrecoverable(err)
 		}
 
-		if task.Status == processedState {
+		status := redis.StringValue(task.Status)
+		if status == processedState {
 			return nil
 		}
 
-		if _, ok := processingStates[task.Status]; !ok {
-			return retry.Unrecoverable(fmt.Errorf("task %s failed %s - %s", id, task.Status, task.Description))
+		if _, ok := processingStates[status]; !ok {
+			return retry.Unrecoverable(fmt.Errorf("task %s failed %s - %s", id, status, redis.StringValue(task.Description)))
 		}
 
-		return fmt.Errorf("task %s not processed yet: %s", id, task.Status)
+		return fmt.Errorf("task %s not processed yet: %s", id, status)
 	},
 		retry.Attempts(math.MaxUint64), retry.Delay(1*time.Second), retry.MaxDelay(30*time.Second),
 		retry.LastErrorOnly(true), retry.Context(ctx), retry.OnRetry(func(_ uint, err error) {
@@ -92,7 +94,7 @@ func (a *Api) WaitForTaskToComplete(ctx context.Context, id string) (*Task, erro
 
 // Get will retrieve a task. An error will be returned if the task couldn't be retrieved or the task itself
 // failed.
-func (a *Api) Get(ctx context.Context, id string) (*Task, error) {
+func (a *API) Get(ctx context.Context, id string) (*Task, error) {
 	var task Task
 	if err := a.client.Get(ctx, fmt.Sprintf("retrieve task %s", id), "/tasks/"+url.PathEscape(id), &task); err != nil {
 		return nil, err

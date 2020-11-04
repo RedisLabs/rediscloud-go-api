@@ -3,6 +3,10 @@ package databases
 import (
 	"context"
 	"fmt"
+	"net/http"
+
+	"github.com/RedisLabs/rediscloud-go-api/internal"
+	"github.com/RedisLabs/rediscloud-go-api/redis"
 )
 
 type Log interface {
@@ -21,33 +25,21 @@ type Task interface {
 	Wait(ctx context.Context, id string) error
 }
 
-type Api struct {
+type API struct {
 	client HttpClient
 	task   Task
 	logger Log
 }
 
-func NewApi(client HttpClient, task Task, logger Log) *Api {
-	return &Api{client: client, task: task, logger: logger}
+func NewAPI(client HttpClient, task Task, logger Log) *API {
+	return &API{client: client, task: task, logger: logger}
 }
 
-// TODO pagination
-// TODO api returns 404 when no databases
-func (a Api) List(ctx context.Context, subscription int) ([]*Database, error) {
-	var list listDatabaseResponse
-	err := a.client.Get(ctx, fmt.Sprintf("list databases for %d", subscription), fmt.Sprintf("/subscriptions/%d/databases", subscription), &list)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(list.Subscription) != 1 || list.Subscription[0].ID != subscription {
-		return nil, fmt.Errorf("server didn't respond with just a single subscription")
-	}
-
-	return list.Subscription[0].Databases, nil
+func (a *API) List(ctx context.Context, subscription int) *ListDatabase {
+	return newListDatabase(ctx, a.client, subscription, 100)
 }
 
-func (a Api) Get(ctx context.Context, subscription int, database int) (*Database, error) {
+func (a *API) Get(ctx context.Context, subscription int, database int) (*Database, error) {
 	var db Database
 	err := a.client.Get(ctx, fmt.Sprintf("get database %d for subscription %d", subscription, database), fmt.Sprintf("/subscriptions/%d/databases/%d", subscription, database), &db)
 	if err != nil {
@@ -57,7 +49,7 @@ func (a Api) Get(ctx context.Context, subscription int, database int) (*Database
 	return &db, nil
 }
 
-func (a Api) Delete(ctx context.Context, subscription int, database int) error {
+func (a *API) Delete(ctx context.Context, subscription int, database int) error {
 	var task taskResponse
 	err := a.client.Delete(ctx, fmt.Sprintf("delete database %d/%d", subscription, database), fmt.Sprintf("/subscriptions/%d/databases/%d", subscription, database), &task)
 	if err != nil {
@@ -66,10 +58,65 @@ func (a Api) Delete(ctx context.Context, subscription int, database int) error {
 
 	a.logger.Printf("Waiting for database %d for subscription %d to finish being deleted", subscription, database)
 
-	err = a.task.Wait(ctx, task.TaskId)
+	err = a.task.Wait(ctx, redis.StringValue(task.ID))
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+type ListDatabase struct {
+	client       HttpClient
+	subscription int
+	ctx          context.Context
+	pageSize     int
+
+	offset int
+	value  []*Database
+	err    error
+}
+
+func newListDatabase(ctx context.Context, client HttpClient, subscription int, pageSize int) *ListDatabase {
+	return &ListDatabase{client: client, subscription: subscription, ctx: ctx, pageSize: pageSize}
+}
+
+func (d *ListDatabase) Next() bool {
+	if d.err != nil {
+		return false
+	}
+
+	url := fmt.Sprintf("/subscriptions/%d/databases?limit=%d&offset=%d", d.subscription, d.pageSize, d.offset)
+
+	var list listDatabaseResponse
+	err := d.client.Get(d.ctx, fmt.Sprintf("list databases for %d", d.subscription), url, &list)
+	if err != nil {
+		d.setError(err)
+		return false
+	}
+
+	if len(list.Subscription) != 1 || redis.IntValue(list.Subscription[0].ID) != d.subscription {
+		d.setError(fmt.Errorf("server didn't respond with just a single subscription"))
+		return false
+	}
+
+	d.value = list.Subscription[0].Databases
+	d.offset += d.pageSize
+
+	return true
+}
+
+func (d *ListDatabase) Value() []*Database {
+	return d.value
+}
+
+func (d *ListDatabase) Err() error {
+	return d.err
+}
+
+func (d *ListDatabase) setError(err error) {
+	if httpErr, ok := err.(*internal.HTTPError); !ok || httpErr.StatusCode != http.StatusNotFound {
+		d.err = err
+	}
+	d.value = nil
 }
