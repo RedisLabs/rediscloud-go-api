@@ -51,7 +51,7 @@ func TestCloudAccount_Create(t *testing.T) {
   }
 }`, expected))))
 
-	subject, err := NewClient(BaseUrl(s.URL), Auth("key", "secret"), Transporter(s.Client().Transport))
+	subject, err := clientFromTestServer(s, "key", "secret")
 	require.NoError(t, err)
 
 	actual, err := subject.CloudAccount.Create(context.TODO(), cloud_accounts.CreateCloudAccount{
@@ -103,7 +103,7 @@ func TestCloudAccount_Update(t *testing.T) {
   }
 }`)))
 
-	subject, err := NewClient(BaseUrl(s.URL), Auth("key", "secret"), Transporter(s.Client().Transport))
+	subject, err := clientFromTestServer(s, "key", "secret")
 	require.NoError(t, err)
 
 	err = subject.CloudAccount.Update(context.TODO(), 642, cloud_accounts.UpdateCloudAccount{
@@ -132,7 +132,7 @@ func TestCloudAccount_Get(t *testing.T) {
   }
 }`)))
 
-	subject, err := NewClient(BaseUrl(s.URL), Auth("apiKey", "secret"), Transporter(s.Client().Transport))
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
 	require.NoError(t, err)
 
 	actual, err := subject.CloudAccount.Get(context.TODO(), 98765)
@@ -175,7 +175,7 @@ func TestCloudAccount_Delete(t *testing.T) {
   }
 }`)))
 
-	subject, err := NewClient(BaseUrl(s.URL), Auth("apiKey", "secret"), Transporter(s.Client().Transport))
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
 	require.NoError(t, err)
 
 	err = subject.CloudAccount.Delete(context.TODO(), 98765)

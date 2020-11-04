@@ -33,7 +33,7 @@ func TestTask_Get(t *testing.T) {
   }
 }`, resourceId))))
 
-	subject, err := NewClient(BaseUrl(s.URL), Auth("key", "secret"), Transporter(s.Client().Transport))
+	subject, err := clientFromTestServer(s, "key", "secret")
 	require.NoError(t, err)
 
 	actual, err := subject.Task.Get(context.TODO(), "task-uuid")
@@ -72,7 +72,7 @@ func TestTask_Get_UnwrapsTaskError(t *testing.T) {
   }
 }`)))
 
-	subject, err := NewClient(BaseUrl(s.URL), Auth("key", "secret"), Transporter(s.Client().Transport))
+	subject, err := clientFromTestServer(s, "key", "secret")
 	require.NoError(t, err)
 
 	actual, err := subject.Task.Get(context.TODO(), "task-uuid")
@@ -129,7 +129,7 @@ func TestTask_WaitForTaskToComplete(t *testing.T) {
   }
 }`, resourceId, resource))))
 
-	subject, err := NewClient(BaseUrl(s.URL), Auth("key", "secret"), Transporter(s.Client().Transport))
+	subject, err := clientFromTestServer(s, "key", "secret")
 	require.NoError(t, err)
 
 	actual, err := subject.Task.WaitForTaskToComplete(context.TODO(), "task-uuid")

@@ -3,14 +3,24 @@ package rediscloud_api
 import (
 	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
+func clientFromTestServer(s *httptest.Server, apiKey string, secretKey string) (*Client, error) {
+	return NewClient(LogRequests(true), BaseUrl(s.URL), Auth(apiKey, secretKey), Transporter(s.Client().Transport))
+}
+
 func testServer(apiKey, secretKey string, mockedResponses ...endpoint) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if strings.Contains(strings.ToLower(r.Header.Get("User-Agent")), "go-http-client") {
+			w.WriteHeader(504)
+			return
+		}
 		if r.Header.Get("X-Api-Key") != apiKey {
 			w.WriteHeader(502)
 			return

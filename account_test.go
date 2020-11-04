@@ -40,7 +40,7 @@ func TestAccount_ListPayments(t *testing.T) {
   }
 }`)))
 
-	subject, err := NewClient(BaseUrl(s.URL), Auth("apiKey", "secret"), Transporter(s.Client().Transport))
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
 	require.NoError(t, err)
 
 	actual, err := subject.Account.ListPaymentMethods(context.TODO())

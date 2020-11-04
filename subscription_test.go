@@ -75,7 +75,7 @@ func TestSubscription_Create(t *testing.T) {
   }
 }`, expected))))
 
-	subject, err := NewClient(BaseUrl(s.URL), Auth("key", "secret"), Transporter(s.Client().Transport))
+	subject, err := clientFromTestServer(s, "key", "secret")
 	require.NoError(t, err)
 
 	actual, err := subject.Subscription.Create(context.TODO(), subscriptions.CreateSubscription{
@@ -144,7 +144,7 @@ func TestSubscription_Delete(t *testing.T) {
   }
 }`)))
 
-	subject, err := NewClient(BaseUrl(s.URL), Auth("apiKey", "secret"), Transporter(s.Client().Transport))
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
 	require.NoError(t, err)
 
 	err = subject.Subscription.Delete(context.TODO(), 12356)

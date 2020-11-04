@@ -44,7 +44,7 @@ func TestDatabase_List(t *testing.T) {
   }
 }`)))
 
-	subject, err := NewClient(BaseUrl(s.URL), Auth("apiKey", "secret"), Transporter(s.Client().Transport))
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
 	require.NoError(t, err)
 
 	actual := subject.Database.List(context.TODO(), 23456)
@@ -125,7 +125,7 @@ func TestDatabase_Get(t *testing.T) {
   }
 }`)))
 
-	subject, err := NewClient(BaseUrl(s.URL), Auth("apiKey", "secret"), Transporter(s.Client().Transport))
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
 	require.NoError(t, err)
 
 	actual, err := subject.Database.Get(context.TODO(), 23456, 98765)
@@ -196,7 +196,7 @@ func TestDatabase_Delete(t *testing.T) {
   }
 }`)))
 
-	subject, err := NewClient(BaseUrl(s.URL), Auth("key", "secret"), Transporter(s.Client().Transport))
+	subject, err := clientFromTestServer(s, "key", "secret")
 	require.NoError(t, err)
 
 	err = subject.Database.Delete(context.TODO(), 42, 4291)
