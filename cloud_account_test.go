@@ -61,7 +61,7 @@ func TestCloudAccount_Create(t *testing.T) {
 		ConsolePassword: redis.String("bar"),
 		Name:            redis.String("cumulus nimbus"),
 		Provider:        redis.String("AWS"),
-		SignInLoginUrl:  redis.String("http://example.org/foo"),
+		SignInLoginURL:  redis.String("http://example.org/foo"),
 	})
 	require.NoError(t, err)
 	assert.Equal(t, expected, actual)
@@ -112,7 +112,7 @@ func TestCloudAccount_Update(t *testing.T) {
 		ConsoleUsername: redis.String("baz"),
 		ConsolePassword: redis.String("bar"),
 		Name:            redis.String("stratocumulus"),
-		SignInLoginUrl:  redis.String("http://example.org/foo"),
+		SignInLoginURL:  redis.String("http://example.org/foo"),
 	})
 	require.NoError(t, err)
 }

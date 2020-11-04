@@ -99,8 +99,8 @@ func TestSubscription_Create(t *testing.T) {
 			{
 				Name:                 redis.String("example"),
 				Protocol:             redis.String("redis"),
-				MemoryLimitInGb:      redis.Float64(1),
-				SupportOSSClusterApi: redis.Bool(true),
+				MemoryLimitInGB:      redis.Float64(1),
+				SupportOSSClusterAPI: redis.Bool(true),
 				DataPersistence:      redis.String("none"),
 				Replication:          redis.Bool(false),
 				ThroughputMeasurement: &subscriptions.CreateThroughput{

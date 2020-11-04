@@ -14,18 +14,18 @@ import (
 )
 
 type Client struct {
-	Account      *account.Api
-	CloudAccount *cloud_accounts.Api
-	Database     *databases.Api
-	Subscription *subscriptions.Api
-	Task         *task.Api
+	Account      *account.API
+	CloudAccount *cloud_accounts.API
+	Database     *databases.API
+	Subscription *subscriptions.API
+	Task         *task.API
 }
 
 func NewClient(configs ...Option) (*Client, error) {
 	config := &Options{
 		baseUrl:   "https://api.redislabs.com/v1",
 		userAgent: userAgent,
-		apiKey:    os.Getenv(ApiKeyEnvVar),
+		apiKey:    os.Getenv(AccessKeyEnvVar),
 		secretKey: os.Getenv(SecretKeyEnvVar),
 		logger:    log.New(os.Stderr, "", log.LstdFlags),
 		transport: http.DefaultTransport,
@@ -44,12 +44,12 @@ func NewClient(configs ...Option) (*Client, error) {
 		return nil, err
 	}
 
-	t := task.NewApi(client, config.logger)
+	t := task.NewAPI(client, config.logger)
 
-	a := account.NewApi(client)
-	c := cloud_accounts.NewApi(client, t, config.logger)
-	d := databases.NewApi(client, t, config.logger)
-	s := subscriptions.NewApi(client, t, config.logger)
+	a := account.NewAPI(client)
+	c := cloud_accounts.NewAPI(client, t, config.logger)
+	d := databases.NewAPI(client, t, config.logger)
+	s := subscriptions.NewAPI(client, t, config.logger)
 
 	return &Client{
 		Account:      a,

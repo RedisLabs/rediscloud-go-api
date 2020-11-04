@@ -21,9 +21,9 @@ type Database struct {
 	Provider               *string     `json:"provider,omitempty"`
 	Region                 *string     `json:"region,omitempty"`
 	Status                 *string     `json:"status,omitempty"`
-	MemoryLimitInGb        *float64    `json:"memoryLimitInGb,omitempty"`
-	MemoryUsedInMb         *float64    `json:"memoryUsedInMb,omitempty"`
-	SupportOSSClusterApi   *bool       `json:"supportOSSClusterApi,omitempty"`
+	MemoryLimitInGB        *float64    `json:"memoryLimitInGb,omitempty"`
+	MemoryUsedInMB         *float64    `json:"memoryUsedInMb,omitempty"`
+	SupportOSSClusterAPI   *bool       `json:"supportOSSClusterApi,omitempty"`
 	DataPersistence        *string     `json:"dataPersistence,omitempty"`
 	Replication            *bool       `json:"replication,omitempty"`
 	DataEvictionPolicy     *string     `json:"dataEvictionPolicy,omitempty"`
@@ -56,8 +56,8 @@ func (o Clustering) String() string {
 }
 
 type Security struct {
-	SslClientAuthentication *bool     `json:"sslClientAuthentication,omitempty"`
-	SourceIps               []*string `json:"sourceIps,omitempty"`
+	SSLClientAuthentication *bool     `json:"sslClientAuthentication,omitempty"`
+	SourceIPs               []*string `json:"sourceIps,omitempty"`
 	Password                *string   `json:"password,omitempty"`
 }
 

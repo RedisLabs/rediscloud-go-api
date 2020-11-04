@@ -11,7 +11,7 @@ type CreateCloudAccount struct {
 	ConsolePassword *string `json:"consolePassword,omitempty"`
 	Name            *string `json:"name,omitempty"`
 	Provider        *string `json:"provider,omitempty"`
-	SignInLoginUrl  *string `json:"signInLoginUrl,omitempty"`
+	SignInLoginURL  *string `json:"signInLoginUrl,omitempty"`
 }
 
 func (o CreateCloudAccount) String() string {
@@ -24,7 +24,7 @@ type UpdateCloudAccount struct {
 	ConsoleUsername *string `json:"consoleUsername,omitempty"`
 	ConsolePassword *string `json:"consolePassword,omitempty"`
 	Name            *string `json:"name,omitempty"`
-	SignInLoginUrl  *string `json:"signInLoginUrl,omitempty"`
+	SignInLoginURL  *string `json:"signInLoginUrl,omitempty"`
 }
 
 func (o UpdateCloudAccount) String() string {

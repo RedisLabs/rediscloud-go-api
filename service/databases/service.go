@@ -25,21 +25,21 @@ type Task interface {
 	Wait(ctx context.Context, id string) error
 }
 
-type Api struct {
+type API struct {
 	client HttpClient
 	task   Task
 	logger Log
 }
 
-func NewApi(client HttpClient, task Task, logger Log) *Api {
-	return &Api{client: client, task: task, logger: logger}
+func NewAPI(client HttpClient, task Task, logger Log) *API {
+	return &API{client: client, task: task, logger: logger}
 }
 
-func (a *Api) List(ctx context.Context, subscription int) *ListDatabase {
+func (a *API) List(ctx context.Context, subscription int) *ListDatabase {
 	return newListDatabase(ctx, a.client, subscription, 100)
 }
 
-func (a *Api) Get(ctx context.Context, subscription int, database int) (*Database, error) {
+func (a *API) Get(ctx context.Context, subscription int, database int) (*Database, error) {
 	var db Database
 	err := a.client.Get(ctx, fmt.Sprintf("get database %d for subscription %d", subscription, database), fmt.Sprintf("/subscriptions/%d/databases/%d", subscription, database), &db)
 	if err != nil {
@@ -49,7 +49,7 @@ func (a *Api) Get(ctx context.Context, subscription int, database int) (*Databas
 	return &db, nil
 }
 
-func (a *Api) Delete(ctx context.Context, subscription int, database int) error {
+func (a *API) Delete(ctx context.Context, subscription int, database int) error {
 	var task taskResponse
 	err := a.client.Delete(ctx, fmt.Sprintf("delete database %d/%d", subscription, database), fmt.Sprintf("/subscriptions/%d/databases/%d", subscription, database), &task)
 	if err != nil {
@@ -115,7 +115,7 @@ func (d *ListDatabase) Err() error {
 }
 
 func (d *ListDatabase) setError(err error) {
-	if httpErr, ok := err.(*internal.HttpError); !ok || httpErr.StatusCode != http.StatusNotFound {
+	if httpErr, ok := err.(*internal.HTTPError); !ok || httpErr.StatusCode != http.StatusNotFound {
 		d.err = err
 	}
 	d.value = nil

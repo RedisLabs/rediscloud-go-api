@@ -41,7 +41,7 @@ func TestListDatabase_stopsOn404(t *testing.T) {
 		}
 	}).Return(nil)
 	client.On("Get", context.TODO(), "list databases for 5", "/subscriptions/5/databases?limit=100&offset=200", mock.AnythingOfType("*databases.listDatabaseResponse")).
-		Return(&internal.HttpError{StatusCode: 404})
+		Return(&internal.HTTPError{StatusCode: 404})
 
 	subject := newListDatabase(context.TODO(), client, 5, 100)
 	assert.True(t, subject.Next())

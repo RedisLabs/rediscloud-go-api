@@ -61,7 +61,7 @@ func (c *HttpClient) withoutRequestBody(ctx context.Context, method, name, path 
 
 	if response.StatusCode > 299 {
 		body, _ := ioutil.ReadAll(response.Body)
-		return &HttpError{
+		return &HTTPError{
 			Name:       name,
 			StatusCode: response.StatusCode,
 			Body:       body,
@@ -102,7 +102,7 @@ func (c *HttpClient) withRequestBody(ctx context.Context, method, name, path str
 
 	if response.StatusCode > 299 {
 		body, _ := ioutil.ReadAll(response.Body)
-		return &HttpError{
+		return &HTTPError{
 			Name:       name,
 			StatusCode: response.StatusCode,
 			Body:       body,
@@ -116,14 +116,14 @@ func (c *HttpClient) withRequestBody(ctx context.Context, method, name, path str
 	return nil
 }
 
-type HttpError struct {
+type HTTPError struct {
 	Name       string
 	StatusCode int
 	Body       []byte
 }
 
-func (h *HttpError) Error() string {
+func (h *HTTPError) Error() string {
 	return fmt.Sprintf("failed to %s: %d - %s", h.Name, h.StatusCode, h.Body)
 }
 
-var _ error = &HttpError{}
+var _ error = &HTTPError{}

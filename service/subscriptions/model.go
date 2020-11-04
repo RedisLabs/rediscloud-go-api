@@ -51,8 +51,8 @@ func (o CreateNetworking) String() string {
 type CreateDatabase struct {
 	Name                   *string           `json:"name,omitempty"`
 	Protocol               *string           `json:"protocol,omitempty"`
-	MemoryLimitInGb        *float64          `json:"memoryLimitInGb,omitempty"`
-	SupportOSSClusterApi   *bool             `json:"supportOSSClusterApi,omitempty"`
+	MemoryLimitInGB        *float64          `json:"memoryLimitInGb,omitempty"`
+	SupportOSSClusterAPI   *bool             `json:"supportOSSClusterApi,omitempty"`
 	DataPersistence        *string           `json:"dataPersistence,omitempty"`
 	Replication            *bool             `json:"replication,omitempty"`
 	ThroughputMeasurement  *CreateThroughput `json:"throughputMeasurement,omitempty"`

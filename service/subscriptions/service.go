@@ -23,17 +23,17 @@ type Task interface {
 	Wait(ctx context.Context, id string) error
 }
 
-type Api struct {
+type API struct {
 	client HttpClient
 	task   Task
 	logger Log
 }
 
-func NewApi(client HttpClient, task Task, logger Log) *Api {
-	return &Api{client: client, task: task, logger: logger}
+func NewAPI(client HttpClient, task Task, logger Log) *API {
+	return &API{client: client, task: task, logger: logger}
 }
 
-func (a *Api) Create(ctx context.Context, subscription CreateSubscription) (int, error) {
+func (a *API) Create(ctx context.Context, subscription CreateSubscription) (int, error) {
 	var task taskResponse
 	err := a.client.Post(ctx, "create subscription", "/subscriptions", subscription, &task)
 	if err != nil {
@@ -50,7 +50,7 @@ func (a *Api) Create(ctx context.Context, subscription CreateSubscription) (int,
 	return id, nil
 }
 
-func (a *Api) Delete(ctx context.Context, id int) error {
+func (a *API) Delete(ctx context.Context, id int) error {
 	var task taskResponse
 	err := a.client.Delete(ctx, fmt.Sprintf("delete subscription %d", id), fmt.Sprintf("/subscriptions/%d", id), &task)
 	if err != nil {
