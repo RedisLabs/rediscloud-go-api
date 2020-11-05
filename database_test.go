@@ -2,6 +2,7 @@ package rediscloud_api
 
 import (
 	"context"
+	"fmt"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -11,6 +12,112 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func TestDatabase_Create(t *testing.T) {
+	expected := 4291
+	s := httptest.NewServer(testServer("key", "secret", postRequest(t, "/subscriptions/42/databases", `{
+  "dryRun": false,
+  "name": "Redis-database-example",
+  "protocol": "redis",
+  "memoryLimitInGb": 1,
+  "supportOSSClusterApi": false,
+  "useExternalEndpointForOSSClusterApi": false,
+  "dataPersistence": "none",
+  "dataEvictionPolicy": "allkeys-lru",
+  "replication": true,
+  "throughputMeasurement": {
+    "by": "operations-per-second",
+    "value": 1000
+  },
+  "averageItemSizeInBytes": 1,
+  "replicaOf": [
+    "another"
+  ],
+  "periodicBackupPath": "s3://bucket-name",
+  "sourceIp": [
+    "10.0.0.1"
+  ],
+  "clientSslCertificate": "something",
+  "password": "fooBar",
+  "alerts": [
+    {
+      "name": "dataset-size",
+      "value": 80
+    }
+  ],
+  "modules": [
+    {
+      "name": "RedisSearch"
+    }
+  ]
+}`, `{
+  "taskId": "task",
+  "commandType": "databaseCreateRequest",
+  "status": "received",
+  "description": "Task request received and is being queued for processing.",
+  "timestamp": "2020-11-02T09:05:34.3Z",
+  "_links": {
+    "task": {
+      "href": "https://example.org",
+      "title": "getTaskStatusUpdates",
+      "type": "GET"
+    }
+  }
+}`), getRequest(t, "/tasks/task", fmt.Sprintf(`{
+  "taskId": "task",
+  "commandType": "databaseCreateRequest",
+  "status": "processing-completed",
+  "timestamp": "2020-10-28T09:58:16.798Z",
+  "response": {
+    "resourceId": %d
+  },
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`, expected))))
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Database.Create(context.TODO(), 42, databases.CreateDatabase{
+		DryRun:                              redis.Bool(false),
+		Name:                                redis.String("Redis-database-example"),
+		Protocol:                            redis.String("redis"),
+		MemoryLimitInGB:                     redis.Float64(1),
+		SupportOSSClusterAPI:                redis.Bool(false),
+		UseExternalEndpointForOSSClusterAPI: redis.Bool(false),
+		DataPersistence:                     redis.String("none"),
+		DataEvictionPolicy:                  redis.String("allkeys-lru"),
+		Replication:                         redis.Bool(true),
+		ThroughputMeasurement: &databases.CreateThroughputMeasurement{
+			By:    redis.String("operations-per-second"),
+			Value: redis.Int(1000),
+		},
+		AverageItemSizeInBytes: redis.Int(1),
+		ReplicaOf:              redis.StringSlice("another"),
+		PeriodicBackupPath:     redis.String("s3://bucket-name"),
+		SourceIP:               redis.StringSlice("10.0.0.1"),
+		ClientSSLCertificate:   redis.String("something"),
+		Password:               redis.String("fooBar"),
+		Alerts: []*databases.CreateAlert{
+			{
+				Name:  redis.String("dataset-size"),
+				Value: redis.Int(80),
+			},
+		},
+		Modules: []*databases.CreateModule{
+			{
+				Name: redis.String("RedisSearch"),
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	assert.Equal(t, expected, actual)
+}
 
 func TestDatabase_List(t *testing.T) {
 	s := httptest.NewServer(testServer("apiKey", "secret", getRequestWithQuery(t, "/subscriptions/23456/databases", map[string][]string{"limit": {"100"}, "offset": {"0"}}, `{
@@ -167,6 +274,96 @@ func TestDatabase_Get(t *testing.T) {
 	}, actual)
 }
 
+func TestDatabase_Update(t *testing.T) {
+	s := httptest.NewServer(testServer("key", "secret", putRequest(t, "/subscriptions/42/databases/18", `{
+  "dryRun": false,
+  "name": "example",
+  "memoryLimitInGb": 1,
+  "supportOSSClusterApi": false,
+  "useExternalEndpointForOSSClusterApi": false,
+  "dataEvictionPolicy": "allkeys-lru",
+  "replication": true,
+  "throughputMeasurement": {
+    "by": "operations-per-second",
+    "value": 1000
+  },
+  "regexRules": [".*"],
+  "dataPersistence": "none",
+  "replicaOf": [
+    "another"
+  ],
+  "periodicBackupPath": "s3://bucket-name",
+  "sourceIp": [
+    "10.0.0.1"
+  ],
+  "clientSslCertificate": "something",
+  "password": "fooBar",
+  "alerts": [
+    {
+      "name": "dataset-size",
+      "value": 80
+    }
+  ]
+}`, `{
+  "taskId": "task",
+  "commandType": "databaseUpdateRequest",
+  "status": "received",
+  "description": "Task request received and is being queued for processing.",
+  "timestamp": "2020-11-02T09:05:34.3Z",
+  "_links": {
+    "task": {
+      "href": "https://example.org",
+      "title": "getTaskStatusUpdates",
+      "type": "GET"
+    }
+  }
+}`), getRequest(t, "/tasks/task", `{
+  "taskId": "task",
+  "commandType": "databaseUpdateRequest",
+  "status": "processing-completed",
+  "timestamp": "2020-10-28T09:58:16.798Z",
+  "response": {
+  },
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`)))
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	err = subject.Database.Update(context.TODO(), 42, 18, databases.UpdateDatabase{
+		DryRun:                              redis.Bool(false),
+		Name:                                redis.String("example"),
+		MemoryLimitInGB:                     redis.Float64(1),
+		SupportOSSClusterAPI:                redis.Bool(false),
+		UseExternalEndpointForOSSClusterAPI: redis.Bool(false),
+		DataPersistence:                     redis.String("none"),
+		DataEvictionPolicy:                  redis.String("allkeys-lru"),
+		Replication:                         redis.Bool(true),
+		ThroughputMeasurement: &databases.UpdateThroughputMeasurement{
+			By:    redis.String("operations-per-second"),
+			Value: redis.Int(1000),
+		},
+		RegexRules:           redis.StringSlice(".*"),
+		ReplicaOf:            redis.StringSlice("another"),
+		PeriodicBackupPath:   redis.String("s3://bucket-name"),
+		SourceIP:             redis.StringSlice("10.0.0.1"),
+		ClientSSLCertificate: redis.String("something"),
+		Password:             redis.String("fooBar"),
+		Alerts: []*databases.UpdateAlert{
+			{
+				Name:  redis.String("dataset-size"),
+				Value: redis.Int(80),
+			},
+		},
+	})
+	require.NoError(t, err)
+}
+
 func TestDatabase_Delete(t *testing.T) {
 	s := httptest.NewServer(testServer("key", "secret", deleteRequest(t, "/subscriptions/42/databases/4291", `{
   "taskId": "task",
@@ -200,5 +397,83 @@ func TestDatabase_Delete(t *testing.T) {
 	require.NoError(t, err)
 
 	err = subject.Database.Delete(context.TODO(), 42, 4291)
+	require.NoError(t, err)
+}
+
+func TestDatabase_Backup(t *testing.T) {
+	s := httptest.NewServer(testServer("key", "secret", postRequestWithNoRequest(t, "/subscriptions/42/databases/18/backup", `{
+  "taskId": "task-uuid",
+  "commandType": "databaseBackupRequest",
+  "status": "received",
+  "description": "Task request received and is being queued for processing.",
+  "timestamp": "2020-11-02T09:05:34.3Z",
+  "_links": {
+    "task": {
+      "href": "https://example.org",
+      "title": "getTaskStatusUpdates",
+      "type": "GET"
+    }
+  }
+}`), getRequest(t, "/tasks/task-uuid", `{
+  "taskId": "task-uuid",
+  "commandType": "databaseBackupRequest",
+  "status": "processing-completed",
+  "timestamp": "2020-10-28T09:58:16.798Z",
+  "response": {
+  },
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`)))
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	err = subject.Database.Backup(context.TODO(), 42, 18)
+	require.NoError(t, err)
+}
+
+func TestDatabase_Import(t *testing.T) {
+	s := httptest.NewServer(testServer("key", "secret", postRequest(t, "/subscriptions/42/databases/81/import", `{
+  "sourceType": "magic",
+  "importFromUri": ["tinkerbell"]
+}`, `{
+  "taskId": "task-uuid",
+  "commandType": "databaseImportRequest",
+  "status": "received",
+  "description": "Task request received and is being queued for processing.",
+  "timestamp": "2020-11-02T09:05:34.3Z",
+  "_links": {
+    "task": {
+      "href": "https://example.org",
+      "title": "getTaskStatusUpdates",
+      "type": "GET"
+    }
+  }
+}`), getRequest(t, "/tasks/task-uuid", `{
+  "taskId": "task-uuid",
+  "commandType": "databaseImportRequest",
+  "status": "processing-completed",
+  "timestamp": "2020-10-28T09:58:16.798Z",
+  "response": {
+  },
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`)))
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	err = subject.Database.Import(context.TODO(), 42, 81, databases.Import{
+		SourceType:    redis.String("magic"),
+		ImportFromURI: redis.StringSlice("tinkerbell"),
+	})
 	require.NoError(t, err)
 }

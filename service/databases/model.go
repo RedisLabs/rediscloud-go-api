@@ -14,6 +14,58 @@ func (o taskResponse) String() string {
 	return internal.ToString(o)
 }
 
+type CreateDatabase struct {
+	DryRun                              *bool                        `json:"dryRun,omitempty"`
+	Name                                *string                      `json:"name,omitempty"`
+	Protocol                            *string                      `json:"protocol,omitempty"`
+	MemoryLimitInGB                     *float64                     `json:"memoryLimitInGb,omitempty"`
+	SupportOSSClusterAPI                *bool                        `json:"supportOSSClusterApi,omitempty"`
+	UseExternalEndpointForOSSClusterAPI *bool                        `json:"useExternalEndpointForOSSClusterApi,omitempty"`
+	DataPersistence                     *string                      `json:"dataPersistence,omitempty"`
+	DataEvictionPolicy                  *string                      `json:"dataEvictionPolicy,omitempty"`
+	Replication                         *bool                        `json:"replication,omitempty"`
+	ThroughputMeasurement               *CreateThroughputMeasurement `json:"throughputMeasurement,omitempty"`
+	AverageItemSizeInBytes              *int                         `json:"averageItemSizeInBytes,omitempty"`
+	ReplicaOf                           []*string                    `json:"replicaOf,omitempty"`
+	PeriodicBackupPath                  *string                      `json:"periodicBackupPath,omitempty"`
+	SourceIP                            []*string                    `json:"sourceIp,omitempty"`
+	ClientSSLCertificate                *string                      `json:"clientSslCertificate,omitempty"`
+	Password                            *string                      `json:"password,omitempty"`
+	Alerts                              []*CreateAlert               `json:"alerts,omitempty"`
+	Modules                             []*CreateModule              `json:"modules,omitempty"`
+}
+
+func (o CreateDatabase) String() string {
+	return internal.ToString(o)
+}
+
+type CreateThroughputMeasurement struct {
+	By    *string `json:"by,omitempty"`
+	Value *int    `json:"value,omitempty"`
+}
+
+func (o CreateThroughputMeasurement) String() string {
+	return internal.ToString(o)
+}
+
+type CreateAlert struct {
+	Name  *string `json:"name,omitempty"`
+	Value *int    `json:"value,omitempty"`
+}
+
+func (o CreateAlert) String() string {
+	return internal.ToString(o)
+}
+
+type CreateModule struct {
+	Name       *string            `json:"name,omitempty"`
+	Parameters map[string]*string `json:"parameters,omitempty"`
+}
+
+func (o CreateModule) String() string {
+	return internal.ToString(o)
+}
+
 type Database struct {
 	ID                     *int        `json:"databaseId,omitempty"`
 	Name                   *string     `json:"name,omitempty"`
@@ -92,6 +144,56 @@ func (o Alert) String() string {
 	return internal.ToString(o)
 }
 
+type UpdateDatabase struct {
+	DryRun                              *bool                        `json:"dryRun,omitempty"`
+	Name                                *string                      `json:"name,omitempty"`
+	MemoryLimitInGB                     *float64                     `json:"memoryLimitInGb,omitempty"`
+	SupportOSSClusterAPI                *bool                        `json:"supportOSSClusterApi,omitempty"`
+	UseExternalEndpointForOSSClusterAPI *bool                        `json:"useExternalEndpointForOSSClusterApi,omitempty"`
+	DataEvictionPolicy                  *string                      `json:"dataEvictionPolicy,omitempty"`
+	Replication                         *bool                        `json:"replication,omitempty"`
+	ThroughputMeasurement               *UpdateThroughputMeasurement `json:"throughputMeasurement,omitempty"`
+	RegexRules                          []*string                    `json:"regexRules,omitempty"`
+	DataPersistence                     *string                      `json:"dataPersistence,omitempty"`
+	ReplicaOf                           []*string                    `json:"replicaOf,omitempty"`
+	PeriodicBackupPath                  *string                      `json:"periodicBackupPath,omitempty"`
+	SourceIP                            []*string                    `json:"sourceIp,omitempty"`
+	ClientSSLCertificate                *string                      `json:"clientSslCertificate,omitempty"`
+	Password                            *string                      `json:"password,omitempty"`
+	Alerts                              []*UpdateAlert               `json:"alerts,omitempty"`
+}
+
+func (o UpdateDatabase) String() string {
+	return internal.ToString(o)
+}
+
+type UpdateThroughputMeasurement struct {
+	By    *string `json:"by,omitempty"`
+	Value *int    `json:"value,omitempty"`
+}
+
+func (o UpdateThroughputMeasurement) String() string {
+	return internal.ToString(o)
+}
+
+type UpdateAlert struct {
+	Name  *string `json:"name,omitempty"`
+	Value *int    `json:"value,omitempty"`
+}
+
+func (o UpdateAlert) String() string {
+	return internal.ToString(o)
+}
+
+type Import struct {
+	SourceType    *string   `json:"sourceType,omitempty"`
+	ImportFromURI []*string `json:"importFromUri,omitempty"`
+}
+
+func (o Import) String() string {
+	return internal.ToString(o)
+}
+
 type listDatabaseResponse struct {
 	Subscription []*listDbSubscription `json:"subscription,omitempty"`
 }
@@ -145,7 +247,7 @@ func DataPersistenceValues() []string {
 	}
 }
 
-func DataEvictionValues() []string {
+func DataEvictionPolicyValues() []string {
 	return []string{
 		"allkeys-lru",
 		"allkeys-lfu",
@@ -155,5 +257,16 @@ func DataEvictionValues() []string {
 		"volatile-random",
 		"volatile-ttl",
 		"noeviction",
+	}
+}
+
+func SourceTypeValues() []string {
+	return []string{
+		"http",
+		"redis",
+		"ftp",
+		"aws-s3",
+		"azure-blob-storage",
+		"google-blob-storage",
 	}
 }

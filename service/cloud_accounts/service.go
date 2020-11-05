@@ -3,8 +3,6 @@ package cloud_accounts
 import (
 	"context"
 	"fmt"
-
-	"github.com/RedisLabs/rediscloud-go-api/redis"
 )
 
 type Log interface {
@@ -42,7 +40,7 @@ func (a *API) Create(ctx context.Context, account CreateCloudAccount) (int, erro
 
 	a.logger.Printf("Waiting for task %s to finish creating the cloud account", response)
 
-	id, err := a.task.WaitForResourceId(ctx, redis.StringValue(response.ID))
+	id, err := a.task.WaitForResourceId(ctx, *response.ID)
 	if err != nil {
 		return 0, err
 	}
@@ -69,7 +67,7 @@ func (a *API) Update(ctx context.Context, id int, account UpdateCloudAccount) er
 
 	a.logger.Printf("Waiting for cloud account %d to finish being updated", id)
 
-	err := a.task.Wait(ctx, redis.StringValue(response.ID))
+	err := a.task.Wait(ctx, *response.ID)
 	if err != nil {
 		return fmt.Errorf("failed when updating account %d: %w", id, err)
 	}
@@ -86,7 +84,7 @@ func (a *API) Delete(ctx context.Context, id int) error {
 
 	a.logger.Printf("Waiting for cloud account %d to finish being deleted", id)
 
-	if err := a.task.Wait(ctx, redis.StringValue(response.ID)); err != nil {
+	if err := a.task.Wait(ctx, *response.ID); err != nil {
 		return fmt.Errorf("failed when deleting account %d: %w", id, err)
 	}
 
