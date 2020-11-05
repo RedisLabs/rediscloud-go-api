@@ -14,6 +14,8 @@ type PaymentMethod struct {
 	ID                 *int    `json:"id,omitempty"`
 	Type               *string `json:"type,omitempty"`
 	CreditCardEndsWith *int    `json:"creditCardEndsWith,omitempty"`
+	ExpirationMonth    *int    `json:"expirationMonth"`
+	ExpirationYear     *int    `json:"expirationYear"`
 }
 
 func (o PaymentMethod) String() string {

@@ -51,6 +51,16 @@ func (a *API) Create(ctx context.Context, subscription CreateSubscription) (int,
 	return id, nil
 }
 
+func (a API) List(ctx context.Context) ([]*Subscription, error) {
+	var response listSubscriptionResponse
+	err := a.client.Get(ctx, fmt.Sprintf("list subscriptions"), "/subscriptions", &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.Subscriptions, nil
+}
+
 func (a *API) Get(ctx context.Context, id int) (*Subscription, error) {
 	var response Subscription
 	err := a.client.Get(ctx, fmt.Sprintf("retrieve subscription %d", id), fmt.Sprintf("/subscriptions/%d", id), &response)

@@ -151,7 +151,7 @@ func (o CIDRWhitelist) String() string {
 
 type UpdateCIDRWhitelist struct {
 	CIDRIPs          []*string `json:"cidrIps,omitempty"`
-	SecurityGroupIds []*string `json:"securityGroupIds,omitempty"`
+	SecurityGroupIDs []*string `json:"securityGroupIds,omitempty"`
 }
 
 func (o UpdateCIDRWhitelist) String() string {
@@ -176,6 +176,10 @@ type VPCPeering struct {
 
 func (o VPCPeering) String() string {
 	return internal.ToString(o)
+}
+
+type listSubscriptionResponse struct {
+	Subscriptions []*Subscription `json:"subscriptions"`
 }
 
 type taskResponse struct {

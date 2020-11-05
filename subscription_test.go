@@ -115,6 +115,159 @@ func TestSubscription_Create(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+func TestSubscription_List(t *testing.T) {
+	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/subscriptions", `{
+  "accountId": 53012,
+  "subscriptions": [
+    {
+      "id": 1,
+      "name": "sdk",
+      "status": "active",
+      "paymentMethodId": 2,
+      "memoryStorage": "ram",
+      "storageEncryption": false,
+      "numberOfDatabases": 1,
+      "subscriptionPricing": [
+        {
+          "type": "Shards",
+          "quantity": 1,
+          "quantityMeasurement": "shards",
+          "pricePerUnit": 1,
+          "priceCurrency": "USD",
+          "pricePeriod": "hour"
+        },
+        {
+          "type": "EBS Volume",
+          "quantity": 71,
+          "quantityMeasurement": "GB"
+        },
+        {
+          "type": "c5.xlarge",
+          "quantity": 2,
+          "quantityMeasurement": "instances"
+        },
+        {
+          "type": "m5.large",
+          "quantity": 1,
+          "quantityMeasurement": "instances"
+        }
+      ],
+      "cloudDetails": [
+        {
+          "provider": "AWS",
+          "cloudAccountId": 2,
+          "totalSizeInGb": 0.0062,
+          "regions": [
+            {
+              "region": "eu-west-1",
+              "networking": [
+                {
+                  "deploymentCIDR": "10.0.0.0/24",
+                  "subnetId": "subnet-12345"
+                }
+              ],
+              "preferredAvailabilityZones": [
+                "eu-west-1a"
+              ],
+              "multipleAvailabilityZones": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "TF Example Subscription demo",
+      "status": "pending",
+      "paymentMethodId": 3,
+      "memoryStorage": "ram",
+      "storageEncryption": false,
+      "numberOfDatabases": 0,
+      "subscriptionPricing": [
+        {
+          "type": "Shards",
+          "quantity": 1,
+          "quantityMeasurement": "shards",
+          "pricePerUnit": 2,
+          "priceCurrency": "USD",
+          "pricePeriod": "hour"
+        },
+        {
+          "type": "EBS Volume",
+          "quantity": 71,
+          "quantityMeasurement": "GB"
+        },
+        {
+          "type": "c5.xlarge",
+          "quantity": 2,
+          "quantityMeasurement": "instances"
+        },
+        {
+          "type": "m5.large",
+          "quantity": 1,
+          "quantityMeasurement": "instances"
+        }
+      ],
+      "cloudDetails": []
+    }
+  ],
+  "_links": {
+    "self": {
+      "href": "https://qa-api.redislabs.com/v1/subscriptions",
+      "type": "GET"
+    }
+  }
+}`)))
+
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Subscription.List(context.TODO())
+	require.NoError(t, err)
+
+	assert.ElementsMatch(t, []*subscriptions.Subscription{
+		{
+			ID:                redis.Int(1),
+			Name:              redis.String("sdk"),
+			Status:            redis.String("active"),
+			PaymentMethodID:   redis.Int(2),
+			MemoryStorage:     redis.String("ram"),
+			StorageEncryption: redis.Bool(false),
+			NumberOfDatabases: redis.Int(1),
+			CloudDetails: []*subscriptions.CloudDetail{
+				{
+					Provider:       redis.String("AWS"),
+					CloudAccountID: redis.Int(2),
+					TotalSizeInGB:  redis.Float64(0.0062),
+					Regions: []*subscriptions.Region{
+						{
+							Region: redis.String("eu-west-1"),
+							Networking: []*subscriptions.Networking{
+								{
+									DeploymentCIDR: redis.String("10.0.0.0/24"),
+									SubnetID:       redis.String("subnet-12345"),
+								},
+							},
+							PreferredAvailabilityZones: redis.StringSlice("eu-west-1a"),
+							MultipleAvailabilityZones:  redis.Bool(false),
+						},
+					},
+				},
+			},
+		},
+		{
+			ID:                redis.Int(2),
+			Name:              redis.String("TF Example Subscription demo"),
+			Status:            redis.String("pending"),
+			PaymentMethodID:   redis.Int(3),
+			MemoryStorage:     redis.String("ram"),
+			StorageEncryption: redis.Bool(false),
+			NumberOfDatabases: redis.Int(0),
+			CloudDetails:      []*subscriptions.CloudDetail{},
+		},
+	}, actual)
+}
+
 func TestSubscription_Get(t *testing.T) {
 	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/subscriptions/98765", `{
   "id": 1,
@@ -380,7 +533,7 @@ func TestSubscription_UpdateCIDRWhitelist(t *testing.T) {
 
 	err = subject.Subscription.UpdateCIDRWhitelist(context.TODO(), 12356, subscriptions.UpdateCIDRWhitelist{
 		CIDRIPs:          redis.StringSlice("6", "5"),
-		SecurityGroupIds: redis.StringSlice("a", "b"),
+		SecurityGroupIDs: redis.StringSlice("a", "b"),
 	})
 	require.NoError(t, err)
 }

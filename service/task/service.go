@@ -57,6 +57,11 @@ func (a *API) Wait(ctx context.Context, id string) error {
 	return nil
 }
 
+// WaitForResource will poll the task, waiting for the task to finish processing, where it will then marshal the
+// returned resource into the value pointed to be `resource`.
+//
+// The task will be continuously polled until the task either fails or succeeds - cancellation can be achieved
+// by cancelling the context.
 func (a *API) WaitForResource(ctx context.Context, id string, resource interface{}) error {
 	task, err := a.WaitForTaskToComplete(ctx, id)
 	if err != nil {
