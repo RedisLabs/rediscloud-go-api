@@ -1,4 +1,4 @@
-package task
+package internal
 
 import (
 	"context"
@@ -16,17 +16,13 @@ type Log interface {
 	Println(v ...interface{})
 }
 
-type HttpClient interface {
-	Get(ctx context.Context, name, path string, responseBody interface{}) error
-}
-
-type API struct {
-	client HttpClient
+type api struct {
+	client *HttpClient
 	logger Log
 }
 
-func NewAPI(client HttpClient, logger Log) *API {
-	return &API{client: client, logger: logger}
+func NewAPI(client *HttpClient, logger Log) *api {
+	return &api{client: client, logger: logger}
 }
 
 // WaitForResourceId will poll the task, waiting for the task to finish processing, where it will then return.
@@ -34,8 +30,8 @@ func NewAPI(client HttpClient, logger Log) *API {
 //
 // The task will be continuously polled until the task either fails or succeeds - cancellation can be achieved
 // by cancelling the context.
-func (a *API) WaitForResourceId(ctx context.Context, id string) (int, error) {
-	task, err := a.WaitForTaskToComplete(ctx, id)
+func (a *api) WaitForResourceId(ctx context.Context, id string) (int, error) {
+	task, err := a.waitForTaskToComplete(ctx, id)
 	if err != nil {
 		return 0, err
 	}
@@ -48,8 +44,8 @@ func (a *API) WaitForResourceId(ctx context.Context, id string) (int, error) {
 //
 // The task will be continuously polled until the task either fails or succeeds - cancellation can be achieved
 // by cancelling the context.
-func (a *API) Wait(ctx context.Context, id string) error {
-	_, err := a.WaitForTaskToComplete(ctx, id)
+func (a *api) Wait(ctx context.Context, id string) error {
+	_, err := a.waitForTaskToComplete(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -62,8 +58,8 @@ func (a *API) Wait(ctx context.Context, id string) error {
 //
 // The task will be continuously polled until the task either fails or succeeds - cancellation can be achieved
 // by cancelling the context.
-func (a *API) WaitForResource(ctx context.Context, id string, resource interface{}) error {
-	task, err := a.WaitForTaskToComplete(ctx, id)
+func (a *api) WaitForResource(ctx context.Context, id string, resource interface{}) error {
+	task, err := a.waitForTaskToComplete(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -76,16 +72,11 @@ func (a *API) WaitForResource(ctx context.Context, id string, resource interface
 	return nil
 }
 
-// WaitForTaskToComplete will poll the task, waiting for the task to finish processing, where it will then return.
-// An error will be returned if the task couldn't be retrieved or the task was not processed successfully.
-//
-// The task will be continuously polled until the task either fails or succeeds - cancellation can be achieved
-// by cancelling the context.
-func (a *API) WaitForTaskToComplete(ctx context.Context, id string) (*Task, error) {
-	var task *Task
+func (a *api) waitForTaskToComplete(ctx context.Context, id string) (*task, error) {
+	var task *task
 	err := retry.Do(func() error {
 		var err error
-		task, err = a.Get(ctx, id)
+		task, err = a.get(ctx, id)
 		if err != nil {
 			return retry.Unrecoverable(err)
 		}
@@ -112,10 +103,8 @@ func (a *API) WaitForTaskToComplete(ctx context.Context, id string) (*Task, erro
 	return task, nil
 }
 
-// Get will retrieve a task. An error will be returned if the task couldn't be retrieved or the task itself
-// failed.
-func (a *API) Get(ctx context.Context, id string) (*Task, error) {
-	var task Task
+func (a *api) get(ctx context.Context, id string) (*task, error) {
+	var task task
 	if err := a.client.Get(ctx, fmt.Sprintf("retrieve task %s", id), "/tasks/"+url.PathEscape(id), &task); err != nil {
 		return nil, err
 	}

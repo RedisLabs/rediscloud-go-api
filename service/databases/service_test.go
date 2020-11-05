@@ -3,6 +3,7 @@ package databases
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"testing"
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
@@ -14,8 +15,8 @@ import (
 func TestListDatabase_stopsOn404(t *testing.T) {
 	client := &mockHttpClient{}
 
-	client.On("Get", context.TODO(), "list databases for 5", "/subscriptions/5/databases?limit=100&offset=0", mock.AnythingOfType("*databases.listDatabaseResponse")).Run(func(args mock.Arguments) {
-		response := args.Get(3).(*listDatabaseResponse)
+	client.On("GetWithQuery", context.TODO(), "list databases for 5", "/subscriptions/5/databases", url.Values{"limit": {"100"}, "offset": {"0"}}, mock.AnythingOfType("*databases.listDatabaseResponse")).Run(func(args mock.Arguments) {
+		response := args.Get(4).(*listDatabaseResponse)
 		response.Subscription = []*listDbSubscription{
 			{
 				ID: redis.Int(5),
@@ -27,8 +28,8 @@ func TestListDatabase_stopsOn404(t *testing.T) {
 			},
 		}
 	}).Return(nil)
-	client.On("Get", context.TODO(), "list databases for 5", "/subscriptions/5/databases?limit=100&offset=100", mock.AnythingOfType("*databases.listDatabaseResponse")).Run(func(args mock.Arguments) {
-		response := args.Get(3).(*listDatabaseResponse)
+	client.On("GetWithQuery", context.TODO(), "list databases for 5", "/subscriptions/5/databases", url.Values{"limit": {"100"}, "offset": {"100"}}, mock.AnythingOfType("*databases.listDatabaseResponse")).Run(func(args mock.Arguments) {
+		response := args.Get(4).(*listDatabaseResponse)
 		response.Subscription = []*listDbSubscription{
 			{
 				ID: redis.Int(5),
@@ -40,7 +41,7 @@ func TestListDatabase_stopsOn404(t *testing.T) {
 			},
 		}
 	}).Return(nil)
-	client.On("Get", context.TODO(), "list databases for 5", "/subscriptions/5/databases?limit=100&offset=200", mock.AnythingOfType("*databases.listDatabaseResponse")).
+	client.On("GetWithQuery", context.TODO(), "list databases for 5", "/subscriptions/5/databases", url.Values{"limit": {"100"}, "offset": {"200"}}, mock.AnythingOfType("*databases.listDatabaseResponse")).
 		Return(&internal.HTTPError{StatusCode: 404})
 
 	subject := newListDatabase(context.TODO(), client, 5, 100)
@@ -69,7 +70,7 @@ func TestListDatabase_recordsError(t *testing.T) {
 	client := &mockHttpClient{}
 
 	expected := fmt.Errorf("stop")
-	client.On("Get", context.TODO(), "list databases for 5", "/subscriptions/5/databases?limit=1&offset=0", mock.AnythingOfType("*databases.listDatabaseResponse")).
+	client.On("GetWithQuery", context.TODO(), "list databases for 5", "/subscriptions/5/databases", url.Values{"limit": {"1"}, "offset": {"0"}}, mock.AnythingOfType("*databases.listDatabaseResponse")).
 		Return(expected)
 
 	subject := newListDatabase(context.TODO(), client, 5, 1)
@@ -84,6 +85,11 @@ type mockHttpClient struct {
 
 func (m *mockHttpClient) Get(ctx context.Context, name, path string, responseBody interface{}) error {
 	args := m.Called(ctx, name, path, responseBody)
+	return args.Error(0)
+}
+
+func (m *mockHttpClient) GetWithQuery(ctx context.Context, name, path string, query url.Values, responseBody interface{}) error {
+	args := m.Called(ctx, name, path, query, responseBody)
 	return args.Error(0)
 }
 

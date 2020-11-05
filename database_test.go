@@ -13,7 +13,7 @@ import (
 )
 
 func TestDatabase_List(t *testing.T) {
-	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/subscriptions/23456/databases?limit=100&offset=0", `{
+	s := httptest.NewServer(testServer("apiKey", "secret", getRequestWithQuery(t, "/subscriptions/23456/databases", map[string][]string{"limit": {"100"}, "offset": {"0"}}, `{
   "accountId": 2,
   "subscription": [
     {

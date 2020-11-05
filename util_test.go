@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
 
@@ -15,7 +16,7 @@ func clientFromTestServer(s *httptest.Server, apiKey string, secretKey string) (
 	return NewClient(LogRequests(true), BaseUrl(s.URL), Auth(apiKey, secretKey), Transporter(s.Client().Transport))
 }
 
-func testServer(apiKey, secretKey string, mockedResponses ...endpoint) http.HandlerFunc {
+func testServer(apiKey, secretKey string, mockedResponses ...endpointRequest) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(strings.ToLower(r.Header.Get("User-Agent")), "go-http-client") {
 			w.WriteHeader(504)
@@ -42,19 +43,38 @@ func testServer(apiKey, secretKey string, mockedResponses ...endpoint) http.Hand
 	}
 }
 
-type endpoint interface {
-	matches(r *http.Request) bool
-	response() string
+type endpointRequest struct {
+	method      string
+	path        string
+	query       url.Values
+	requestBody *string
+	body        string
+	t           *testing.T
 }
 
-type endpointWithoutRequest struct {
-	method string
-	path   string
-	body   string
-	t      *testing.T
-}
+func (e endpointRequest) matches(r *http.Request) bool {
+	if e.requestBody != nil {
+		request, err := ioutil.ReadAll(r.Body)
+		require.NoError(e.t, err)
+		if !assert.JSONEq(e.t, *e.requestBody, string(request)) {
+			return false
+		}
+	} else {
+		if !assert.Empty(e.t, r.Body) {
+			return false
+		}
+	}
 
-func (e endpointWithoutRequest) matches(r *http.Request) bool {
+	if e.query != nil {
+		if !assert.Equal(e.t, e.query, r.URL.Query()) {
+			return false
+		}
+	} else {
+		if !assert.Empty(e.t, r.URL.RawQuery) {
+			return false
+		}
+	}
+
 	if !assert.Equal(e.t, e.method, r.Method) {
 		return false
 	}
@@ -64,12 +84,12 @@ func (e endpointWithoutRequest) matches(r *http.Request) bool {
 	return true
 }
 
-func (e endpointWithoutRequest) response() string {
+func (e endpointRequest) response() string {
 	return e.body
 }
 
-func getRequest(t *testing.T, path string, body string) endpoint {
-	return endpointWithoutRequest{
+func getRequest(t *testing.T, path string, body string) endpointRequest {
+	return endpointRequest{
 		method: http.MethodGet,
 		path:   path,
 		body:   body,
@@ -77,8 +97,18 @@ func getRequest(t *testing.T, path string, body string) endpoint {
 	}
 }
 
-func deleteRequest(t *testing.T, path string, body string) endpoint {
-	return endpointWithoutRequest{
+func getRequestWithQuery(t *testing.T, path string, query url.Values, body string) endpointRequest {
+	return endpointRequest{
+		method: http.MethodGet,
+		path:   path,
+		body:   body,
+		query:  query,
+		t:      t,
+	}
+}
+
+func deleteRequest(t *testing.T, path string, body string) endpointRequest {
+	return endpointRequest{
 		method: http.MethodDelete,
 		path:   path,
 		body:   body,
@@ -86,49 +116,22 @@ func deleteRequest(t *testing.T, path string, body string) endpoint {
 	}
 }
 
-type endpointWithRequest struct {
-	method      string
-	path        string
-	requestBody string
-	body        string
-	t           *testing.T
-}
-
-func (e endpointWithRequest) matches(r *http.Request) bool {
-	request, err := ioutil.ReadAll(r.Body)
-	require.NoError(e.t, err)
-	if !assert.JSONEq(e.t, e.requestBody, string(request)) {
-		return false
-	}
-	if !assert.Equal(e.t, e.method, r.Method) {
-		return false
-	}
-	if !assert.Equal(e.t, e.path, r.URL.Path) {
-		return false
-	}
-	return true
-}
-
-func (e endpointWithRequest) response() string {
-	return e.body
-}
-
-func postRequest(t *testing.T, path string, request string, body string) endpoint {
-	return endpointWithRequest{
+func postRequest(t *testing.T, path string, request string, body string) endpointRequest {
+	return endpointRequest{
 		method:      http.MethodPost,
 		path:        path,
 		body:        body,
-		requestBody: request,
+		requestBody: &request,
 		t:           t,
 	}
 }
 
-func putRequest(t *testing.T, path string, request string, body string) endpoint {
-	return endpointWithRequest{
+func putRequest(t *testing.T, path string, request string, body string) endpointRequest {
+	return endpointRequest{
 		method:      http.MethodPut,
 		path:        path,
 		body:        body,
-		requestBody: request,
+		requestBody: &request,
 		t:           t,
 	}
 }
