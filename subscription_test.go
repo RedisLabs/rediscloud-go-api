@@ -508,10 +508,10 @@ func TestSubscription_GetCIDRWhitelist(t *testing.T) {
 	subject, err := clientFromTestServer(s, "apiKey", "secret")
 	require.NoError(t, err)
 
-	actual, err := subject.Subscription.GetCIDRWhitelist(context.TODO(), 12356)
+	actual, err := subject.Subscription.GetCIDRAllowlist(context.TODO(), 12356)
 	require.NoError(t, err)
 
-	assert.Equal(t, &subscriptions.CIDRWhitelist{
+	assert.Equal(t, &subscriptions.CIDRAllowlist{
 		CIDRIPs:          redis.StringSlice("1", "2", "3"),
 		SecurityGroupIDs: redis.StringSlice("4", "5", "6"),
 	}, actual)
@@ -556,7 +556,7 @@ func TestSubscription_UpdateCIDRWhitelist(t *testing.T) {
 	subject, err := clientFromTestServer(s, "apiKey", "secret")
 	require.NoError(t, err)
 
-	err = subject.Subscription.UpdateCIDRWhitelist(context.TODO(), 12356, subscriptions.UpdateCIDRWhitelist{
+	err = subject.Subscription.UpdateCIDRAllowlist(context.TODO(), 12356, subscriptions.UpdateCIDRAllowlist{
 		CIDRIPs:          redis.StringSlice("6", "5"),
 		SecurityGroupIDs: redis.StringSlice("a", "b"),
 	})

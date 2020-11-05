@@ -13,7 +13,7 @@ import (
 )
 
 func clientFromTestServer(s *httptest.Server, apiKey string, secretKey string) (*Client, error) {
-	return NewClient(LogRequests(true), BaseUrl(s.URL), Auth(apiKey, secretKey), Transporter(s.Client().Transport))
+	return NewClient(LogRequests(true), BaseURL(s.URL), Auth(apiKey, secretKey), Transporter(s.Client().Transport))
 }
 
 func testServer(apiKey, secretKey string, mockedResponses ...endpointRequest) http.HandlerFunc {
@@ -123,6 +123,15 @@ func postRequest(t *testing.T, path string, request string, body string) endpoin
 		body:        body,
 		requestBody: &request,
 		t:           t,
+	}
+}
+
+func postRequestWithNoRequest(t *testing.T, path string, body string) endpointRequest {
+	return endpointRequest{
+		method: http.MethodPost,
+		path:   path,
+		body:   body,
+		t:      t,
 	}
 }
 

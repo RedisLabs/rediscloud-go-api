@@ -29,7 +29,7 @@ func NewClient(configs ...Option) (*Client, error) {
 		userAgent: userAgent,
 		apiKey:    os.Getenv(AccessKeyEnvVar),
 		secretKey: os.Getenv(SecretKeyEnvVar),
-		logger:    log.New(os.Stderr, "", log.LstdFlags),
+		logger:    &defaultLogger{},
 		transport: http.DefaultTransport,
 	}
 
@@ -84,6 +84,8 @@ func (o Options) roundTripper() http.RoundTripper {
 
 type Option func(*Options)
 
+// Auth is used to set the authentication credentials - will otherwise default to using environment variables
+// for the credentials.
 func Auth(apiKey string, secretKey string) Option {
 	return func(options *Options) {
 		options.apiKey = apiKey
@@ -91,30 +93,37 @@ func Auth(apiKey string, secretKey string) Option {
 	}
 }
 
-func BaseUrl(url string) Option {
+// BaseURL sets the URL to use for the API endpoint - will default to `https://api.redislabs.com/v1`.
+func BaseURL(url string) Option {
 	return func(options *Options) {
 		options.baseUrl = url
 	}
 }
 
+// LogRequests allows the logging of HTTP request and responses - will default to false (disabled).
 func LogRequests(enable bool) Option {
 	return func(options *Options) {
 		options.logRequests = enable
 	}
 }
 
+// Transporter allows the customisation of the RoundTripper used to communicate with the API - will default to the
+// Go default.
 func Transporter(transporter http.RoundTripper) Option {
 	return func(options *Options) {
 		options.transport = transporter
 	}
 }
 
+// AdditionalUserAgent allows extra information to be appended to the user agent sent in all requests to the API.
 func AdditionalUserAgent(additional string) Option {
 	return func(options *Options) {
 		options.userAgent += " " + additional
 	}
 }
 
+// Logger allows for a custom implementation to handle the debug log messages - defaults to using the Go standard log
+// package.
 func Logger(log Log) Option {
 	return func(options *Options) {
 		options.logger = log
@@ -124,6 +133,16 @@ func Logger(log Log) Option {
 type Log interface {
 	Printf(format string, v ...interface{})
 	Println(v ...interface{})
+}
+
+type defaultLogger struct{}
+
+func (d *defaultLogger) Printf(format string, v ...interface{}) {
+	log.Printf(format, v...)
+}
+
+func (d *defaultLogger) Println(v ...interface{}) {
+	log.Println(v...)
 }
 
 type credentialTripper struct {

@@ -8,7 +8,7 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 * List payment methods through the Accounts API 
 * Cloud accounts API
 * Subscription API
-* Basic database API
+* Database API
 
 ### Changed
 

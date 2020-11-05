@@ -139,22 +139,22 @@ func (o Networking) String() string {
 	return internal.ToString(o)
 }
 
-type CIDRWhitelist struct {
+type CIDRAllowlist struct {
 	CIDRIPs          []*string   `json:"cidr_ips,omitempty"`
 	SecurityGroupIDs []*string   `json:"security_group_ids,omitempty"`
 	Errors           interface{} `json:"errors,omitempty"` // TODO the structure of this is undocumented
 }
 
-func (o CIDRWhitelist) String() string {
+func (o CIDRAllowlist) String() string {
 	return internal.ToString(o)
 }
 
-type UpdateCIDRWhitelist struct {
+type UpdateCIDRAllowlist struct {
 	CIDRIPs          []*string `json:"cidrIps,omitempty"`
 	SecurityGroupIDs []*string `json:"securityGroupIds,omitempty"`
 }
 
-func (o UpdateCIDRWhitelist) String() string {
+func (o UpdateCIDRAllowlist) String() string {
 	return internal.ToString(o)
 }
 
