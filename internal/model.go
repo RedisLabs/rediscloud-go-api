@@ -1,34 +1,33 @@
-package task
+package internal
 
 import (
 	"encoding/json"
 	"fmt"
 	"regexp"
 
-	"github.com/RedisLabs/rediscloud-go-api/internal"
 	"github.com/RedisLabs/rediscloud-go-api/redis"
 )
 
-type Task struct {
+type task struct {
 	CommandType *string   `json:"commandType,omitempty"`
 	Description *string   `json:"description,omitempty"`
 	Status      *string   `json:"status,omitempty"`
 	ID          *string   `json:"taskId,omitempty"`
-	Response    *Response `json:"response,omitempty"`
+	Response    *response `json:"response,omitempty"`
 }
 
-func (o Task) String() string {
-	return internal.ToString(o)
+func (o task) String() string {
+	return ToString(o)
 }
 
-type Response struct {
+type response struct {
 	ID       *int             `json:"resourceId,omitempty"`
 	Resource *json.RawMessage `json:"resource,omitempty"`
 	Error    *Error           `json:"error,omitempty"`
 }
 
-func (o Response) String() string {
-	return internal.ToString(o)
+func (o response) String() string {
+	return ToString(o)
 }
 
 type Error struct {
@@ -38,7 +37,7 @@ type Error struct {
 }
 
 func (o Error) String() string {
-	return internal.ToString(o)
+	return ToString(o)
 }
 
 func (e *Error) StatusCode() string {

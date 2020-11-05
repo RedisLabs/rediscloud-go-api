@@ -2,60 +2,34 @@ package rediscloud_api
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
+	"errors"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/RedisLabs/rediscloud-go-api/internal"
 	"github.com/RedisLabs/rediscloud-go-api/redis"
-	"github.com/RedisLabs/rediscloud-go-api/service/task"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestTask_Get(t *testing.T) {
-	resourceId := 100556
-
-	s := httptest.NewServer(testServer("key", "secret", getRequest(t, "/tasks/task-uuid", fmt.Sprintf(`{
-  "taskId": "e02b40d6-1395-4861-a3b9-ecf829d835fd",
-  "commandType": "subscriptionCreateRequest",
-  "status": "processing-error",
-  "description": "Task request failed during processing. See error information for failure details.",
-  "timestamp": "2020-10-28T09:58:16.798Z",
-  "response": {
-    "resourceId": %d
-  },
+func TestTaskErrorsGetUnwraped(t *testing.T) {
+	s := httptest.NewServer(testServer("key", "secret", deleteRequest(t, "/cloud-accounts/1", `{
+  "taskId": "task",
+  "commandType": "cloudAccountDeleteRequest",
+  "status": "received",
+  "description": "Task request received and is being queued for processing.",
+  "timestamp": "2020-11-02T09:05:34.3Z",
   "_links": {
-    "self": {
-      "href": "https://example.com",
+    "task": {
+      "href": "https://example.org",
+      "title": "getTaskStatusUpdates",
       "type": "GET"
     }
   }
-}`, resourceId))))
-
-	subject, err := clientFromTestServer(s, "key", "secret")
-	require.NoError(t, err)
-
-	actual, err := subject.Task.Get(context.TODO(), "task-uuid")
-	require.NoError(t, err)
-
-	assert.Equal(t, &task.Task{
-		CommandType: redis.String("subscriptionCreateRequest"),
-		Description: redis.String("Task request failed during processing. See error information for failure details."),
-		Status:      redis.String("processing-error"),
-		ID:          redis.String("e02b40d6-1395-4861-a3b9-ecf829d835fd"),
-		Response: &task.Response{
-			ID: &resourceId,
-		},
-	}, actual)
-}
-
-func TestTask_Get_UnwrapsTaskError(t *testing.T) {
-	s := httptest.NewServer(testServer("key", "secret", getRequest(t, "/tasks/task-uuid", `{
+}`), getRequest(t, "/tasks/task", `{
   "taskId": "e02b40d6-1395-4861-a3b9-ecf829d835fd",
-  "commandType": "subscriptionCreateRequest",
+  "commandType": "cloudAccountDeleteRequest",
   "status": "processing-error",
-  "description": "Task request failed during processing. See error information for failure details.",
   "timestamp": "2020-10-28T09:58:16.798Z",
   "response": {
     "error": {
@@ -75,70 +49,10 @@ func TestTask_Get_UnwrapsTaskError(t *testing.T) {
 	subject, err := clientFromTestServer(s, "key", "secret")
 	require.NoError(t, err)
 
-	actual, err := subject.Task.Get(context.TODO(), "task-uuid")
-	assert.Equal(t, &task.Error{
+	err = subject.CloudAccount.Delete(context.TODO(), 1)
+	assert.Equal(t, &internal.Error{
 		Type:        redis.String("SUBSCRIPTION_PI_NOT_FOUND"),
 		Description: redis.String("Payment info was not found for subscription. Use 'GET /payment-methods' to lookup valid payment methods for current Account"),
 		Status:      redis.String("400 BAD_REQUEST"),
-	}, err)
-	assert.Nil(t, actual)
-}
-
-func TestTask_WaitForTaskToComplete(t *testing.T) {
-	resourceId := 100556
-	resource := "oiuygfcvbnmk"
-
-	s := httptest.NewServer(testServer("key", "secret", getRequest(t, "/tasks/task-uuid", `{
-  "taskId": "e02b40d6-1395-4861-a3b9-ecf829d835fd",
-  "commandType": "subscriptionCreateRequest",
-  "status": "initialized",
-  "timestamp": "2020-10-28T09:58:16.798Z",
-  "response": {},
-  "_links": {
-    "self": {
-      "href": "https://example.com",
-      "type": "GET"
-    }
-  }
-}`), getRequest(t, "/tasks/task-uuid", `{
-  "taskId": "e02b40d6-1395-4861-a3b9-ecf829d835fd",
-  "commandType": "subscriptionCreateRequest",
-  "status": "processing-in-progress",
-  "timestamp": "2020-10-28T09:58:16.798Z",
-  "response": {},
-  "_links": {
-    "self": {
-      "href": "https://example.com",
-      "type": "GET"
-    }
-  }
-}`), getRequest(t, "/tasks/task-uuid", fmt.Sprintf(`{
-  "taskId": "e02b40d6-1395-4861-a3b9-ecf829d835fd",
-  "commandType": "subscriptionCreateRequest",
-  "status": "processing-completed",
-  "timestamp": "2020-10-28T09:58:16.798Z",
-  "response": {
-    "resourceId": %d,
-    "resource": "%s"
-  },
-  "_links": {
-    "self": {
-      "href": "https://example.com",
-      "type": "GET"
-    }
-  }
-}`, resourceId, resource))))
-
-	subject, err := clientFromTestServer(s, "key", "secret")
-	require.NoError(t, err)
-
-	actual, err := subject.Task.WaitForTaskToComplete(context.TODO(), "task-uuid")
-	require.NoError(t, err)
-	assert.Equal(t, resourceId, *actual.Response.ID)
-
-	var actualResponse string
-	err = json.Unmarshal(*actual.Response.Resource, &actualResponse)
-	require.NoError(t, err)
-
-	assert.Equal(t, resource, actualResponse)
+	}, errors.Unwrap(err))
 }

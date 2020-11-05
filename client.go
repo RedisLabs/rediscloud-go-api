@@ -14,7 +14,6 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/service/cloud_accounts"
 	"github.com/RedisLabs/rediscloud-go-api/service/databases"
 	"github.com/RedisLabs/rediscloud-go-api/service/subscriptions"
-	"github.com/RedisLabs/rediscloud-go-api/service/task"
 )
 
 type Client struct {
@@ -22,7 +21,6 @@ type Client struct {
 	CloudAccount *cloud_accounts.API
 	Database     *databases.API
 	Subscription *subscriptions.API
-	Task         *task.API
 }
 
 func NewClient(configs ...Option) (*Client, error) {
@@ -48,7 +46,7 @@ func NewClient(configs ...Option) (*Client, error) {
 		return nil, err
 	}
 
-	t := task.NewAPI(client, config.logger)
+	t := internal.NewAPI(client, config.logger)
 
 	a := account.NewAPI(client)
 	c := cloud_accounts.NewAPI(client, t, config.logger)
@@ -60,7 +58,6 @@ func NewClient(configs ...Option) (*Client, error) {
 		CloudAccount: c,
 		Database:     d,
 		Subscription: s,
-		Task:         t,
 	}, nil
 }
 

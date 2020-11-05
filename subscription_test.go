@@ -14,6 +14,7 @@ import (
 
 func TestSubscription_Create(t *testing.T) {
 	expected := 1235
+	// Also test that the task API will poll for the finished task
 	s := httptest.NewServer(testServer("key", "secret", postRequest(t, "/subscriptions", `{
   "name": "Test subscription",
   "dryRun": false,
@@ -59,8 +60,32 @@ func TestSubscription_Create(t *testing.T) {
       "type": "GET"
     }
   }
+}`), getRequest(t, "/tasks/task-id", `{
+  "taskId": "task-id",
+  "commandType": "subscriptionCreateRequest",
+  "status": "initialized",
+  "timestamp": "2020-10-28T09:58:16.798Z",
+  "response": {},
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`), getRequest(t, "/tasks/task-id", `{
+  "taskId": "task-id",
+  "commandType": "subscriptionCreateRequest",
+  "status": "processing-in-progress",
+  "timestamp": "2020-10-28T09:58:16.798Z",
+  "response": {},
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
 }`), getRequest(t, "/tasks/task-id", fmt.Sprintf(`{
-  "taskId": "e02b40d6-1395-4861-a3b9-ecf829d835fd",
+  "taskId": "task-id",
   "commandType": "subscriptionCreateRequest",
   "status": "processing-completed",
   "timestamp": "2020-10-28T09:58:16.798Z",

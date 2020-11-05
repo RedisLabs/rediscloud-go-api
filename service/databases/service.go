@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 	"github.com/RedisLabs/rediscloud-go-api/redis"
@@ -15,6 +16,7 @@ type Log interface {
 
 type HttpClient interface {
 	Get(ctx context.Context, name, path string, responseBody interface{}) error
+	GetWithQuery(ctx context.Context, name, path string, query url.Values, responseBody interface{}) error
 	Post(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 	Put(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 	Delete(ctx context.Context, name, path string, responseBody interface{}) error
@@ -86,10 +88,14 @@ func (d *ListDatabase) Next() bool {
 		return false
 	}
 
-	url := fmt.Sprintf("/subscriptions/%d/databases?limit=%d&offset=%d", d.subscription, d.pageSize, d.offset)
+	u := fmt.Sprintf("/subscriptions/%d/databases", d.subscription)
+	q := map[string][]string{
+		"limit":  {fmt.Sprintf("%d", d.pageSize)},
+		"offset": {fmt.Sprintf("%d", d.offset)},
+	}
 
 	var list listDatabaseResponse
-	err := d.client.Get(d.ctx, fmt.Sprintf("list databases for %d", d.subscription), url, &list)
+	err := d.client.GetWithQuery(d.ctx, fmt.Sprintf("list databases for %d", d.subscription), u, q, &list)
 	if err != nil {
 		d.setError(err)
 		return false
