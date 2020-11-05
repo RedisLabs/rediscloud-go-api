@@ -51,11 +51,15 @@ func TestAccount_ListPayments(t *testing.T) {
 			ID:                 redis.Int(123),
 			Type:               redis.String("Visa"),
 			CreditCardEndsWith: redis.Int(9876),
+			ExpirationMonth:    redis.Int(1),
+			ExpirationYear:     redis.Int(2021),
 		},
 		{
 			ID:                 redis.Int(654),
 			Type:               redis.String("Mastercard"),
 			CreditCardEndsWith: redis.Int(4567),
+			ExpirationMonth:    redis.Int(2),
+			ExpirationYear:     redis.Int(2022),
 		},
 	}, actual)
 }
