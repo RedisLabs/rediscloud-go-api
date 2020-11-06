@@ -14,6 +14,7 @@ import (
 
 func TestListDatabase_stopsOn404(t *testing.T) {
 	client := &mockHttpClient{}
+	subject := newListDatabase(context.TODO(), client, 5, 100)
 
 	client.On("GetWithQuery", context.TODO(), "list databases for 5", "/subscriptions/5/databases", url.Values{"limit": {"100"}, "offset": {"0"}}, mock.AnythingOfType("*databases.listDatabaseResponse")).Run(func(args mock.Arguments) {
 		response := args.Get(4).(*listDatabaseResponse)
@@ -24,16 +25,6 @@ func TestListDatabase_stopsOn404(t *testing.T) {
 					{
 						ID: redis.Int(1),
 					},
-				},
-			},
-		}
-	}).Return(nil)
-	client.On("GetWithQuery", context.TODO(), "list databases for 5", "/subscriptions/5/databases", url.Values{"limit": {"100"}, "offset": {"100"}}, mock.AnythingOfType("*databases.listDatabaseResponse")).Run(func(args mock.Arguments) {
-		response := args.Get(4).(*listDatabaseResponse)
-		response.Subscription = []*listDbSubscription{
-			{
-				ID: redis.Int(5),
-				Databases: []*Database{
 					{
 						ID: redis.Int(2),
 					},
@@ -41,25 +32,40 @@ func TestListDatabase_stopsOn404(t *testing.T) {
 			},
 		}
 	}).Return(nil)
+
+	assert.True(t, subject.Next())
+	assert.NoError(t, subject.Err())
+	assert.Equal(t, &Database{
+		ID: redis.Int(1),
+	}, subject.Value())
+	assert.True(t, subject.Next())
+	assert.NoError(t, subject.Err())
+	assert.Equal(t, &Database{
+		ID: redis.Int(2),
+	}, subject.Value())
+
+	client.On("GetWithQuery", context.TODO(), "list databases for 5", "/subscriptions/5/databases", url.Values{"limit": {"100"}, "offset": {"100"}}, mock.AnythingOfType("*databases.listDatabaseResponse")).Run(func(args mock.Arguments) {
+		response := args.Get(4).(*listDatabaseResponse)
+		response.Subscription = []*listDbSubscription{
+			{
+				ID: redis.Int(5),
+				Databases: []*Database{
+					{
+						ID: redis.Int(3),
+					},
+				},
+			},
+		}
+	}).Return(nil)
+
+	assert.True(t, subject.Next())
+	assert.NoError(t, subject.Err())
+	assert.Equal(t, &Database{
+		ID: redis.Int(3),
+	}, subject.Value())
+
 	client.On("GetWithQuery", context.TODO(), "list databases for 5", "/subscriptions/5/databases", url.Values{"limit": {"100"}, "offset": {"200"}}, mock.AnythingOfType("*databases.listDatabaseResponse")).
 		Return(&internal.HTTPError{StatusCode: 404})
-
-	subject := newListDatabase(context.TODO(), client, 5, 100)
-	assert.True(t, subject.Next())
-	assert.NoError(t, subject.Err())
-	assert.Equal(t, []*Database{
-		{
-			ID: redis.Int(1),
-		},
-	}, subject.Value())
-
-	assert.True(t, subject.Next())
-	assert.NoError(t, subject.Err())
-	assert.Equal(t, []*Database{
-		{
-			ID: redis.Int(2),
-		},
-	}, subject.Value())
 
 	assert.False(t, subject.Next())
 	assert.NoError(t, subject.Err())

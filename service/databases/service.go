@@ -152,8 +152,10 @@ type ListDatabase struct {
 	pageSize     int
 
 	offset int
-	value  []*Database
+	page   []*Database
 	err    error
+	fin    bool
+	value  *Database
 }
 
 func newListDatabase(ctx context.Context, client HttpClient, subscription int, pageSize int) *ListDatabase {
@@ -167,6 +169,33 @@ func (d *ListDatabase) Next() bool {
 		return false
 	}
 
+	if d.fin {
+		return false
+	}
+
+	if len(d.page) == 0 {
+		if err := d.nextPage(); err != nil {
+			d.setError(err)
+			return false
+		}
+	}
+
+	d.updateValue()
+
+	return true
+}
+
+// Value returns the current page of databases.
+func (d *ListDatabase) Value() *Database {
+	return d.value
+}
+
+// Err returns any error that occurred while trying to retrieve the next page of databases.
+func (d *ListDatabase) Err() error {
+	return d.err
+}
+
+func (d *ListDatabase) nextPage() error {
 	u := fmt.Sprintf("/subscriptions/%d/databases", d.subscription)
 	q := map[string][]string{
 		"limit":  {strconv.Itoa(d.pageSize)},
@@ -176,34 +205,31 @@ func (d *ListDatabase) Next() bool {
 	var list listDatabaseResponse
 	err := d.client.GetWithQuery(d.ctx, fmt.Sprintf("list databases for %d", d.subscription), u, q, &list)
 	if err != nil {
-		d.setError(err)
-		return false
+		return err
 	}
 
 	if len(list.Subscription) != 1 || redis.IntValue(list.Subscription[0].ID) != d.subscription {
-		d.setError(fmt.Errorf("server didn't respond with just a single subscription"))
-		return false
+		return fmt.Errorf("server didn't respond with just a single subscription")
 	}
 
-	d.value = list.Subscription[0].Databases
+	d.page = list.Subscription[0].Databases
 	d.offset += d.pageSize
 
-	return true
+	return nil
 }
 
-// Value returns the current page of databases.
-func (d *ListDatabase) Value() []*Database {
-	return d.value
-}
-
-// Err returns any error that occurred while trying to retrieve the next page of databases.
-func (d *ListDatabase) Err() error {
-	return d.err
+func (d *ListDatabase) updateValue() {
+	d.value = d.page[0]
+	d.page = d.page[1:]
 }
 
 func (d *ListDatabase) setError(err error) {
-	if httpErr, ok := err.(*internal.HTTPError); !ok || httpErr.StatusCode != http.StatusNotFound {
+	if httpErr, ok := err.(*internal.HTTPError); ok && httpErr.StatusCode == http.StatusNotFound {
+		d.fin = true
+	} else {
 		d.err = err
 	}
+
+	d.page = nil
 	d.value = nil
 }
