@@ -149,16 +149,20 @@ func TestDatabase_List(t *testing.T) {
       "type": "GET"
     }
   }
-}`)))
+}`), getRequestWithQueryAndStatus(t, "/subscriptions/23456/databases", map[string][]string{"limit": {"100"}, "offset": {"100"}}, 404, "")))
 
 	subject, err := clientFromTestServer(s, "apiKey", "secret")
 	require.NoError(t, err)
 
-	actual := subject.Database.List(context.TODO(), 23456)
+	list := subject.Database.List(context.TODO(), 23456)
 
-	assert.True(t, actual.Next())
-	assert.NoError(t, actual.Err())
-	assert.ElementsMatch(t, []*databases.Database{
+	var actual []*databases.Database
+	for list.Next() {
+		actual = append(actual, list.Value())
+	}
+	require.NoError(t, list.Err())
+
+	assert.Equal(t, []*databases.Database{
 		{
 			ID:       redis.Int(42),
 			Name:     redis.String("first-example"),
@@ -173,7 +177,7 @@ func TestDatabase_List(t *testing.T) {
 			Provider: redis.String("AWS"),
 			Region:   redis.String("eu-west-1"),
 		},
-	}, actual.Value())
+	}, actual)
 }
 
 func TestDatabase_Get(t *testing.T) {

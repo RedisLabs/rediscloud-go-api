@@ -31,14 +31,15 @@ func testServer(apiKey, secretKey string, mockedResponses ...endpointRequest) ht
 			return
 		}
 
-		if !mockedResponses[0].matches(r) {
+		mockedResponse := mockedResponses[0]
+		if !mockedResponse.matches(r) {
 			w.WriteHeader(501)
 			return
 		}
 
-		response := mockedResponses[0].response()
+		response := mockedResponse.response()
 		mockedResponses = mockedResponses[1:]
-		w.WriteHeader(200)
+		w.WriteHeader(mockedResponse.status)
 		_, _ = w.Write([]byte(response))
 	}
 }
@@ -49,6 +50,7 @@ type endpointRequest struct {
 	query       url.Values
 	requestBody *string
 	body        string
+	status      int
 	t           *testing.T
 }
 
@@ -93,6 +95,7 @@ func getRequest(t *testing.T, path string, body string) endpointRequest {
 		method: http.MethodGet,
 		path:   path,
 		body:   body,
+		status: http.StatusOK,
 		t:      t,
 	}
 }
@@ -103,6 +106,18 @@ func getRequestWithQuery(t *testing.T, path string, query url.Values, body strin
 		path:   path,
 		body:   body,
 		query:  query,
+		status: http.StatusOK,
+		t:      t,
+	}
+}
+
+func getRequestWithQueryAndStatus(t *testing.T, path string, query url.Values, status int, body string) endpointRequest {
+	return endpointRequest{
+		method: http.MethodGet,
+		path:   path,
+		body:   body,
+		query:  query,
+		status: status,
 		t:      t,
 	}
 }
@@ -112,6 +127,7 @@ func deleteRequest(t *testing.T, path string, body string) endpointRequest {
 		method: http.MethodDelete,
 		path:   path,
 		body:   body,
+		status: http.StatusOK,
 		t:      t,
 	}
 }
@@ -122,6 +138,7 @@ func postRequest(t *testing.T, path string, request string, body string) endpoin
 		path:        path,
 		body:        body,
 		requestBody: &request,
+		status:      http.StatusOK,
 		t:           t,
 	}
 }
@@ -131,6 +148,7 @@ func postRequestWithNoRequest(t *testing.T, path string, body string) endpointRe
 		method: http.MethodPost,
 		path:   path,
 		body:   body,
+		status: http.StatusOK,
 		t:      t,
 	}
 }
@@ -141,6 +159,7 @@ func putRequest(t *testing.T, path string, request string, body string) endpoint
 		path:        path,
 		body:        body,
 		requestBody: &request,
+		status:      http.StatusOK,
 		t:           t,
 	}
 }
