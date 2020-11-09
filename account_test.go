@@ -63,3 +63,41 @@ func TestAccount_ListPayments(t *testing.T) {
 		},
 	}, actual)
 }
+
+func TestAccount_ListRegions(t *testing.T) {
+	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/regions", `{
+  "regions": [
+    {
+      "name": "asia-east1",
+      "provider": "GCP"
+    },
+    {
+      "name": "eu-west-1",
+      "provider": "AWS"
+    }
+  ],
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`)))
+
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Account.ListRegions(context.TODO())
+	require.NoError(t, err)
+
+	assert.ElementsMatch(t, []*account.Region{
+		{
+			Name:     redis.String("asia-east1"),
+			Provider: redis.String("GCP"),
+		},
+		{
+			Name:     redis.String("eu-west-1"),
+			Provider: redis.String("AWS"),
+		},
+	}, actual)
+}
