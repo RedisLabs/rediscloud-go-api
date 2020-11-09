@@ -122,6 +122,16 @@ func getRequestWithQueryAndStatus(t *testing.T, path string, query url.Values, s
 	}
 }
 
+func getRequestWithStatus(t *testing.T, path string, status int, body string) endpointRequest {
+	return endpointRequest{
+		method: http.MethodGet,
+		path:   path,
+		body:   body,
+		status: status,
+		t:      t,
+	}
+}
+
 func deleteRequest(t *testing.T, path string, body string) endpointRequest {
 	return endpointRequest{
 		method: http.MethodDelete,

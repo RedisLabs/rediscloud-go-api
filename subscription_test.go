@@ -60,7 +60,7 @@ func TestSubscription_Create(t *testing.T) {
       "type": "GET"
     }
   }
-}`), getRequest(t, "/tasks/task-id", `{
+}`), getRequestWithStatus(t, "/tasks/task-id", 404, ""), getRequest(t, "/tasks/task-id", `{
   "taskId": "task-id",
   "commandType": "subscriptionCreateRequest",
   "status": "initialized",
