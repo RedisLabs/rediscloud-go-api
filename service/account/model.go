@@ -44,6 +44,6 @@ func (o dataPersistence) String() string {
 }
 
 type DataPersistence struct {
-	Name     *string `json:"name,omitempty"`
-	Description     *string `json:"description,omitempty"`
+	Name        *string `json:"name,omitempty"`
+	Description *string `json:"description,omitempty"`
 }
