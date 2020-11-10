@@ -57,7 +57,7 @@ func TestTaskErrorsGetUnwrapped(t *testing.T) {
 	}, errors.Unwrap(err))
 }
 
-func TestTask_GivesUpAfterThree404s(t *testing.T) {
+func TestTask_Handles404Eventually(t *testing.T) {
 	s := httptest.NewServer(testServer("key", "secret", deleteRequest(t, "/cloud-accounts/1", `{
   "taskId": "task",
   "commandType": "cloudAccountDeleteRequest",
@@ -84,6 +84,8 @@ func TestTask_GivesUpAfterThree404s(t *testing.T) {
     }
   }
 }`), getRequestWithStatus(t, "/tasks/task", 404, ""),
+		getRequestWithStatus(t, "/tasks/task", 404, ""),
+		getRequestWithStatus(t, "/tasks/task", 404, ""),
 		getRequestWithStatus(t, "/tasks/task", 404, ""),
 		getRequestWithStatus(t, "/tasks/task", 404, "")))
 
