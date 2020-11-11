@@ -101,3 +101,51 @@ func TestAccount_ListRegions(t *testing.T) {
 		},
 	}, actual)
 }
+
+func TestAccount_ListDatabaseModules(t *testing.T) {
+	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/database-modules", `{
+  "modules": [
+    {
+      "name": "RedisBloom",
+      "description": "Bloom Filter Module for Redis",
+      "parameters": []
+    },
+    {
+      "name": "RedisGraph",
+      "description": "A graph database on top of Redis which supports Open-Cypher query language",
+      "parameters": [
+        {
+          "name": "number-of-threads",
+          "description": "Number of threads used by RedisGraph",
+          "type": "integer",
+          "defaultValue": 1,
+          "required": false
+        }
+      ]
+    }
+  ],
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`)))
+
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Account.ListDatabaseModules(context.TODO())
+	require.NoError(t, err)
+
+	assert.ElementsMatch(t, []*account.DatabaseModule{
+		{
+			Name:     redis.String("RedisBloom"),
+			Description: redis.String("Bloom Filter Module for Redis"),
+		},
+		{
+			Name:     redis.String("RedisGraph"),
+			Description: redis.String("A graph database on top of Redis which supports Open-Cypher query language"),
+		},
+	}, actual)
+}
