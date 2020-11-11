@@ -140,11 +140,11 @@ func TestAccount_ListDatabaseModules(t *testing.T) {
 
 	assert.ElementsMatch(t, []*account.DatabaseModule{
 		{
-			Name:     redis.String("RedisBloom"),
+			Name:        redis.String("RedisBloom"),
 			Description: redis.String("Bloom Filter Module for Redis"),
 		},
 		{
-			Name:     redis.String("RedisGraph"),
+			Name:        redis.String("RedisGraph"),
 			Description: redis.String("A graph database on top of Redis which supports Open-Cypher query language"),
 		},
 	}, actual)
