@@ -1,6 +1,8 @@
 package subscriptions
 
 import (
+	"fmt"
+
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 )
 
@@ -187,6 +189,14 @@ type taskResponse struct {
 
 func (o taskResponse) String() string {
 	return internal.ToString(o)
+}
+
+type NotFound struct {
+	id int
+}
+
+func (f *NotFound) Error() string {
+	return fmt.Sprintf("subscription %d not found", f.id)
 }
 
 const (
