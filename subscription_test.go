@@ -394,6 +394,18 @@ func TestSubscription_Get(t *testing.T) {
 	}, actual)
 }
 
+func TestSubscription_Get_wraps404Error(t *testing.T) {
+	s := httptest.NewServer(testServer("apiKey", "secret", getRequestWithStatus(t, "/subscriptions/123", 404, "")))
+
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Subscription.Get(context.TODO(), 123)
+
+	assert.Nil(t, actual)
+	assert.IsType(t, &subscriptions.NotFound{}, err)
+}
+
 func TestSubscription_Update(t *testing.T) {
 	s := httptest.NewServer(testServer("key", "secret", putRequest(t, "/subscriptions/1234", `{
   "name": "test",
