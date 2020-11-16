@@ -139,10 +139,61 @@ func TestCloudAccount_Get(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, &cloud_accounts.CloudAccount{
+		ID:          redis.Int(97643),
 		Name:        redis.String("Frank"),
 		Provider:    redis.String("GCP"),
 		Status:      redis.String("active"),
 		AccessKeyID: redis.String("keyId"),
+	}, actual)
+}
+
+func TestCloudAccount_List(t *testing.T) {
+	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/cloud-accounts", `{
+  "accountId": 1245,
+  "cloudAccounts": [
+    {
+      "id": 1,
+      "name": "first one",
+      "provider": "AWS",
+      "status": "active"
+    },
+    {
+      "id": 9876,
+      "name": "custom",
+      "provider": "AWS",
+      "status": "active",
+      "accessKeyId": "someKeyId"
+    }
+  ],
+  "_links": {
+    "self": {
+      "href": "https://qa-api.redislabs.com/v1/cloud-accounts",
+      "type": "GET"
+    }
+  }
+}`)))
+
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.CloudAccount.List(context.TODO())
+	require.NoError(t, err)
+
+	assert.ElementsMatch(t, []*cloud_accounts.CloudAccount{
+		{
+			ID:          redis.Int(1),
+			Name:        redis.String("first one"),
+			Provider:    redis.String("AWS"),
+			Status:      redis.String("active"),
+			AccessKeyID: nil,
+		},
+		{
+			ID:          redis.Int(9876),
+			Name:        redis.String("custom"),
+			Provider:    redis.String("AWS"),
+			Status:      redis.String("active"),
+			AccessKeyID: redis.String("someKeyId"),
+		},
 	}, actual)
 }
 
