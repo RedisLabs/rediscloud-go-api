@@ -267,6 +267,16 @@ func TestDatabase_Get(t *testing.T) {
 		},
 		Clustering: &databases.Clustering{
 			NumberOfShards: redis.Int(1),
+			RegexRules: []*databases.RegexRule{
+				{
+					Ordinal: 1,
+					Pattern: "(?<tag>.*)",
+				},
+				{
+					Ordinal: 0,
+					Pattern: ".*\\{(?<tag>.*)\\}.*",
+				},
+			},
 		},
 		Security: &databases.Security{
 			SSLClientAuthentication: redis.Bool(false),
