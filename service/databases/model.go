@@ -79,7 +79,7 @@ type Database struct {
 	Replication            *bool       `json:"replication,omitempty"`
 	DataEvictionPolicy     *string     `json:"dataEvictionPolicy,omitempty"`
 	ThroughputMeasurement  *Throughput `json:"throughputMeasurement,omitempty"`
-	ReplicaOf              []*string   `json:"replicaOf,omitempty"`
+	ReplicaOf              *ReplicaOf  `json:"replicaOf,omitempty"`
 	Clustering             *Clustering `json:"clustering,omitempty"`
 	Security               *Security   `json:"security,omitempty"`
 	Modules                []*Module   `json:"modules,omitempty"`
@@ -94,6 +94,10 @@ type Database struct {
 
 func (o Database) String() string {
 	return internal.ToString(o)
+}
+
+type ReplicaOf struct {
+	Endpoints []*string `json:"endpoints,omitempty"`
 }
 
 type Clustering struct {

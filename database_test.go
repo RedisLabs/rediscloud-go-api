@@ -204,7 +204,9 @@ func TestDatabase_Get(t *testing.T) {
   "lastModified": "2020-11-03T09:03:30Z",
   "publicEndpoint": "example.com:16668",
   "privateEndpoint": "example.net:16668",
-  "replicaOf": null,
+  "replicaOf": {
+    "endpoints": ["another"]
+  },
   "clustering": {
     "numberOfShards": 1,
     "regexRules": [
@@ -243,17 +245,20 @@ func TestDatabase_Get(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, &databases.Database{
-		ID:                     redis.Int(98765),
-		Name:                   redis.String("Example"),
-		Protocol:               redis.String("redis"),
-		Provider:               redis.String("AWS"),
-		Region:                 redis.String("eu-west-1"),
-		Status:                 redis.String("active"),
-		MemoryLimitInGB:        redis.Float64(7),
-		MemoryUsedInMB:         redis.Float64(5),
-		SupportOSSClusterAPI:   redis.Bool(true),
-		DataPersistence:        redis.String("none"),
-		Replication:            redis.Bool(false),
+		ID:                   redis.Int(98765),
+		Name:                 redis.String("Example"),
+		Protocol:             redis.String("redis"),
+		Provider:             redis.String("AWS"),
+		Region:               redis.String("eu-west-1"),
+		Status:               redis.String("active"),
+		MemoryLimitInGB:      redis.Float64(7),
+		MemoryUsedInMB:       redis.Float64(5),
+		SupportOSSClusterAPI: redis.Bool(true),
+		DataPersistence:      redis.String("none"),
+		Replication:          redis.Bool(false),
+		ReplicaOf: &databases.ReplicaOf{
+			Endpoints: []*string{redis.String("another")},
+		},
 		DataEvictionPolicy:     redis.String("volatile-random"),
 		ActivatedOn:            redis.Time(time.Date(2020, 11, 3, 9, 3, 30, 0, time.UTC)),
 		LastModified:           redis.Time(time.Date(2020, 11, 3, 9, 3, 30, 0, time.UTC)),
