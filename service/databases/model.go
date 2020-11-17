@@ -287,3 +287,14 @@ func SourceTypeValues() []string {
 		"google-blob-storage",
 	}
 }
+
+func AlertNameValues() []string {
+	return []string{
+		"dataset-size",
+		"throughput-higher-than",
+		"throughput-lower-than",
+		"latency",
+		"syncsource-error",
+		"syncsource-lag",
+	}
+}
