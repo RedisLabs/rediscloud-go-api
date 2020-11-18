@@ -595,12 +595,16 @@ func TestSubscription_ListVPCPeering(t *testing.T) {
   "status": "processing-completed",
   "timestamp": "2020-10-28T09:58:16.798Z",
   "response": {
-    "resource": [
-      {
-        "id": 10,
-        "status": "done"
-      }
-    ]
+    "resourceId" : 12356,
+    "resource" : {
+      "peerings" : [ {
+        "vpcPeeringId" : 10,
+        "awsAccountId" : "4291",
+        "vpcUid" : "vpc-deadbeef",
+        "vpcCidr" : "10.0.0.0/24",
+        "status" : "done"
+      } ]
+    }
   },
   "_links": {
     "self": {
@@ -616,10 +620,13 @@ func TestSubscription_ListVPCPeering(t *testing.T) {
 	actual, err := subject.Subscription.ListVPCPeering(context.TODO(), 12356)
 	require.NoError(t, err)
 
-	assert.Equal(t, []*subscriptions.VPCPeering{
+	assert.ElementsMatch(t, []*subscriptions.VPCPeering{
 		{
-			ID:     redis.Int(10),
-			Status: redis.String("done"),
+			ID:           redis.Int(10),
+			AWSAccountID: redis.String("4291"),
+			VPCId:        redis.String("vpc-deadbeef"),
+			VPCCidr:      redis.String("10.0.0.0/24"),
+			Status:       redis.String("done"),
 		},
 	}, actual)
 }
