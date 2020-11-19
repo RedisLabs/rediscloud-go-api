@@ -147,6 +147,18 @@ func TestCloudAccount_Get(t *testing.T) {
 	}, actual)
 }
 
+func TestCloudAccount_Get_wraps404(t *testing.T) {
+	s := httptest.NewServer(testServer("apiKey", "secret", getRequestWithStatus(t, "/cloud-accounts/98765", 404, "")))
+
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.CloudAccount.Get(context.TODO(), 98765)
+
+	assert.Nil(t, actual)
+	assert.IsType(t, &cloud_accounts.NotFound{}, err)
+}
+
 func TestCloudAccount_List(t *testing.T) {
 	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/cloud-accounts", `{
   "accountId": 1245,
