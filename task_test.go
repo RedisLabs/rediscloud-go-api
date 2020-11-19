@@ -87,11 +87,19 @@ func TestTask_Handles404Eventually(t *testing.T) {
 		getRequestWithStatus(t, "/tasks/task", 404, ""),
 		getRequestWithStatus(t, "/tasks/task", 404, ""),
 		getRequestWithStatus(t, "/tasks/task", 404, ""),
+		getRequestWithStatus(t, "/tasks/task", 404, ""),
 		getRequestWithStatus(t, "/tasks/task", 404, "")))
 
 	subject, err := clientFromTestServer(s, "key", "secret")
 	require.NoError(t, err)
 
 	err = subject.CloudAccount.Delete(context.TODO(), 1)
-	assert.Error(t, err)
+
+	var actual *internal.HTTPError
+	require.True(t, errors.As(err, &actual))
+	assert.Equal(t, &internal.HTTPError{
+		Name:       "retrieve task task",
+		StatusCode: 404,
+		Body:       []byte{},
+	}, actual)
 }
