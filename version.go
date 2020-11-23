@@ -8,7 +8,7 @@ import (
 
 const (
 	// Version is the release number of this SDK.
-	Version = "0.1.0"
+	Version = "0.2.0"
 
 	// AccessKeyEnvVar is the environment variable that will be used for the access key by default.
 	AccessKeyEnvVar = "REDISCLOUD_ACCESS_KEY"
