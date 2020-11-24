@@ -96,7 +96,7 @@ func (a *api) waitForTaskToComplete(ctx context.Context, id string) (*task, erro
 
 		return fmt.Errorf("task %s not processed yet: %s", id, status)
 	},
-		retry.Attempts(math.MaxUint64), retry.Delay(1*time.Second), retry.MaxDelay(30*time.Second),
+		retry.Attempts(math.MaxUint16), retry.Delay(1*time.Second), retry.MaxDelay(30*time.Second),
 		retry.RetryIf(func(err error) bool {
 			if !retry.IsRecoverable(err) {
 				return false
