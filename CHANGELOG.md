@@ -4,6 +4,9 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
 ## 0.2.0 (Unreleased)
 
+### Changed
+* Expanded VPC Peering with fields for GCP
+
 ## 0.1.1
 
 ### Added
