@@ -160,13 +160,13 @@ func (o UpdateCIDRAllowlist) String() string {
 }
 
 type CreateVPCPeering struct {
-	Region       *string `json:"region,omitempty"`
-	AWSAccountID *string `json:"awsAccountId,omitempty"`
-	VPCId        *string `json:"vpcId,omitempty"`
-	VPCCidr      *string `json:"vpcCidr,omitempty"`
-	Provider     *string `json:"provider,omitempty"`
-	GCPProjectId *string `json:"vpcProjectUid,omitempty"`
-	NetworkName  *string `json:"vpcNetworkName,omitempty"`
+	Region         *string `json:"region,omitempty"`
+	AWSAccountID   *string `json:"awsAccountId,omitempty"`
+	VPCId          *string `json:"vpcId,omitempty"`
+	VPCCidr        *string `json:"vpcCidr,omitempty"`
+	Provider       *string `json:"provider,omitempty"`
+	VPCProjectUID  *string `json:"vpcProjectUid,omitempty"`
+	VPCNetworkName *string `json:"vpcNetworkName,omitempty"`
 }
 
 func (o CreateVPCPeering) String() string {
@@ -178,14 +178,13 @@ type listVpcPeering struct {
 }
 
 type VPCPeering struct {
-	ID           *int    `json:"vpcPeeringId,omitempty"`
-	AWSAccountID *string `json:"awsAccountId,omitempty"`
-	VPCId        *string `json:"vpcUid,omitempty"`
-	VPCCidr      *string `json:"vpcCidr,omitempty"`
-	Status       *string `json:"status,omitempty"`
-	Provider     *string `json:"provider,omitempty"`
-	GCPProjectId *string `json:"vpcProjectUid,omitempty"`
-	NetworkName  *string `json:"vpcNetworkName,omitempty"`
+	ID            *int    `json:"vpcPeeringId,omitempty"`
+	Status        *string `json:"status,omitempty"`
+	AWSAccountID  *string `json:"awsAccountId,omitempty"`
+	VPCId         *string `json:"vpcUid,omitempty"`
+	VPCCidr       *string `json:"vpcCidr,omitempty"`
+	GCPProjectUID *string `json:"projectUid,omitempty"`
+	NetworkName   *string `json:"networkName,omitempty"`
 }
 
 func (o VPCPeering) String() string {
