@@ -178,13 +178,17 @@ type listVpcPeering struct {
 }
 
 type VPCPeering struct {
-	ID            *int    `json:"vpcPeeringId,omitempty"`
-	Status        *string `json:"status,omitempty"`
-	AWSAccountID  *string `json:"awsAccountId,omitempty"`
-	VPCId         *string `json:"vpcUid,omitempty"`
-	VPCCidr       *string `json:"vpcCidr,omitempty"`
-	GCPProjectUID *string `json:"projectUid,omitempty"`
-	NetworkName   *string `json:"networkName,omitempty"`
+	ID               *int    `json:"vpcPeeringId,omitempty"`
+	Status           *string `json:"status,omitempty"`
+	AWSAccountID     *string `json:"awsAccountId,omitempty"`
+	AWSPeeringId     *string `json:"awsPeeringUid,omitempty"`
+	VPCId            *string `json:"vpcUid,omitempty"`
+	VPCCidr          *string `json:"vpcCidr,omitempty"`
+	GCPProjectUID    *string `json:"projectUid,omitempty"`
+	NetworkName      *string `json:"networkName,omitempty"`
+	RedisProjectUid  *string `json:"redisProjectUid,omitempty"`
+	RedisNetworkName *string `json:"redisNetworkName,omitempty"`
+	CloudPeeringId   *string `json:"cloudPeeringId,omitempty"`
 }
 
 func (o VPCPeering) String() string {
