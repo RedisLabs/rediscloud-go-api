@@ -597,13 +597,16 @@ func TestSubscription_ListVPCPeering(t *testing.T) {
   "response": {
     "resourceId" : 12356,
     "resource" : {
-      "peerings" : [ {
-        "vpcPeeringId" : 10,
-        "awsAccountId" : "4291",
-        "vpcUid" : "vpc-deadbeef",
-        "vpcCidr" : "10.0.0.0/24",
-        "status" : "done"
-      } ]
+      "peerings" : [
+		{
+          "vpcPeeringId": 10,
+          "awsAccountId": "4291",
+          "vpcUid": "vpc-deadbeef",
+          "vpcCidr": "10.0.0.0/24",
+          "awsPeeringUid": "pcx-0123456789",
+          "status": "done"
+		}
+	  ]
     }
   },
   "_links": {
@@ -626,6 +629,7 @@ func TestSubscription_ListVPCPeering(t *testing.T) {
 			AWSAccountID: redis.String("4291"),
 			VPCId:        redis.String("vpc-deadbeef"),
 			VPCCidr:      redis.String("10.0.0.0/24"),
+			AWSPeeringID: redis.String("pcx-0123456789"),
 			Status:       redis.String("done"),
 		},
 	}, actual)
