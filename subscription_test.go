@@ -635,6 +635,69 @@ func TestSubscription_ListVPCPeering(t *testing.T) {
 	}, actual)
 }
 
+func TestSubscription_ListVPCPeering_gcp(t *testing.T) {
+	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/subscriptions/12356/peerings", `{
+  "taskId": "task",
+  "commandType": "peeringListRequest",
+  "status": "received",
+  "description": "Task request received and is being queued for processing.",
+  "timestamp": "2020-11-02T09:05:34.3Z",
+  "_links": {
+    "task": {
+      "href": "https://example.org",
+      "title": "getTaskStatusUpdates",
+      "type": "GET"
+    }
+  }
+}`), getRequest(t, "/tasks/task", `{
+  "taskId": "task",
+  "commandType": "vpcPeeringGetRequest",
+  "status": "processing-completed",
+  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+  "timestamp": "2020-12-01T14:56:09.204Z",
+  "response": {
+    "resourceId": 12356,
+    "resource": {
+      "peerings": [
+        {
+          "vpcPeeringId": 11,
+          "projectUid": "cloud-api-123456",
+          "networkName": "cloud-api-vpc-peering-test",
+          "redisProjectUid": "v00d1c1f22233333f-tp",
+          "redisNetworkName": "c12345-us-east1-2-rlrcp",
+          "cloudPeeringId": "redislabs-peering-f123abc4-d56",
+          "status": "inactive"
+        }
+      ]
+    }
+  },
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`)))
+
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Subscription.ListVPCPeering(context.TODO(), 12356)
+	require.NoError(t, err)
+
+	assert.ElementsMatch(t, []*subscriptions.VPCPeering{
+		{
+			ID:               redis.Int(11),
+			Status:           redis.String("inactive"),
+			GCPProjectUID:    redis.String("cloud-api-123456"),
+			NetworkName:      redis.String("cloud-api-vpc-peering-test"),
+			RedisProjectUID:  redis.String("v00d1c1f22233333f-tp"),
+			RedisNetworkName: redis.String("c12345-us-east1-2-rlrcp"),
+			CloudPeeringID:   redis.String("redislabs-peering-f123abc4-d56"),
+		},
+	}, actual)
+}
+
 func TestSubscription_CreateVPCPeering(t *testing.T) {
 	expected := 1235
 	s := httptest.NewServer(testServer("key", "secret", postRequest(t, "/subscriptions/42/peerings", `{
