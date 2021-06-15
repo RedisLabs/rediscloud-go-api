@@ -2,7 +2,10 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
-## 0.2.0 (Unreleased)
+## 0.1.4 (Unreleased)
+
+### Changed
+* Changed the UpdateDatabase struct to allow replicaOf to be set as empty list
 
 ## 0.1.3
 
