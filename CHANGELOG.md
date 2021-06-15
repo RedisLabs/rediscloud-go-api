@@ -5,7 +5,7 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 ## 0.1.4 (Unreleased)
 
 ### Changed
-* Changed the UpdateDatabase struct to allow replicaOf to be set as empty list
+* Changed the UpdateDatabase struct to allow replicaOf to be set as empty array
 
 ## 0.1.3
 
