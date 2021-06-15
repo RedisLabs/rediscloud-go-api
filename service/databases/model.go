@@ -166,7 +166,7 @@ type UpdateDatabase struct {
 	ThroughputMeasurement               *UpdateThroughputMeasurement `json:"throughputMeasurement,omitempty"`
 	RegexRules                          []*string                    `json:"regexRules,omitempty"`
 	DataPersistence                     *string                      `json:"dataPersistence,omitempty"`
-	ReplicaOf                           []*string                    `json:"replicaOf,omitempty"`
+	ReplicaOf                           []*string                    `json:"replicaOf"`
 	PeriodicBackupPath                  *string                      `json:"periodicBackupPath,omitempty"`
 	SourceIP                            []*string                    `json:"sourceIp,omitempty"`
 	ClientSSLCertificate                *string                      `json:"clientSslCertificate,omitempty"`
