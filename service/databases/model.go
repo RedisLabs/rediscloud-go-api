@@ -124,7 +124,7 @@ type Security struct {
 	SSLClientAuthentication *bool     `json:"sslClientAuthentication,omitempty"`
 	SourceIPs               []*string `json:"sourceIps,omitempty"`
 	Password                *string   `json:"password,omitempty"`
-	EnableTls               *string   `json:"enableTls,omitempty"`
+	EnableTls               *bool     `json:"enableTls,omitempty"`
 }
 
 func (o Security) String() string {
