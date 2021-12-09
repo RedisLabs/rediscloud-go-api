@@ -33,6 +33,7 @@ type CreateDatabase struct {
 	Password                            *string                      `json:"password,omitempty"`
 	Alerts                              []*CreateAlert               `json:"alerts,omitempty"`
 	Modules                             []*CreateModule              `json:"modules,omitempty"`
+	EnableTls                           *bool                        `json:"enableTls,omitempty"`
 }
 
 func (o CreateDatabase) String() string {
@@ -123,6 +124,7 @@ type Security struct {
 	SSLClientAuthentication *bool     `json:"sslClientAuthentication,omitempty"`
 	SourceIPs               []*string `json:"sourceIps,omitempty"`
 	Password                *string   `json:"password,omitempty"`
+	EnableTls               *bool     `json:"enableTls,omitempty"`
 }
 
 func (o Security) String() string {
@@ -172,6 +174,7 @@ type UpdateDatabase struct {
 	ClientSSLCertificate                *string                      `json:"clientSslCertificate,omitempty"`
 	Password                            *string                      `json:"password,omitempty"`
 	Alerts                              []*UpdateAlert               `json:"alerts,omitempty"`
+	EnableTls                           *bool                        `json:"enableTls,omitempty"`
 }
 
 func (o UpdateDatabase) String() string {
