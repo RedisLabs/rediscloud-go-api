@@ -3,7 +3,13 @@ All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
 
-## 0.1.5 (Unreleased)
+## 0.1.6 (Unreleased)
+
+### Added
+
+* Include "Content-Type: application/json" in the header of all requests to the API.
+
+## 0.1.5 (December 9 2021)
 
 ### Added
 
