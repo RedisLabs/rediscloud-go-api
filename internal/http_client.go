@@ -68,7 +68,7 @@ func (c *HttpClient) connection(ctx context.Context, method, name, path string, 
 
 	// The API expects this entry in the header in all requests.
 	request.Header.Set("Content-Type", "application/json")
-	
+
 	if err != nil {
 		return fmt.Errorf("failed to create request to %s: %w", name, err)
 	}
