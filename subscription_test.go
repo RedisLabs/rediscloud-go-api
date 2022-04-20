@@ -20,7 +20,6 @@ func TestSubscription_Create(t *testing.T) {
   "dryRun": false,
   "paymentMethodId": 2,
   "memoryStorage": "ram",
-  "persistentStorageEncryption": false,
   "cloudProviders": [
     {
       "provider": "AWS",
@@ -108,7 +107,6 @@ func TestSubscription_Create(t *testing.T) {
 		DryRun:                      redis.Bool(false),
 		PaymentMethodID:             redis.Int(2),
 		MemoryStorage:               redis.String("ram"),
-		PersistentStorageEncryption: redis.Bool(false),
 		CloudProviders: []*subscriptions.CreateCloudProvider{
 			{
 				Provider:       redis.String("AWS"),

@@ -11,7 +11,6 @@ type CreateSubscription struct {
 	DryRun                      *bool                  `json:"dryRun,omitempty"`
 	PaymentMethodID             *int                   `json:"paymentMethodId,omitempty"`
 	MemoryStorage               *string                `json:"memoryStorage,omitempty"`
-	PersistentStorageEncryption *bool                  `json:"persistentStorageEncryption,omitempty"`
 	CloudProviders              []*CreateCloudProvider `json:"cloudProviders,omitempty"`
 	Databases                   []*CreateDatabase      `json:"databases,omitempty"`
 }
