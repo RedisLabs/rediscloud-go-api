@@ -103,10 +103,10 @@ func TestSubscription_Create(t *testing.T) {
 	require.NoError(t, err)
 
 	actual, err := subject.Subscription.Create(context.TODO(), subscriptions.CreateSubscription{
-		Name:                        redis.String("Test subscription"),
-		DryRun:                      redis.Bool(false),
-		PaymentMethodID:             redis.Int(2),
-		MemoryStorage:               redis.String("ram"),
+		Name:            redis.String("Test subscription"),
+		DryRun:          redis.Bool(false),
+		PaymentMethodID: redis.Int(2),
+		MemoryStorage:   redis.String("ram"),
 		CloudProviders: []*subscriptions.CreateCloudProvider{
 			{
 				Provider:       redis.String("AWS"),

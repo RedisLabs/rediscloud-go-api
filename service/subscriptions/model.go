@@ -7,12 +7,12 @@ import (
 )
 
 type CreateSubscription struct {
-	Name                        *string                `json:"name,omitempty"`
-	DryRun                      *bool                  `json:"dryRun,omitempty"`
-	PaymentMethodID             *int                   `json:"paymentMethodId,omitempty"`
-	MemoryStorage               *string                `json:"memoryStorage,omitempty"`
-	CloudProviders              []*CreateCloudProvider `json:"cloudProviders,omitempty"`
-	Databases                   []*CreateDatabase      `json:"databases,omitempty"`
+	Name            *string                `json:"name,omitempty"`
+	DryRun          *bool                  `json:"dryRun,omitempty"`
+	PaymentMethodID *int                   `json:"paymentMethodId,omitempty"`
+	MemoryStorage   *string                `json:"memoryStorage,omitempty"`
+	CloudProviders  []*CreateCloudProvider `json:"cloudProviders,omitempty"`
+	Databases       []*CreateDatabase      `json:"databases,omitempty"`
 }
 
 func (o CreateSubscription) String() string {
