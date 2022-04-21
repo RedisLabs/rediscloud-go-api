@@ -2,13 +2,11 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
-## 0.1.8 (unreleased)
-
-## 0.1.7 (April X 2022)
+## 0.1.7 (unreleased)
 
 ### Removed
 
-* Removed the PersistentStorageEncryption field from the API calls.
+* Removed the PersistentStorageEncryption (deprecated) field from the API calls.
 
 ## 0.1.6 (January 14 2022)
 
