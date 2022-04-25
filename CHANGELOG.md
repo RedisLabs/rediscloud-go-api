@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
-## 0.1.7 (unreleased)
+## 0.1.7 (April 25 2022)
 
 ### Removed
 
