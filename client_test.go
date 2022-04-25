@@ -180,6 +180,63 @@ HTTP/1.1 204 No Content
 X-Test: Demo`, mockLogger.log[1])
 }
 
+func TestCredentialTripper_RedactPasswordFromBody(t *testing.T) {
+	mockTripper := &mockedRoundTripper{}
+	mockLogger := &mockedLogger{}
+
+	request := &http.Request{
+		Method: http.MethodPost,
+		URL: &url.URL{
+			Scheme: "https",
+			Host:   "example.org",
+			Path:   "/foo/bar",
+		},
+		Proto:         "HTTP/1.1",
+		ProtoMajor:    1,
+		ProtoMinor:    1,
+		Header:        map[string][]string{},
+		Body:          ioutil.NopCloser(bytes.NewBufferString(`{"password":"pass"}`)),
+		ContentLength: 19,
+		Host:          "example.org",
+	}
+	expected := &http.Response{
+		StatusCode: 200,
+		Proto:      "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		Header:     map[string][]string{},
+		Body:       ioutil.NopCloser(bytes.NewBufferString(`{"password":"REDACTED"}`)),
+	}
+
+	mockTripper.On("RoundTrip", request).Return(expected, nil)
+
+	subject := &credentialTripper{
+		apiKey:      "KEY THAT SHOULD NOT BE LOGGED",
+		secretKey:   "SECRET KEY THAT SHOULD NOT BE LOGGED",
+		wrapped:     mockTripper,
+		logRequests: true,
+		logger:      mockLogger,
+		userAgent:   "test-user-agent",
+	}
+
+	actual, err := subject.RoundTrip(request)
+	require.NoError(t, err)
+	assert.Same(t, expected, actual)
+
+	assert.Equal(t, `DEBUG: Request /foo/bar:
+---[ REQUEST ]---
+POST /foo/bar HTTP/1.1
+Host: example.org
+User-Agent: test-user-agent
+Content-Length: 19
+Accept: application/json
+Accept-Encoding: gzip
+
+{
+  "password": "REDACTED"
+}`, mockLogger.log[0])
+}
+
 type mockedLogger struct {
 	log []string
 }
