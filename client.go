@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
@@ -163,7 +164,7 @@ func (c *credentialTripper) RoundTrip(request *http.Request) (*http.Response, er
 		if data != nil {
 			c.logger.Printf(`DEBUG: Request %s:
 ---[ REQUEST ]---
-%s`, request.URL.Path, prettyRedactedPrint(data))
+%s`, request.URL.Path, redactPasswords(prettyPrint(data)))
 		}
 	}
 
@@ -181,21 +182,19 @@ func (c *credentialTripper) RoundTrip(request *http.Request) (*http.Response, er
 		if data != nil {
 			c.logger.Printf(`DEBUG: Response %s:
 ---[ RESPONSE ]---
-%s`, request.URL.Path, prettyRedactedPrint(data))
+%s`, request.URL.Path, redactPasswords(prettyPrint(data)))
 		}
 	}
 	return response, nil
 }
 
-// prettyRedactedPrint: Convert JSON to human-readable text and redact any sensitive values.
-func prettyRedactedPrint(data []byte) string {
+func prettyPrint(data []byte) string {
 	lines := strings.Split(string(data), "\n")
 	// A JSON body that wasn't indented would have ended up as a single line in the dumped information,
 	// so try and find a line which is valid JSON and then indent it
 	for i, line := range lines {
 		asBytes := []byte(line)
 		if json.Valid(asBytes) {
-			asBytes := redactSensitiveValue(asBytes, "password")
 			var indented bytes.Buffer
 			if err := json.Indent(&indented, asBytes, "", "  "); err == nil {
 				lines[i] = indented.String()
@@ -205,18 +204,10 @@ func prettyRedactedPrint(data []byte) string {
 	return strings.Join(lines, "\n")
 }
 
-// redactSensitiveValue: Redacts sensitive value from a key in a JSON message.
-func redactSensitiveValue(bytes []byte, key string) []byte {
-	var rawMap map[string]json.RawMessage
-	if err := json.Unmarshal(bytes, &rawMap); err == nil {
-		if _, ok := rawMap[key]; ok {
-			rawMap[key] = []byte(`"REDACTED"`)
-		}
-		if redactedBytes, err := json.Marshal(rawMap); err == nil {
-			return redactedBytes
-		}
-	}
-	return bytes
+// redactPasswords: Redacts password values from a JSON message.
+func redactPasswords(data string) string {
+	m1 := regexp.MustCompile(`\"password\"\s*:\s*\"(?:[^"\\]|\\.)*\"`)
+	return m1.ReplaceAllString(data, "\"password\": \"REDACTED\"")
 }
 
 var _ http.RoundTripper = &credentialTripper{}
