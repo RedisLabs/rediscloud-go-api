@@ -285,12 +285,14 @@ func TestCredentialTripper_RedactPasswordFromNestedBody(t *testing.T) {
 POST /foo/bar HTTP/1.1
 Host: example.org
 User-Agent: test-user-agent
-Content-Length: 19
+Content-Length: 33
 Accept: application/json
 Accept-Encoding: gzip
 
 {
-  "password": "REDACTED"
+  "security": {
+    "password": "REDACTED"
+  }
 }`, mockLogger.log[0])
 }
 
