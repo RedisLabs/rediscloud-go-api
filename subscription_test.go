@@ -19,6 +19,7 @@ func TestSubscription_Create(t *testing.T) {
   "name": "Test subscription",
   "dryRun": false,
   "paymentMethodId": 2,
+  "paymentMethod": "credit-card",
   "memoryStorage": "ram",
   "cloudProviders": [
     {
@@ -106,6 +107,7 @@ func TestSubscription_Create(t *testing.T) {
 		Name:            redis.String("Test subscription"),
 		DryRun:          redis.Bool(false),
 		PaymentMethodID: redis.Int(2),
+		PaymentMethod:   redis.String("credit-card"),
 		MemoryStorage:   redis.String("ram"),
 		CloudProviders: []*subscriptions.CreateCloudProvider{
 			{
