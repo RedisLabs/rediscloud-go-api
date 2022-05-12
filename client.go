@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
@@ -163,7 +164,7 @@ func (c *credentialTripper) RoundTrip(request *http.Request) (*http.Response, er
 		if data != nil {
 			c.logger.Printf(`DEBUG: Request %s:
 ---[ REQUEST ]---
-%s`, request.URL.Path, prettyPrint(data))
+%s`, escapePath(request.URL.Path), redactPasswords(prettyPrint(data)))
 		}
 	}
 
@@ -181,7 +182,7 @@ func (c *credentialTripper) RoundTrip(request *http.Request) (*http.Response, er
 		if data != nil {
 			c.logger.Printf(`DEBUG: Response %s:
 ---[ RESPONSE ]---
-%s`, request.URL.Path, prettyPrint(data))
+%s`, escapePath(request.URL.Path), redactPasswords(prettyPrint(data)))
 		}
 	}
 	return response, nil
@@ -201,6 +202,18 @@ func prettyPrint(data []byte) string {
 		}
 	}
 	return strings.Join(lines, "\n")
+}
+
+// redactPasswords: Redacts password values from a JSON message.
+func redactPasswords(data string) string {
+	m1 := regexp.MustCompile(`\"password\"\s*:\s*\"(?:[^"\\]|\\.)*\"`)
+	return m1.ReplaceAllString(data, "\"password\": \"REDACTED\"")
+}
+
+func escapePath(path string) string {
+	escapedPath := strings.Replace(path, "\n", "", -1)
+	escapedPath = strings.Replace(escapedPath, "\r", "", -1)
+	return escapedPath
 }
 
 var _ http.RoundTripper = &credentialTripper{}

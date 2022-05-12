@@ -10,6 +10,7 @@ type CreateSubscription struct {
 	Name            *string                `json:"name,omitempty"`
 	DryRun          *bool                  `json:"dryRun,omitempty"`
 	PaymentMethodID *int                   `json:"paymentMethodId,omitempty"`
+	PaymentMethod   *string                `json:"paymentMethod,omitempty"`
 	MemoryStorage   *string                `json:"memoryStorage,omitempty"`
 	CloudProviders  []*CreateCloudProvider `json:"cloudProviders,omitempty"`
 	Databases       []*CreateDatabase      `json:"databases,omitempty"`
@@ -96,6 +97,7 @@ type Subscription struct {
 	ID                *int           `json:"id,omitempty"`
 	Name              *string        `json:"name,omitempty"`
 	Status            *string        `json:"status,omitempty"`
+	PaymentMethod     *string        `json:"paymentMethodType,omitempty"`
 	PaymentMethodID   *int           `json:"paymentMethodId,omitempty"`
 	MemoryStorage     *string        `json:"memoryStorage,omitempty"`
 	StorageEncryption *bool          `json:"storageEncryption,omitempty"`

@@ -19,6 +19,7 @@ func TestSubscription_Create(t *testing.T) {
   "name": "Test subscription",
   "dryRun": false,
   "paymentMethodId": 2,
+  "paymentMethod": "credit-card",
   "memoryStorage": "ram",
   "cloudProviders": [
     {
@@ -106,6 +107,7 @@ func TestSubscription_Create(t *testing.T) {
 		Name:            redis.String("Test subscription"),
 		DryRun:          redis.Bool(false),
 		PaymentMethodID: redis.Int(2),
+		PaymentMethod:   redis.String("credit-card"),
 		MemoryStorage:   redis.String("ram"),
 		CloudProviders: []*subscriptions.CreateCloudProvider{
 			{
@@ -146,6 +148,7 @@ func TestSubscription_List(t *testing.T) {
       "id": 1,
       "name": "sdk",
       "status": "active",
+      "paymentMethodType": "credit-card",
       "paymentMethodId": 2,
       "memoryStorage": "ram",
       "storageEncryption": false,
@@ -253,6 +256,7 @@ func TestSubscription_List(t *testing.T) {
 			ID:                redis.Int(1),
 			Name:              redis.String("sdk"),
 			Status:            redis.String("active"),
+			PaymentMethod:     redis.String("credit-card"),
 			PaymentMethodID:   redis.Int(2),
 			MemoryStorage:     redis.String("ram"),
 			StorageEncryption: redis.Bool(false),
@@ -296,6 +300,7 @@ func TestSubscription_Get(t *testing.T) {
   "id": 1,
   "name": "Get-test",
   "status": "active",
+  "paymentMethodType": "credit-card",
   "paymentMethodId": 2,
   "memoryStorage": "ram",
   "storageEncryption": false,
@@ -365,6 +370,7 @@ func TestSubscription_Get(t *testing.T) {
 		ID:                redis.Int(1),
 		Name:              redis.String("Get-test"),
 		Status:            redis.String("active"),
+		PaymentMethod:     redis.String("credit-card"),
 		PaymentMethodID:   redis.Int(2),
 		MemoryStorage:     redis.String("ram"),
 		StorageEncryption: redis.Bool(false),
