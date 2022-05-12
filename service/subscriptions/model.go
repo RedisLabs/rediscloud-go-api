@@ -190,6 +190,7 @@ type VPCPeering struct {
 	RedisProjectUID  *string `json:"redisProjectUid,omitempty"`
 	RedisNetworkName *string `json:"redisNetworkName,omitempty"`
 	CloudPeeringID   *string `json:"cloudPeeringId,omitempty"`
+	Region           *string `json:"regionName,omitempty"`
 }
 
 func (o VPCPeering) String() string {

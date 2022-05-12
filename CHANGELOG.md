@@ -5,6 +5,8 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 ## 0.1.8 (Unreleased)
 
 ### Added
+
+* Adds region attribute to VPCPeering
 * Adds paymentMethod field to CreateSubscription and Subscription structs
 
 ## 0.1.7 (April 25 2022)

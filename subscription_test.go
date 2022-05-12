@@ -608,7 +608,8 @@ func TestSubscription_ListVPCPeering(t *testing.T) {
           "vpcUid": "vpc-deadbeef",
           "vpcCidr": "10.0.0.0/24",
           "awsPeeringUid": "pcx-0123456789",
-          "status": "done"
+          "status": "done",
+          "regionName": "eu-west-2"
 		}
 	  ]
     }
@@ -635,6 +636,7 @@ func TestSubscription_ListVPCPeering(t *testing.T) {
 			VPCCidr:      redis.String("10.0.0.0/24"),
 			AWSPeeringID: redis.String("pcx-0123456789"),
 			Status:       redis.String("done"),
+			Region:       redis.String("eu-west-2"),
 		},
 	}, actual)
 }
