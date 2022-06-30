@@ -293,6 +293,18 @@ func TestDatabase_Get(t *testing.T) {
 	}, actual)
 }
 
+func TestDatabase_Get_wraps404Error(t *testing.T) {
+	s := httptest.NewServer(testServer("apiKey", "secret", getRequestWithStatus(t, "/subscriptions/23456/databases/98765", 404, "")))
+
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Database.Get(context.TODO(), 23456, 98765)
+
+	assert.Nil(t, actual)
+	assert.IsType(t, &databases.NotFound{}, err)
+}
+
 func TestDatabase_Update(t *testing.T) {
 	s := httptest.NewServer(testServer("key", "secret", putRequest(t, "/subscriptions/42/databases/18", `{
   "dryRun": false,
