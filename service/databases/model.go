@@ -252,6 +252,8 @@ const (
 	StatusActiveChangeDraft = "active-change-draft"
 	// Active change pending value of the `Status` field in `Database`
 	StatusActiveChangePending = "active-change-pending"
+	// Proxy Policy change pending value of the `Status` field in `Database`
+	StatusProxyPolicyChangePending = "proxy-policy-change-pending"
 	// Error value of the `Status` field in `Database`
 	StatusError = "error"
 )
