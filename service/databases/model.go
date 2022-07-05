@@ -252,8 +252,11 @@ const (
 	StatusActiveChangeDraft = "active-change-draft"
 	// Active change pending value of the `Status` field in `Database`
 	StatusActiveChangePending = "active-change-pending"
-	// Proxy Policy change pending value of the `Status` field in `Database`
+	// The below two Proxy Policy states are caused by a change to the 'support_oss_cluster_api' attribute
+	// Proxy Policy change pending value of the `Status` field in `Database`.
 	StatusProxyPolicyChangePending = "proxy-policy-change-pending"
+	// Proxy Policy change draft value of the `Status` field in `Database`
+	StatusProxyPolicyChangeDraft = "proxy-policy-change-draft"
 	// Error value of the `Status` field in `Database`
 	StatusError = "error"
 )
