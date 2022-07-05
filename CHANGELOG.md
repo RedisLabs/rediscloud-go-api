@@ -7,7 +7,7 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 ### Added 
 
 * Adds wrap404Error for database service GET method
-* Add proxy policy change to pending state constants
+* Add proxy-policy-change and -draft to pending state constants
 
 ## 0.1.8 (May 12 2022)
 
