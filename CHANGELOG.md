@@ -2,8 +2,7 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
-## 0.1.9 (unreleased)
-
+## 0.1.9 (July 5 2022)
 ### Added 
 
 * Adds wrap404Error for database service GET method
