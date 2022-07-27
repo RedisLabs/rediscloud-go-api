@@ -67,7 +67,7 @@ func (a *API) Get(ctx context.Context, subscription int, database int) (*Databas
 	var db Database
 	err := a.client.Get(ctx, fmt.Sprintf("get database %d for subscription %d", subscription, database), fmt.Sprintf("/subscriptions/%d/databases/%d", subscription, database), &db)
 	if err != nil {
-		return nil, err
+		return nil, wrap404Error(subscription, database, err)
 	}
 
 	return &db, nil
@@ -232,4 +232,11 @@ func (d *ListDatabase) setError(err error) {
 
 	d.page = nil
 	d.value = nil
+}
+
+func wrap404Error(subId int, dbId int, err error) error {
+	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
+		return &NotFound{subId: subId, dbId: dbId}
+	}
+	return err
 }

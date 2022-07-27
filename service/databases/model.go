@@ -1,6 +1,7 @@
 package databases
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
@@ -225,6 +226,15 @@ func (o listDbSubscription) String() string {
 	return internal.ToString(o)
 }
 
+type NotFound struct {
+	subId int
+	dbId  int
+}
+
+func (f *NotFound) Error() string {
+	return fmt.Sprintf("database %d in subscription %d not found", f.dbId, f.subId)
+}
+
 const (
 	// Active value of the `Status` field in `Database`
 	StatusActive = "active"
@@ -242,6 +252,11 @@ const (
 	StatusActiveChangeDraft = "active-change-draft"
 	// Active change pending value of the `Status` field in `Database`
 	StatusActiveChangePending = "active-change-pending"
+	// The below two Proxy Policy states are caused by a change to the 'support_oss_cluster_api' attribute
+	// Proxy Policy change pending value of the `Status` field in `Database`.
+	StatusProxyPolicyChangePending = "proxy-policy-change-pending"
+	// Proxy Policy change draft value of the `Status` field in `Database`
+	StatusProxyPolicyChangeDraft = "proxy-policy-change-draft"
 	// Error value of the `Status` field in `Database`
 	StatusError = "error"
 )
