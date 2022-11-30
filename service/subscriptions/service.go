@@ -188,6 +188,23 @@ func (a *API) CreateVPCPeering(ctx context.Context, id int, create CreateVPCPeer
 	return id, nil
 }
 
+func (a *API) CreateActiveActiveVPCPeering(ctx context.Context, id int, create CreateVPCPeering) (int, error) {
+	var task taskResponse
+	err := a.client.Post(ctx, fmt.Sprintf("create peering for subscription %d", id), fmt.Sprintf("/subscriptions/%d/regions/peerings/", id), create, &task)
+	if err != nil {
+		return 0, wrap404Error(id, err)
+	}
+
+	a.logger.Printf("Waiting for subscription %d peering details to be retrieved", id)
+
+	id, err = a.task.WaitForResourceId(ctx, *task.ID)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
+
 // DeleteVPCPeering destroys an existing VPC peering connection.
 func (a *API) DeleteVPCPeering(ctx context.Context, subscription int, peering int) error {
 	var task taskResponse

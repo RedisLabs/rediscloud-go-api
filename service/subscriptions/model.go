@@ -8,6 +8,7 @@ import (
 
 type CreateSubscription struct {
 	Name            *string                `json:"name,omitempty"`
+	DeploymentType  *string                `json:"deploymentType,omitempty"`
 	DryRun          *bool                  `json:"dryRun,omitempty"`
 	PaymentMethodID *int                   `json:"paymentMethodId,omitempty"`
 	PaymentMethod   *string                `json:"paymentMethod,omitempty"`
@@ -51,16 +52,17 @@ func (o CreateNetworking) String() string {
 }
 
 type CreateDatabase struct {
-	Name                   *string           `json:"name,omitempty"`
-	Protocol               *string           `json:"protocol,omitempty"`
-	MemoryLimitInGB        *float64          `json:"memoryLimitInGb,omitempty"`
-	SupportOSSClusterAPI   *bool             `json:"supportOSSClusterApi,omitempty"`
-	DataPersistence        *string           `json:"dataPersistence,omitempty"`
-	Replication            *bool             `json:"replication,omitempty"`
-	ThroughputMeasurement  *CreateThroughput `json:"throughputMeasurement,omitempty"`
-	Modules                []*CreateModules  `json:"modules,omitempty"`
-	Quantity               *int              `json:"quantity,omitempty"`
-	AverageItemSizeInBytes *int              `json:"averageItemSizeInBytes,omitempty"`
+	Name                       *string                  `json:"name,omitempty"`
+	Protocol                   *string                  `json:"protocol,omitempty"`
+	MemoryLimitInGB            *float64                 `json:"memoryLimitInGb,omitempty"`
+	SupportOSSClusterAPI       *bool                    `json:"supportOSSClusterApi,omitempty"`
+	DataPersistence            *string                  `json:"dataPersistence,omitempty"`
+	Replication                *bool                    `json:"replication,omitempty"`
+	ThroughputMeasurement      *CreateThroughput        `json:"throughputMeasurement,omitempty"`
+	LocalThroughputMeasurement []*CreateLocalThroughput `json:"localThroughputMeasurement,omitempty"`
+	Modules                    []*CreateModules         `json:"modules,omitempty"`
+	Quantity                   *int                     `json:"quantity,omitempty"`
+	AverageItemSizeInBytes     *int                     `json:"averageItemSizeInBytes,omitempty"`
 }
 
 func (o CreateDatabase) String() string {
@@ -73,6 +75,16 @@ type CreateThroughput struct {
 }
 
 func (o CreateThroughput) String() string {
+	return internal.ToString(o)
+}
+
+type CreateLocalThroughput struct {
+	Region                   *string `json:"region,omitempty"`
+	WriteOperationsPerSecond *int    `json:"writeOperationsPerSecond"`
+	ReadOperationsPerSecond  *int    `json:"readOperationsPerSecond"`
+}
+
+func (o CreateLocalThroughput) String() string {
 	return internal.ToString(o)
 }
 
