@@ -14,6 +14,7 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/service/account"
 	"github.com/RedisLabs/rediscloud-go-api/service/cloud_accounts"
 	"github.com/RedisLabs/rediscloud-go-api/service/databases"
+	"github.com/RedisLabs/rediscloud-go-api/service/regions"
 	"github.com/RedisLabs/rediscloud-go-api/service/subscriptions"
 )
 
@@ -22,6 +23,7 @@ type Client struct {
 	CloudAccount *cloud_accounts.API
 	Database     *databases.API
 	Subscription *subscriptions.API
+	Regions      *regions.API
 }
 
 func NewClient(configs ...Option) (*Client, error) {
@@ -53,12 +55,14 @@ func NewClient(configs ...Option) (*Client, error) {
 	c := cloud_accounts.NewAPI(client, t, config.logger)
 	d := databases.NewAPI(client, t, config.logger)
 	s := subscriptions.NewAPI(client, t, config.logger)
+	r := regions.NewAPI(client, t, config.logger)
 
 	return &Client{
 		Account:      a,
 		CloudAccount: c,
 		Database:     d,
 		Subscription: s,
+		Regions:      r,
 	}, nil
 }
 
