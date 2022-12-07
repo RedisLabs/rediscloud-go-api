@@ -186,6 +186,21 @@ func (o CreateVPCPeering) String() string {
 	return internal.ToString(o)
 }
 
+type CreateActiveActiveVPCPeering struct {
+	SourceRegion      *string   `json:"sourceRegion,omitempty"`
+	DestinationRegion *string   `json:"destinationRegion,omitempty"`
+	AWSAccountID      *string   `json:"awsAccountId,omitempty"`
+	VPCId             *string   `json:"vpcId,omitempty"`
+	VPCCidrs          []*string `json:"vpcCidrs,omitempty"`
+	Provider          *string   `json:"provider,omitempty"`
+	VPCProjectUID     *string   `json:"vpcProjectUid,omitempty"`
+	VPCNetworkName    *string   `json:"vpcNetworkName,omitempty"`
+}
+
+func (o CreateActiveActiveVPCPeering) String() string {
+	return internal.ToString(o)
+}
+
 type listVpcPeering struct {
 	Peerings []*VPCPeering `json:"peerings"`
 }
@@ -206,6 +221,39 @@ type VPCPeering struct {
 }
 
 func (o VPCPeering) String() string {
+	return internal.ToString(o)
+}
+
+type listActiveActiveVpcPeering struct {
+	SubscriptionId *int                     `json:"subscriptionId,omitempty"`
+	Regions        []*ActiveActiveVpcRegion `json:"regions,omitempty"`
+}
+
+type ActiveActiveVpcRegion struct {
+	ID          *int                      `json:"id,omitempty"`
+	Region      *string                   `json:"region,omitempty"`
+	VPCPeerings []*ActiveActiveVPCPeering `json:"vpcPeerings,omitempty"`
+}
+
+type ActiveActiveVPCPeering struct {
+	ID                *int      `json:"id,omitempty"`
+	Status            *string   `json:"status,omitempty"`
+	RegionId          *int      `json:"regionId,omitempty"`
+	RegionName        *string   `json:"regionName,omitempty"`
+	AWSAccountID      *string   `json:"awsAccountId,omitempty"`
+	AWSPeeringID      *string   `json:"awsPeeringUid,omitempty"`
+	VPCId             *string   `json:"vpcUid,omitempty"`
+	VPCCidrs          []*string `json:"vpcCidrs,omitempty"`
+	GCPProjectUID     *string   `json:"projectUid,omitempty"`
+	NetworkName       *string   `json:"networkName,omitempty"`
+	RedisProjectUID   *string   `json:"redisProjectUid,omitempty"`
+	RedisNetworkName  *string   `json:"redisNetworkName,omitempty"`
+	CloudPeeringID    *string   `json:"cloudPeeringId,omitempty"`
+	SourceRegion      *string   `json:"sourceRegion,omitempty"`
+	DestinationRegion *string   `json:"destinationRegion,omitempty"`
+}
+
+func (o ActiveActiveVPCPeering) String() string {
 	return internal.ToString(o)
 }
 
