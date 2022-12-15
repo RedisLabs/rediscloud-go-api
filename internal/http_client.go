@@ -44,6 +44,10 @@ func (c *HttpClient) Delete(ctx context.Context, name, path string, responseBody
 	return c.connection(ctx, http.MethodDelete, name, path, nil, nil, responseBody)
 }
 
+func (c *HttpClient) DeleteWithQuery(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error {
+	return c.connection(ctx, http.MethodDelete, name, path, nil, requestBody, responseBody)
+}
+
 func (c *HttpClient) connection(ctx context.Context, method, name, path string, query url.Values, requestBody interface{}, responseBody interface{}) error {
 	parsed := new(url.URL)
 	*parsed = *c.baseUrl
