@@ -41,24 +41,6 @@ func (o CreateDatabase) String() string {
 	return internal.ToString(o)
 }
 
-type CreateActiveActiveDatabase struct {
-	DryRun                              *bool              `json:"dryRun,omitempty"`
-	Name                                *string            `json:"name,omitempty"`
-	Protocol                            *string            `json:"protocol,omitempty"`
-	MemoryLimitInGB                     *float64           `json:"memoryLimitInGb,omitempty"`
-	SupportOSSClusterAPI                *bool              `json:"supportOSSClusterApi,omitempty"`
-	UseExternalEndpointForOSSClusterAPI *bool              `json:"useExternalEndpointForOSSClusterApi,omitempty"`
-	GlobalDataPersistence               *string            `json:"dataPersistence,omitempty"`
-	GlobalSourceIP                      []*string          `json:"sourceIp,omitempty"`
-	GlobalPassword                      *string            `json:"password,omitempty"`
-	GlobalAlerts                        []*CreateAlert     `json:"alerts,omitempty"`
-	LocalThroughputMeasurement          []*LocalThroughput `json:"localThroughputMeasurement,omitempty"`
-}
-
-func (o CreateActiveActiveDatabase) String() string {
-	return internal.ToString(o)
-}
-
 type CreateThroughputMeasurement struct {
 	By    *string `json:"by,omitempty"`
 	Value *int    `json:"value,omitempty"`
@@ -201,25 +183,6 @@ func (o UpdateDatabase) String() string {
 	return internal.ToString(o)
 }
 
-type UpdateActiveActiveDatabase struct {
-	DryRun                              *bool                    `json:"dryRun,omitempty"`
-	MemoryLimitInGB                     *float64                 `json:"memoryLimitInGb,omitempty"`
-	SupportOSSClusterAPI                *bool                    `json:"supportOSSClusterApi,omitempty"`
-	UseExternalEndpointForOSSClusterAPI *bool                    `json:"useExternalEndpointForOSSClusterApi,omitempty"`
-	ClientSSLCertificate                *string                  `json:"clientSslCertificate,omitempty"`
-	EnableTls                           *bool                    `json:"enableTls,omitempty"`
-	GlobalDataPersistence               *string                  `json:"globalDataPersistence,omitempty"`
-	GlobalPassword                      *string                  `json:"globalPassword,omitempty"`
-	GlobalSourceIP                      []*string                `json:"globalSourceIp,omitempty"`
-	GlobalAlerts                        []*UpdateAlert           `json:"globalAlerts,omitempty"`
-	Regions                             []*LocalRegionProperties `json:"regions,omitempty"`
-	DataEvictionPolicy                  *string                  `json:"dataEvictionPolicy,omitempty"`
-}
-
-func (o UpdateActiveActiveDatabase) String() string {
-	return internal.ToString(o)
-}
-
 type UpdateThroughputMeasurement struct {
 	By    *string `json:"by,omitempty"`
 	Value *int    `json:"value,omitempty"`
@@ -235,42 +198,6 @@ type UpdateAlert struct {
 }
 
 func (o UpdateAlert) String() string {
-	return internal.ToString(o)
-}
-
-type LocalRegionProperties struct {
-	Region                     *string               `json:"region,omitempty"`
-	RemoteBackup               *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
-	LocalThroughputMeasurement *LocalThroughput      `json:"localThroughputMeasurement,omitempty"`
-	DataPersistence            *string               `json:"dataPersistence,omitempty"`
-	Password                   *string               `json:"password,omitempty"`
-	SourceIP                   []*string             `json:"sourceIp,omitempty"`
-	Alerts                     []*UpdateAlert        `json:"alerts,omitempty"`
-}
-
-func (o LocalRegionProperties) String() string {
-	return internal.ToString(o)
-}
-
-type LocalThroughput struct {
-	Region                   *string `json:"region,omitempty"`
-	WriteOperationsPerSecond *int    `json:"writeOperationsPerSecond,omitempty"`
-	ReadOperationsPerSecond  *int    `json:"readOperationsPerSecond,omitempty"`
-}
-
-func (o LocalThroughput) String() string {
-	return internal.ToString(o)
-}
-
-type DatabaseBackupConfig struct {
-	Active      *bool   `json:"active,omitempty"`
-	Interval    *string `json:"interval,omitempty"`
-	TimeUTC     *string `json:"timeUTC,omitempty"`
-	StorageType *string `json:"storageType,omitempty"`
-	StoragePath *string `json:"storagePath,omitempty"`
-}
-
-func (o DatabaseBackupConfig) String() string {
 	return internal.ToString(o)
 }
 
