@@ -230,9 +230,9 @@ type listActiveActiveVpcPeering struct {
 }
 
 type ActiveActiveVpcRegion struct {
-	ID          *int                      `json:"id,omitempty"`
-	Region      *string                   `json:"region,omitempty"`
-	VPCPeerings []*ActiveActiveVPCPeering `json:"vpcPeerings,omitempty"`
+	ID           *int                      `json:"id,omitempty"`
+	SourceRegion *string                   `json:"region,omitempty"`
+	VPCPeerings  []*ActiveActiveVPCPeering `json:"vpcPeerings,omitempty"`
 }
 
 type ActiveActiveVPCPeering struct {
@@ -244,8 +244,8 @@ type ActiveActiveVPCPeering struct {
 	AWSPeeringID      *string   `json:"awsPeeringUid,omitempty"`
 	VPCId             *string   `json:"vpcUid,omitempty"`
 	VPCCidrs          []*string `json:"vpcCidrs,omitempty"`
-	GCPProjectUID     *string   `json:"projectUid,omitempty"`
-	NetworkName       *string   `json:"networkName,omitempty"`
+	GCPProjectUID     *string   `json:"vpcProjectUid,omitempty"`
+	NetworkName       *string   `json:"vpcNetworkName,omitempty"`
 	RedisProjectUID   *string   `json:"redisProjectUid,omitempty"`
 	RedisNetworkName  *string   `json:"redisNetworkName,omitempty"`
 	CloudPeeringID    *string   `json:"cloudPeeringId,omitempty"`
