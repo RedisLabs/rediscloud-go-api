@@ -63,6 +63,7 @@ type CreateActiveActiveDatabase struct {
 	MemoryLimitInGB                     *float64           `json:"memoryLimitInGb,omitempty"`
 	SupportOSSClusterAPI                *bool              `json:"supportOSSClusterApi,omitempty"`
 	UseExternalEndpointForOSSClusterAPI *bool              `json:"useExternalEndpointForOSSClusterApi,omitempty"`
+	DataEvictionPolicy                  *string            `json:"dataEvictionPolicy,omitempty"`
 	GlobalDataPersistence               *string            `json:"dataPersistence,omitempty"`
 	GlobalSourceIP                      []*string          `json:"sourceIp,omitempty"`
 	GlobalPassword                      *string            `json:"password,omitempty"`
