@@ -244,6 +244,7 @@ type ActiveActiveVPCPeering struct {
 	AWSPeeringID      *string   `json:"awsPeeringUid,omitempty"`
 	VPCId             *string   `json:"vpcUid,omitempty"`
 	VPCCidrs          []*string `json:"vpcCidrs,omitempty"`
+	VPCCidr           *string   `json:"vpcCidr,omitempty"`
 	GCPProjectUID     *string   `json:"vpcProjectUid,omitempty"`
 	NetworkName       *string   `json:"vpcNetworkName,omitempty"`
 	RedisProjectUID   *string   `json:"redisProjectUid,omitempty"`

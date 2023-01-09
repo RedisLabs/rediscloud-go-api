@@ -185,6 +185,15 @@ func (a *API) ListActiveActiveVPCPeering(ctx context.Context, id int) ([]*Active
 		return nil, err
 	}
 
+	// add vpcCidr to vpcCidrs slice if it exists
+	for i, region := range peering.Regions {
+		for j, vpcPeering := range region.VPCPeerings {
+			if vpcPeering.VPCCidr != nil {
+				peering.Regions[i].VPCPeerings[j].VPCCidrs = append(peering.Regions[i].VPCPeerings[j].VPCCidrs, vpcPeering.VPCCidr)
+			}
+		}
+	}
+
 	return peering.Regions, nil
 }
 
