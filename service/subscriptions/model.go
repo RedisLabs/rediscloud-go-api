@@ -109,6 +109,7 @@ type Subscription struct {
 	ID                *int           `json:"id,omitempty"`
 	Name              *string        `json:"name,omitempty"`
 	Status            *string        `json:"status,omitempty"`
+	DeploymentType    *string        `json:"deploymentType,omitempty"`
 	PaymentMethod     *string        `json:"paymentMethodType,omitempty"`
 	PaymentMethodID   *int           `json:"paymentMethodId,omitempty"`
 	MemoryStorage     *string        `json:"memoryStorage,omitempty"`
@@ -298,4 +299,7 @@ const (
 	VPCPeeringStatusPendingAcceptance = "pending-acceptance"
 	// Failed value of the `Status` field in `VPCPeering`
 	VPCPeeringStatusFailed = "failed"
+
+	SubscriptionDeploymentTypeSingleRegion = "single-region"
+	SubscriptionDeploymentTypeActiveActive = "active-active"
 )
