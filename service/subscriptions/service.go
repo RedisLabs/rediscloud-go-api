@@ -170,6 +170,33 @@ func (a *API) ListVPCPeering(ctx context.Context, id int) ([]*VPCPeering, error)
 	return peering.Peerings, nil
 }
 
+func (a *API) ListActiveActiveVPCPeering(ctx context.Context, id int) ([]*ActiveActiveVpcRegion, error) {
+	var task taskResponse
+	err := a.client.Get(ctx, fmt.Sprintf("get peerings for subscription %d", id), fmt.Sprintf("/subscriptions/%d/regions/peerings/", id), &task)
+	if err != nil {
+		return nil, wrap404Error(id, err)
+	}
+
+	a.logger.Printf("Waiting for subscription %d peering details to be retrieved", id)
+
+	var peering listActiveActiveVpcPeering
+	err = a.task.WaitForResource(ctx, *task.ID, &peering)
+	if err != nil {
+		return nil, err
+	}
+
+	// add vpcCidr to vpcCidrs slice if it exists
+	for i, region := range peering.Regions {
+		for j, vpcPeering := range region.VPCPeerings {
+			if vpcPeering.VPCCidr != nil {
+				peering.Regions[i].VPCPeerings[j].VPCCidrs = append(peering.Regions[i].VPCPeerings[j].VPCCidrs, vpcPeering.VPCCidr)
+			}
+		}
+	}
+
+	return peering.Regions, nil
+}
+
 // CreateVPCPeering creates a new VPC peering from the subscription VPC and returns the identifier of the VPC peering.
 func (a *API) CreateVPCPeering(ctx context.Context, id int, create CreateVPCPeering) (int, error) {
 	var task taskResponse
@@ -188,7 +215,7 @@ func (a *API) CreateVPCPeering(ctx context.Context, id int, create CreateVPCPeer
 	return id, nil
 }
 
-func (a *API) CreateActiveActiveVPCPeering(ctx context.Context, id int, create CreateVPCPeering) (int, error) {
+func (a *API) CreateActiveActiveVPCPeering(ctx context.Context, id int, create CreateActiveActiveVPCPeering) (int, error) {
 	var task taskResponse
 	err := a.client.Post(ctx, fmt.Sprintf("create peering for subscription %d", id), fmt.Sprintf("/subscriptions/%d/regions/peerings/", id), create, &task)
 	if err != nil {
@@ -209,6 +236,23 @@ func (a *API) CreateActiveActiveVPCPeering(ctx context.Context, id int, create C
 func (a *API) DeleteVPCPeering(ctx context.Context, subscription int, peering int) error {
 	var task taskResponse
 	err := a.client.Delete(ctx, fmt.Sprintf("deleting peering %d for subscription %d", peering, subscription), fmt.Sprintf("/subscriptions/%d/peerings/%d", subscription, peering), &task)
+	if err != nil {
+		return err
+	}
+
+	a.logger.Printf("Waiting for peering %d for subscription %d to be deleted", peering, subscription)
+
+	err = a.task.Wait(ctx, *task.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *API) DeleteActiveActiveVPCPeering(ctx context.Context, subscription int, peering int) error {
+	var task taskResponse
+	err := a.client.Delete(ctx, fmt.Sprintf("deleting peering %d for subscription %d", peering, subscription), fmt.Sprintf("/subscriptions/%d/regions/peerings/%d", subscription, peering), &task)
 	if err != nil {
 		return err
 	}
