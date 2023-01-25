@@ -272,11 +272,11 @@ func (o taskResponse) String() string {
 }
 
 type NotFound struct {
-	id int
+	ID int
 }
 
 func (f *NotFound) Error() string {
-	return fmt.Sprintf("subscription %d not found", f.id)
+	return fmt.Sprintf("subscription %d not found", f.ID)
 }
 
 const (
