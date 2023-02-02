@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
+	"github.com/RedisLabs/rediscloud-go-api/service/subscriptions"
 )
 
 type Log interface {
@@ -35,15 +36,15 @@ func NewAPI(client HttpClient, task Task, logger Log) *API {
 	return &API{client: client, task: task, logger: logger}
 }
 
-// Create will create a new subscription.
+// Create will create a new region
 func (a *API) Create(ctx context.Context, subId int, region CreateRegion) (int, error) {
 	var task taskResponse
-	err := a.client.Post(ctx, "create subscription", fmt.Sprintf("/subscriptions/%d/regions", subId), region, &task)
+	err := a.client.Post(ctx, "create subscription region", fmt.Sprintf("/subscriptions/%d/regions", subId), region, &task)
 	if err != nil {
-		return 0, err
+		return 0, wrap404Error(subId, err)
 	}
 
-	a.logger.Printf("Waiting for task %s to finish creating the subscription", task)
+	a.logger.Printf("Waiting for task %s to finish creating the subscription region", task)
 
 	id, err := a.task.WaitForResourceId(ctx, *task.ID)
 	if err != nil {
@@ -58,7 +59,7 @@ func (a API) List(ctx context.Context, subId int) (*Regions, error) {
 	var response Regions
 	err := a.client.Get(ctx, "list regions", fmt.Sprintf("/subscriptions/%d/regions", subId), &response)
 	if err != nil {
-		return nil, err
+		return nil, wrap404Error(subId, err)
 	}
 
 	return &response, nil
@@ -68,7 +69,7 @@ func (a *API) DeleteWithQuery(ctx context.Context, id int, regions DeleteRegions
 	var task taskResponse
 	err := a.client.DeleteWithQuery(ctx, fmt.Sprintf("delete region %d", id), fmt.Sprintf("/subscriptions/%d/regions/", id), regions, &task)
 	if err != nil {
-		return err
+		return wrap404Error(id, err)
 	}
 
 	a.logger.Printf("Waiting for region %d to finish being deleted", id)
@@ -81,17 +82,9 @@ func (a *API) DeleteWithQuery(ctx context.Context, id int, regions DeleteRegions
 	return nil
 }
 
-type NotFound struct {
-	id int
-}
-
-func (f *NotFound) Error() string {
-	return fmt.Sprintf("subscription %d not found", f.id)
-}
-
 func wrap404Error(id int, err error) error {
 	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
-		return &NotFound{id: id}
+		return &subscriptions.NotFound{ID: id}
 	}
 	return err
 }
