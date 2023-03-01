@@ -67,6 +67,7 @@ func (o CreateModule) String() string {
 	return internal.ToString(o)
 }
 
+// TODO: do we need a separate ActiveActiveDatabase type as well?
 type Database struct {
 	ID                     *int        `json:"databaseId,omitempty"`
 	Name                   *string     `json:"name,omitempty"`

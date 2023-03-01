@@ -8,6 +8,7 @@ import (
 
 type CreateSubscription struct {
 	Name            *string                `json:"name,omitempty"`
+	DeploymentType  *string                `json:"deploymentType,omitempty"`
 	DryRun          *bool                  `json:"dryRun,omitempty"`
 	PaymentMethodID *int                   `json:"paymentMethodId,omitempty"`
 	PaymentMethod   *string                `json:"paymentMethod,omitempty"`
@@ -51,16 +52,17 @@ func (o CreateNetworking) String() string {
 }
 
 type CreateDatabase struct {
-	Name                   *string           `json:"name,omitempty"`
-	Protocol               *string           `json:"protocol,omitempty"`
-	MemoryLimitInGB        *float64          `json:"memoryLimitInGb,omitempty"`
-	SupportOSSClusterAPI   *bool             `json:"supportOSSClusterApi,omitempty"`
-	DataPersistence        *string           `json:"dataPersistence,omitempty"`
-	Replication            *bool             `json:"replication,omitempty"`
-	ThroughputMeasurement  *CreateThroughput `json:"throughputMeasurement,omitempty"`
-	Modules                []*CreateModules  `json:"modules,omitempty"`
-	Quantity               *int              `json:"quantity,omitempty"`
-	AverageItemSizeInBytes *int              `json:"averageItemSizeInBytes,omitempty"`
+	Name                       *string                  `json:"name,omitempty"`
+	Protocol                   *string                  `json:"protocol,omitempty"`
+	MemoryLimitInGB            *float64                 `json:"memoryLimitInGb,omitempty"`
+	SupportOSSClusterAPI       *bool                    `json:"supportOSSClusterApi,omitempty"`
+	DataPersistence            *string                  `json:"dataPersistence,omitempty"`
+	Replication                *bool                    `json:"replication,omitempty"`
+	ThroughputMeasurement      *CreateThroughput        `json:"throughputMeasurement,omitempty"`
+	LocalThroughputMeasurement []*CreateLocalThroughput `json:"localThroughputMeasurement,omitempty"`
+	Modules                    []*CreateModules         `json:"modules,omitempty"`
+	Quantity                   *int                     `json:"quantity,omitempty"`
+	AverageItemSizeInBytes     *int                     `json:"averageItemSizeInBytes,omitempty"`
 }
 
 func (o CreateDatabase) String() string {
@@ -73,6 +75,16 @@ type CreateThroughput struct {
 }
 
 func (o CreateThroughput) String() string {
+	return internal.ToString(o)
+}
+
+type CreateLocalThroughput struct {
+	Region                   *string `json:"region,omitempty"`
+	WriteOperationsPerSecond *int    `json:"writeOperationsPerSecond"`
+	ReadOperationsPerSecond  *int    `json:"readOperationsPerSecond"`
+}
+
+func (o CreateLocalThroughput) String() string {
 	return internal.ToString(o)
 }
 
@@ -97,6 +109,7 @@ type Subscription struct {
 	ID                *int           `json:"id,omitempty"`
 	Name              *string        `json:"name,omitempty"`
 	Status            *string        `json:"status,omitempty"`
+	DeploymentType    *string        `json:"deploymentType,omitempty"`
 	PaymentMethod     *string        `json:"paymentMethodType,omitempty"`
 	PaymentMethodID   *int           `json:"paymentMethodId,omitempty"`
 	MemoryStorage     *string        `json:"memoryStorage,omitempty"`
@@ -174,6 +187,21 @@ func (o CreateVPCPeering) String() string {
 	return internal.ToString(o)
 }
 
+type CreateActiveActiveVPCPeering struct {
+	SourceRegion      *string `json:"sourceRegion,omitempty"`
+	DestinationRegion *string `json:"destinationRegion,omitempty"`
+	AWSAccountID      *string `json:"awsAccountId,omitempty"`
+	VPCId             *string `json:"vpcId,omitempty"`
+	VPCCidr           *string `json:"vpcCidr,omitempty"`
+	Provider          *string `json:"provider,omitempty"`
+	VPCProjectUID     *string `json:"vpcProjectUid,omitempty"`
+	VPCNetworkName    *string `json:"vpcNetworkName,omitempty"`
+}
+
+func (o CreateActiveActiveVPCPeering) String() string {
+	return internal.ToString(o)
+}
+
 type listVpcPeering struct {
 	Peerings []*VPCPeering `json:"peerings"`
 }
@@ -197,6 +225,39 @@ func (o VPCPeering) String() string {
 	return internal.ToString(o)
 }
 
+type listActiveActiveVpcPeering struct {
+	SubscriptionId *int                     `json:"subscriptionId,omitempty"`
+	Regions        []*ActiveActiveVpcRegion `json:"regions,omitempty"`
+}
+
+type ActiveActiveVpcRegion struct {
+	ID           *int                      `json:"id,omitempty"`
+	SourceRegion *string                   `json:"region,omitempty"`
+	VPCPeerings  []*ActiveActiveVPCPeering `json:"vpcPeerings,omitempty"`
+}
+
+type ActiveActiveVPCPeering struct {
+	ID                *int    `json:"id,omitempty"`
+	Status            *string `json:"status,omitempty"`
+	RegionId          *int    `json:"regionId,omitempty"`
+	RegionName        *string `json:"regionName,omitempty"`
+	AWSAccountID      *string `json:"awsAccountId,omitempty"`
+	AWSPeeringID      *string `json:"awsPeeringUid,omitempty"`
+	VPCId             *string `json:"vpcUid,omitempty"`
+	VPCCidr           *string `json:"vpcCidr,omitempty"`
+	GCPProjectUID     *string `json:"vpcProjectUid,omitempty"`
+	NetworkName       *string `json:"vpcNetworkName,omitempty"`
+	RedisProjectUID   *string `json:"redisProjectUid,omitempty"`
+	RedisNetworkName  *string `json:"redisNetworkName,omitempty"`
+	CloudPeeringID    *string `json:"cloudPeeringId,omitempty"`
+	SourceRegion      *string `json:"sourceRegion,omitempty"`
+	DestinationRegion *string `json:"destinationRegion,omitempty"`
+}
+
+func (o ActiveActiveVPCPeering) String() string {
+	return internal.ToString(o)
+}
+
 type listSubscriptionResponse struct {
 	Subscriptions []*Subscription `json:"subscriptions"`
 }
@@ -210,11 +271,11 @@ func (o taskResponse) String() string {
 }
 
 type NotFound struct {
-	id int
+	ID int
 }
 
 func (f *NotFound) Error() string {
-	return fmt.Sprintf("subscription %d not found", f.id)
+	return fmt.Sprintf("subscription %d not found", f.ID)
 }
 
 const (
@@ -237,4 +298,7 @@ const (
 	VPCPeeringStatusPendingAcceptance = "pending-acceptance"
 	// Failed value of the `Status` field in `VPCPeering`
 	VPCPeeringStatusFailed = "failed"
+
+	SubscriptionDeploymentTypeSingleRegion = "single-region"
+	SubscriptionDeploymentTypeActiveActive = "active-active"
 )

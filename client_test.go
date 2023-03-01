@@ -252,8 +252,8 @@ func TestCredentialTripper_RedactPasswordFromNestedBody(t *testing.T) {
 		ProtoMajor:    1,
 		ProtoMinor:    1,
 		Header:        map[string][]string{},
-		Body:          ioutil.NopCloser(bytes.NewBufferString(`{"security": {"password":"pass"}}`)),
-		ContentLength: 33,
+		Body:          ioutil.NopCloser(bytes.NewBufferString(`{"security": {"password":"pass", "global_password":"globalpass"}}`)),
+		ContentLength: 65,
 		Host:          "example.org",
 	}
 	expected := &http.Response{
@@ -262,7 +262,7 @@ func TestCredentialTripper_RedactPasswordFromNestedBody(t *testing.T) {
 		ProtoMajor: 1,
 		ProtoMinor: 1,
 		Header:     map[string][]string{},
-		Body:       ioutil.NopCloser(bytes.NewBufferString(`{"security": {"password":"REDACTED"}}`)),
+		Body:       ioutil.NopCloser(bytes.NewBufferString(`{"security": {"password":"REDACTED", "global_password":"REDACTED"}}`)),
 	}
 
 	mockTripper.On("RoundTrip", request).Return(expected, nil)
@@ -285,13 +285,14 @@ func TestCredentialTripper_RedactPasswordFromNestedBody(t *testing.T) {
 POST /foo/bar HTTP/1.1
 Host: example.org
 User-Agent: test-user-agent
-Content-Length: 33
+Content-Length: 65
 Accept: application/json
 Accept-Encoding: gzip
 
 {
   "security": {
-    "password": "REDACTED"
+    "password": "REDACTED",
+    "global_password": "REDACTED"
   }
 }`, mockLogger.log[0])
 }
