@@ -5,5 +5,5 @@ go 1.15
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/stretchr/testify v1.8.0
-	golang.org/x/tools v0.0.0-20201028111035-eafbe7b904eb
+	golang.org/x/tools v0.9.1
 )
