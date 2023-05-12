@@ -48,6 +48,7 @@ func (o CrdbDatabase) String() string {
 
 type Backup struct {
 	Enabled     *bool   `json:"enableRemoteBackup,omitempty"`
+	TimeUTC     *string `json:"timeUTC,omitempty"`
 	Interval    *string `json:"interval,omitempty"`
 	Destination *string `json:"destination,omitempty"`
 }
@@ -69,6 +70,7 @@ type CreateActiveActiveDatabase struct {
 	GlobalPassword                      *string            `json:"password,omitempty"`
 	GlobalAlerts                        []*CreateAlert     `json:"alerts,omitempty"`
 	LocalThroughputMeasurement          []*LocalThroughput `json:"localThroughputMeasurement,omitempty"`
+	PortNumber                          *int               `json:"port,omitempty"`
 }
 
 func (o CreateActiveActiveDatabase) String() string {

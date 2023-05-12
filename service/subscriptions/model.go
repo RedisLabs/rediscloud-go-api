@@ -174,13 +174,14 @@ func (o UpdateCIDRAllowlist) String() string {
 }
 
 type CreateVPCPeering struct {
-	Region         *string `json:"region,omitempty"`
-	AWSAccountID   *string `json:"awsAccountId,omitempty"`
-	VPCId          *string `json:"vpcId,omitempty"`
-	VPCCidr        *string `json:"vpcCidr,omitempty"`
-	Provider       *string `json:"provider,omitempty"`
-	VPCProjectUID  *string `json:"vpcProjectUid,omitempty"`
-	VPCNetworkName *string `json:"vpcNetworkName,omitempty"`
+	Region         *string   `json:"region,omitempty"`
+	AWSAccountID   *string   `json:"awsAccountId,omitempty"`
+	VPCId          *string   `json:"vpcId,omitempty"`
+	VPCCidr        *string   `json:"vpcCidr,omitempty"`
+	VPCCidrs       []*string `json:"vpcCidrs,omitempty"`
+	Provider       *string   `json:"provider,omitempty"`
+	VPCProjectUID  *string   `json:"vpcProjectUid,omitempty"`
+	VPCNetworkName *string   `json:"vpcNetworkName,omitempty"`
 }
 
 func (o CreateVPCPeering) String() string {
@@ -188,14 +189,15 @@ func (o CreateVPCPeering) String() string {
 }
 
 type CreateActiveActiveVPCPeering struct {
-	SourceRegion      *string `json:"sourceRegion,omitempty"`
-	DestinationRegion *string `json:"destinationRegion,omitempty"`
-	AWSAccountID      *string `json:"awsAccountId,omitempty"`
-	VPCId             *string `json:"vpcId,omitempty"`
-	VPCCidr           *string `json:"vpcCidr,omitempty"`
-	Provider          *string `json:"provider,omitempty"`
-	VPCProjectUID     *string `json:"vpcProjectUid,omitempty"`
-	VPCNetworkName    *string `json:"vpcNetworkName,omitempty"`
+	SourceRegion      *string   `json:"sourceRegion,omitempty"`
+	DestinationRegion *string   `json:"destinationRegion,omitempty"`
+	AWSAccountID      *string   `json:"awsAccountId,omitempty"`
+	VPCId             *string   `json:"vpcId,omitempty"`
+	VPCCidr           *string   `json:"vpcCidr,omitempty"`
+	VPCCidrs          []*string `json:"vpcCidrs,omitempty"`
+	Provider          *string   `json:"provider,omitempty"`
+	VPCProjectUID     *string   `json:"vpcProjectUid,omitempty"`
+	VPCNetworkName    *string   `json:"vpcNetworkName,omitempty"`
 }
 
 func (o CreateActiveActiveVPCPeering) String() string {
@@ -213,6 +215,7 @@ type VPCPeering struct {
 	AWSPeeringID     *string `json:"awsPeeringUid,omitempty"`
 	VPCId            *string `json:"vpcUid,omitempty"`
 	VPCCidr          *string `json:"vpcCidr,omitempty"`
+	VPCCidrs         []*CIDR `json:"vpcCidrs,omitempty"`
 	GCPProjectUID    *string `json:"projectUid,omitempty"`
 	NetworkName      *string `json:"networkName,omitempty"`
 	RedisProjectUID  *string `json:"redisProjectUid,omitempty"`
@@ -245,6 +248,7 @@ type ActiveActiveVPCPeering struct {
 	AWSPeeringID      *string `json:"awsPeeringUid,omitempty"`
 	VPCId             *string `json:"vpcUid,omitempty"`
 	VPCCidr           *string `json:"vpcCidr,omitempty"`
+	VPCCidrs          []*CIDR `json:"vpcCidrs,omitempty"`
 	GCPProjectUID     *string `json:"vpcProjectUid,omitempty"`
 	NetworkName       *string `json:"vpcNetworkName,omitempty"`
 	RedisProjectUID   *string `json:"redisProjectUid,omitempty"`
@@ -255,6 +259,15 @@ type ActiveActiveVPCPeering struct {
 }
 
 func (o ActiveActiveVPCPeering) String() string {
+	return internal.ToString(o)
+}
+
+type CIDR struct {
+	VPCCidr *string `json:"vpcCidr,omitempty"`
+	Status  *string `json:"active,omitempty"`
+}
+
+func (o CIDR) String() string {
 	return internal.ToString(o)
 }
 
