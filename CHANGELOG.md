@@ -7,6 +7,10 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
 * Dependencies for CI and Testing
 
+### Added
+* Add support for port number and backup to databases
+* Add support for multiple CIDR ranges when peering
+
 ## 0.1.9 (July 5 2022)
 ### Added 
 

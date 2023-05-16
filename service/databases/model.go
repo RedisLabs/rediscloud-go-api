@@ -35,6 +35,8 @@ type CreateDatabase struct {
 	Alerts                              []*CreateAlert               `json:"alerts,omitempty"`
 	Modules                             []*CreateModule              `json:"modules,omitempty"`
 	EnableTls                           *bool                        `json:"enableTls,omitempty"`
+	PortNumber                          *int                         `json:"port,omitempty"`
+	RemoteBackup                        *DatabaseBackupConfig        `json:"remoteBackup,omitempty"`
 }
 
 func (o CreateDatabase) String() string {
@@ -93,6 +95,7 @@ type Database struct {
 	PrivateEndpoint        *string     `json:"privateEndpoint,omitempty"`
 	PublicEndpoint         *string     `json:"publicEndpoint,omitempty"`
 	RedisVersionCompliance *string     `json:"redisVersionCompliance,omitempty"`
+	Backup                 *Backup     `json:"backup,omitempty"`
 }
 
 func (o Database) String() string {
@@ -177,6 +180,7 @@ type UpdateDatabase struct {
 	Password                            *string                      `json:"password,omitempty"`
 	Alerts                              []*UpdateAlert               `json:"alerts,omitempty"`
 	EnableTls                           *bool                        `json:"enableTls,omitempty"`
+	RemoteBackup                        *DatabaseBackupConfig        `json:"remoteBackup,omitempty"`
 }
 
 func (o UpdateDatabase) String() string {
@@ -260,6 +264,18 @@ const (
 	StatusProxyPolicyChangeDraft = "proxy-policy-change-draft"
 	// Error value of the `Status` field in `Database`
 	StatusError = "error"
+	// BackupIntervalEvery24Hours is the schedule to back up once a day
+	BackupIntervalEvery24Hours = "every-24-hours"
+	// BackupIntervalEvery12Hours is the schedule to back up twice a day
+	BackupIntervalEvery12Hours = "every-12-hours"
+	// BackupIntervalEvery6Hours is the schedule to back up four times a day
+	BackupIntervalEvery6Hours = "every-6-hours"
+	// BackupIntervalEvery4Hours is the schedule to back up six times a day
+	BackupIntervalEvery4Hours = "every-4-hours"
+	// BackupIntervalEvery2Hours is the schedule to back up twelve times a day
+	BackupIntervalEvery2Hours = "every-2-hours"
+	// BackupIntervalEvery1Hours is the schedule to back up every hour
+	BackupIntervalEvery1Hours = "every-1-hours"
 )
 
 func MemoryStorageValues() []string {
@@ -319,5 +335,25 @@ func AlertNameValues() []string {
 		"latency",
 		"syncsource-error",
 		"syncsource-lag",
+	}
+}
+
+func BackupStorageTypes() []string {
+	return []string{
+		"ftp",
+		"aws-s3",
+		"azure-blob-storage",
+		"google-blob-storage",
+	}
+}
+
+func BackupIntervals() []string {
+	return []string{
+		BackupIntervalEvery24Hours,
+		BackupIntervalEvery12Hours,
+		BackupIntervalEvery6Hours,
+		BackupIntervalEvery4Hours,
+		BackupIntervalEvery2Hours,
+		BackupIntervalEvery1Hours,
 	}
 }
