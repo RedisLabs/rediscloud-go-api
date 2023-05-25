@@ -33,7 +33,6 @@ func TestDatabase_Create(t *testing.T) {
   "replicaOf": [
     "another"
   ],
-  "periodicBackupPath": "s3://bucket-name",
   "sourceIp": [
     "10.0.0.1"
   ],
@@ -98,7 +97,6 @@ func TestDatabase_Create(t *testing.T) {
 		},
 		AverageItemSizeInBytes: redis.Int(1),
 		ReplicaOf:              redis.StringSlice("another"),
-		PeriodicBackupPath:     redis.String("s3://bucket-name"),
 		SourceIP:               redis.StringSlice("10.0.0.1"),
 		ClientSSLCertificate:   redis.String("something"),
 		Password:               redis.String("fooBar"),

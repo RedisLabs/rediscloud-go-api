@@ -28,15 +28,16 @@ type CreateDatabase struct {
 	ThroughputMeasurement               *CreateThroughputMeasurement `json:"throughputMeasurement,omitempty"`
 	AverageItemSizeInBytes              *int                         `json:"averageItemSizeInBytes,omitempty"`
 	ReplicaOf                           []*string                    `json:"replicaOf,omitempty"`
-	PeriodicBackupPath                  *string                      `json:"periodicBackupPath,omitempty"`
-	SourceIP                            []*string                    `json:"sourceIp,omitempty"`
-	ClientSSLCertificate                *string                      `json:"clientSslCertificate,omitempty"`
-	Password                            *string                      `json:"password,omitempty"`
-	Alerts                              []*CreateAlert               `json:"alerts,omitempty"`
-	Modules                             []*CreateModule              `json:"modules,omitempty"`
-	EnableTls                           *bool                        `json:"enableTls,omitempty"`
-	PortNumber                          *int                         `json:"port,omitempty"`
-	RemoteBackup                        *DatabaseBackupConfig        `json:"remoteBackup,omitempty"`
+	// Deprecated: Use RemoteBackup instead
+	PeriodicBackupPath   *string               `json:"periodicBackupPath,omitempty"`
+	SourceIP             []*string             `json:"sourceIp,omitempty"`
+	ClientSSLCertificate *string               `json:"clientSslCertificate,omitempty"`
+	Password             *string               `json:"password,omitempty"`
+	Alerts               []*CreateAlert        `json:"alerts,omitempty"`
+	Modules              []*CreateModule       `json:"modules,omitempty"`
+	EnableTls            *bool                 `json:"enableTls,omitempty"`
+	PortNumber           *int                  `json:"port,omitempty"`
+	RemoteBackup         *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
 }
 
 func (o CreateDatabase) String() string {
@@ -276,12 +277,16 @@ const (
 	BackupIntervalEvery2Hours = "every-2-hours"
 	// BackupIntervalEvery1Hours is the schedule to back up every hour
 	BackupIntervalEvery1Hours = "every-1-hours"
+	// MemoryStorageRam stores data only in RAM
+	MemoryStorageRam = "ram"
+	// MemoryStorageRamAndFlash stores data both in RAM and on SSD
+	MemoryStorageRamAndFlash = "ram-and-flash"
 )
 
 func MemoryStorageValues() []string {
 	return []string{
-		"ram",
-		"ram-and-flash",
+		MemoryStorageRam,
+		MemoryStorageRamAndFlash,
 	}
 }
 
