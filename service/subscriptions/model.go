@@ -234,6 +234,7 @@ type listActiveActiveVpcPeering struct {
 }
 
 type ActiveActiveVpcRegion struct {
+	ID           *int                      `json:"id,omitempty"`
 	SourceRegion *string                   `json:"region,omitempty"`
 	VPCPeerings  []*ActiveActiveVPCPeering `json:"vpcPeerings,omitempty"`
 }
