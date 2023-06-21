@@ -10,7 +10,6 @@ type ListRolesResponse struct {
 	// Links []*AnotherThing
 }
 
-// GetRoleResponse Note: no getById
 type GetRoleResponse struct {
 	ID         *int                     `json:"id,omitempty"`
 	Name       *string                  `json:"name,omitempty"`

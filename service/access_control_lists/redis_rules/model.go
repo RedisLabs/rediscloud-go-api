@@ -13,7 +13,6 @@ func (o ListRedisRulesResponse) String() string {
 	return internal.ToString(o)
 }
 
-// GetRedisRuleResponse Note: no getById
 type GetRedisRuleResponse struct {
 	ID        *int    `json:"id,omitempty"`
 	Name      *string `json:"name,omitempty"`

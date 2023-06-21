@@ -13,7 +13,6 @@ func (o ListUsersResponse) String() string {
 	return internal.ToString(o)
 }
 
-// GetUserResponse Either in a list or getById
 type GetUserResponse struct {
 	ID   *int    `json:"id,omitempty"`
 	Name *string `json:"name,omitempty"`
