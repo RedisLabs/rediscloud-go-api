@@ -3,6 +3,7 @@ package rediscloud_api
 import (
 	"context"
 	"fmt"
+	"github.com/RedisLabs/rediscloud-go-api/internal"
 	"net/http/httptest"
 	"testing"
 
@@ -156,7 +157,7 @@ func TestCloudAccount_Get_wraps404(t *testing.T) {
 	actual, err := subject.CloudAccount.Get(context.TODO(), 98765)
 
 	assert.Nil(t, actual)
-	assert.IsType(t, &cloud_accounts.NotFound{}, err)
+	assert.IsType(t, &internal.NotFound{}, err)
 }
 
 func TestCloudAccount_List(t *testing.T) {
