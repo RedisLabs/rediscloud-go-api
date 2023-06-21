@@ -3,7 +3,6 @@ package rediscloud_api
 import (
 	"context"
 	"fmt"
-	"github.com/RedisLabs/rediscloud-go-api/internal"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -301,7 +300,7 @@ func TestDatabase_Get_wraps404Error(t *testing.T) {
 	actual, err := subject.Database.Get(context.TODO(), 23456, 98765)
 
 	assert.Nil(t, actual)
-	assert.IsType(t, &internal.NotFound{}, err)
+	assert.IsType(t, &databases.NotFound{}, err)
 }
 
 func TestDatabase_Update(t *testing.T) {
