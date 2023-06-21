@@ -3,15 +3,16 @@ package rediscloud_api
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/redis_rules"
-	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/roles"
-	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/users"
 	"log"
 	"net/http"
 	"net/http/httputil"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/redis_rules"
+	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/roles"
+	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/users"
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 	"github.com/RedisLabs/rediscloud-go-api/service/account"

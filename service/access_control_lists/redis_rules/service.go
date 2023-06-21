@@ -3,6 +3,7 @@ package redis_rules
 import (
 	"context"
 	"fmt"
+
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 )
 

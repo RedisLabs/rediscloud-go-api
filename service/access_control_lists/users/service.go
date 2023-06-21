@@ -3,6 +3,7 @@ package users
 import (
 	"context"
 	"fmt"
+
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 )
 

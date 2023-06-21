@@ -3,9 +3,10 @@ package rediscloud_api
 import (
 	"context"
 	"fmt"
-	"github.com/RedisLabs/rediscloud-go-api/internal"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/RedisLabs/rediscloud-go-api/internal"
 
 	"github.com/RedisLabs/rediscloud-go-api/redis"
 	"github.com/RedisLabs/rediscloud-go-api/service/cloud_accounts"
