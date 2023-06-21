@@ -1,8 +1,6 @@
 package subscriptions
 
 import (
-	"fmt"
-
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 )
 
@@ -274,36 +272,3 @@ func (o CIDR) String() string {
 type listSubscriptionResponse struct {
 	Subscriptions []*Subscription `json:"subscriptions"`
 }
-
-type NotFound struct {
-	ID int
-}
-
-func (f *NotFound) Error() string {
-	return fmt.Sprintf("subscription %d not found", f.ID)
-}
-
-const (
-	// Active value of the `Status` field in `Subscription`
-	SubscriptionStatusActive = "active"
-	// Pending value of the `Status` field in `Subscription`
-	SubscriptionStatusPending = "pending"
-	// Error value of the `Status` field in `Subscription`
-	SubscriptionStatusError = "error"
-	// Deleting value of the `Status` field in `Subscription`
-	SubscriptionStatusDeleting = "deleting"
-
-	// Initiating request value of the `Status` field in `VPCPeering`
-	VPCPeeringStatusInitiatingRequest = "initiating-request"
-	// Active value of the `Status` field in `VPCPeering`
-	VPCPeeringStatusActive = "active"
-	// Inactive value of the `Status` field in `VPCPeering`
-	VPCPeeringStatusInactive = "inactive"
-	// Pending acceptance value of the `Status` field in `VPCPeering`
-	VPCPeeringStatusPendingAcceptance = "pending-acceptance"
-	// Failed value of the `Status` field in `VPCPeering`
-	VPCPeeringStatusFailed = "failed"
-
-	SubscriptionDeploymentTypeSingleRegion = "single-region"
-	SubscriptionDeploymentTypeActiveActive = "active-active"
-)

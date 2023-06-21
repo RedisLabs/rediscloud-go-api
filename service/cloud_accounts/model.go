@@ -1,8 +1,6 @@
 package cloud_accounts
 
 import (
-	"fmt"
-
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 )
 
@@ -33,14 +31,6 @@ func (o UpdateCloudAccount) String() string {
 	return internal.ToString(o)
 }
 
-type NotFound struct {
-	id int
-}
-
-func (f *NotFound) Error() string {
-	return fmt.Sprintf("cloud account %d not found", f.id)
-}
-
 type listCloudAccounts struct {
 	CloudAccounts []*CloudAccount `json:"cloudAccounts"`
 }
@@ -55,22 +45,4 @@ type CloudAccount struct {
 
 func (o CloudAccount) String() string {
 	return internal.ToString(o)
-}
-
-const (
-	// Active value of the `Status` field in `CloudAccount`
-	StatusActive = "active"
-	// Draft value of the `Status` field in `CloudAccount`
-	StatusDraft = "draft"
-	// Change draft value of the `Status` field in `CloudAccount`
-	StatusChangeDraft = "change-draft"
-	// Error value of the `Status` field in `CloudAccount`
-	StatusError = "error"
-)
-
-func ProviderValues() []string {
-	return []string{
-		"AWS",
-		"GCP",
-	}
 }
