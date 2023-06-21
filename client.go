@@ -3,6 +3,9 @@ package rediscloud_api
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/redis_rules"
+	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/roles"
+	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/users"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -24,6 +27,10 @@ type Client struct {
 	Database     *databases.API
 	Subscription *subscriptions.API
 	Regions      *regions.API
+	// acl
+	RedisRules *redis_rules.API
+	Roles      *roles.API
+	Users      *users.API
 }
 
 func NewClient(configs ...Option) (*Client, error) {
@@ -51,18 +58,16 @@ func NewClient(configs ...Option) (*Client, error) {
 
 	t := internal.NewAPI(client, config.logger)
 
-	a := account.NewAPI(client)
-	c := cloud_accounts.NewAPI(client, t, config.logger)
-	d := databases.NewAPI(client, t, config.logger)
-	s := subscriptions.NewAPI(client, t, config.logger)
-	r := regions.NewAPI(client, t, config.logger)
-
 	return &Client{
-		Account:      a,
-		CloudAccount: c,
-		Database:     d,
-		Subscription: s,
-		Regions:      r,
+		Account:      account.NewAPI(client),
+		CloudAccount: cloud_accounts.NewAPI(client, t, config.logger),
+		Database:     databases.NewAPI(client, t, config.logger),
+		Subscription: subscriptions.NewAPI(client, t, config.logger),
+		Regions:      regions.NewAPI(client, t, config.logger),
+		// acl
+		RedisRules: redis_rules.NewAPI(client, t, config.logger),
+		Roles:      roles.NewAPI(client, t, config.logger),
+		Users:      users.NewAPI(client, t, config.logger),
 	}, nil
 }
 

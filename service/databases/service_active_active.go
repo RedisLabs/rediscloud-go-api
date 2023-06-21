@@ -12,7 +12,7 @@ import (
 
 // Create will create a new database for the subscription and return the identifier of the database.
 func (a *API) ActiveActiveCreate(ctx context.Context, subscription int, db CreateActiveActiveDatabase) (int, error) {
-	var task taskResponse
+	var task internal.TaskResponse
 	err := a.client.Post(ctx, fmt.Sprintf("create database for subscription %d", subscription), fmt.Sprintf("/subscriptions/%d/databases", subscription), db, &task)
 	if err != nil {
 		return 0, err
@@ -30,7 +30,7 @@ func (a *API) ActiveActiveCreate(ctx context.Context, subscription int, db Creat
 
 // Update will update certain values of an existing database.
 func (a *API) ActiveActiveUpdate(ctx context.Context, subscription int, database int, update UpdateActiveActiveDatabase) error {
-	var task taskResponse
+	var task internal.TaskResponse
 	err := a.client.Put(ctx, fmt.Sprintf("update database %d for subscription %d", database, subscription), fmt.Sprintf("/subscriptions/%d/databases/%d/regions", subscription, database), update, &task)
 	if err != nil {
 		return err

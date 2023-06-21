@@ -3,8 +3,6 @@ package cloud_accounts
 import (
 	"context"
 	"fmt"
-	"net/http"
-
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 )
 
@@ -36,7 +34,7 @@ func NewAPI(client HttpClient, task Task, logger Log) *API {
 
 // Create will create a new Cloud Account and return the identifier of the new account.
 func (a *API) Create(ctx context.Context, account CreateCloudAccount) (int, error) {
-	var response taskResponse
+	var response internal.TaskResponse
 	if err := a.client.Post(ctx, "cloud account", "/cloud-accounts", account, &response); err != nil {
 		return 0, err
 	}
@@ -64,7 +62,7 @@ func (a API) List(ctx context.Context) ([]*CloudAccount, error) {
 func (a *API) Get(ctx context.Context, id int) (*CloudAccount, error) {
 	var response CloudAccount
 	if err := a.client.Get(ctx, fmt.Sprintf("retrieve cloud account %d", id), fmt.Sprintf("/cloud-accounts/%d", id), &response); err != nil {
-		return nil, wrap404Error(id, err)
+		return nil, internal.Wrap404Error(id, "cloud account", err)
 	}
 
 	return &response, nil
@@ -72,9 +70,9 @@ func (a *API) Get(ctx context.Context, id int) (*CloudAccount, error) {
 
 // Update will update certain values of an existing Cloud Account.
 func (a *API) Update(ctx context.Context, id int, account UpdateCloudAccount) error {
-	var response taskResponse
+	var response internal.TaskResponse
 	if err := a.client.Put(ctx, fmt.Sprintf("update cloud account %d", id), fmt.Sprintf("/cloud-accounts/%d", id), account, &response); err != nil {
-		return wrap404Error(id, err)
+		return internal.Wrap404Error(id, "cloud account", err)
 	}
 
 	a.logger.Printf("Waiting for cloud account %d to finish being updated", id)
@@ -89,9 +87,9 @@ func (a *API) Update(ctx context.Context, id int, account UpdateCloudAccount) er
 
 // Delete will delete an existing Cloud Account.
 func (a *API) Delete(ctx context.Context, id int) error {
-	var response taskResponse
+	var response internal.TaskResponse
 	if err := a.client.Delete(ctx, fmt.Sprintf("delete cloud account %d", id), fmt.Sprintf("/cloud-accounts/%d", id), &response); err != nil {
-		return wrap404Error(id, err)
+		return internal.Wrap404Error(id, "cloud account", err)
 	}
 
 	a.logger.Printf("Waiting for cloud account %d to finish being deleted", id)
@@ -101,11 +99,4 @@ func (a *API) Delete(ctx context.Context, id int) error {
 	}
 
 	return nil
-}
-
-func wrap404Error(id int, err error) error {
-	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
-		return &NotFound{id: id}
-	}
-	return err
 }

@@ -234,7 +234,6 @@ type listActiveActiveVpcPeering struct {
 }
 
 type ActiveActiveVpcRegion struct {
-	ID           *int                      `json:"id,omitempty"`
 	SourceRegion *string                   `json:"region,omitempty"`
 	VPCPeerings  []*ActiveActiveVPCPeering `json:"vpcPeerings,omitempty"`
 }
@@ -273,14 +272,6 @@ func (o CIDR) String() string {
 
 type listSubscriptionResponse struct {
 	Subscriptions []*Subscription `json:"subscriptions"`
-}
-
-type taskResponse struct {
-	ID *string `json:"taskId,omitempty"`
-}
-
-func (o taskResponse) String() string {
-	return internal.ToString(o)
 }
 
 type NotFound struct {

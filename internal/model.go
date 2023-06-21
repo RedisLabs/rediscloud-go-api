@@ -54,3 +54,12 @@ func (e *Error) Error() string {
 
 var errorStatusCode = regexp.MustCompile("^(\\d*).*$")
 var _ error = &Error{}
+
+// TaskResponse is the high-level response when a Create/Update/Delete operation is in progress.
+type TaskResponse struct {
+	ID *string `json:"taskId,omitempty"`
+}
+
+func (o TaskResponse) String() string {
+	return ToString(o)
+}

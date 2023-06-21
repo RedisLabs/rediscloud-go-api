@@ -45,14 +45,6 @@ type listCloudAccounts struct {
 	CloudAccounts []*CloudAccount `json:"cloudAccounts"`
 }
 
-type taskResponse struct {
-	ID *string `json:"taskId,omitempty"`
-}
-
-func (o taskResponse) String() string {
-	return internal.ToString(o)
-}
-
 type CloudAccount struct {
 	ID          *int    `json:"id"`
 	Name        *string `json:"name,omitempty"`
