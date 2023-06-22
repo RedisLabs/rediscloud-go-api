@@ -40,7 +40,7 @@ func NewAPI(client HttpClient, task Task, logger Log) *API {
 
 // Create will create a new database for the subscription and return the identifier of the database.
 func (a *API) Create(ctx context.Context, subscription int, db CreateDatabase) (int, error) {
-	var task taskResponse
+	var task internal.TaskResponse
 	err := a.client.Post(ctx, fmt.Sprintf("create database for subscription %d", subscription), fmt.Sprintf("/subscriptions/%d/databases", subscription), db, &task)
 	if err != nil {
 		return 0, err
@@ -75,7 +75,7 @@ func (a *API) Get(ctx context.Context, subscription int, database int) (*Databas
 
 // Update will update certain values of an existing database.
 func (a *API) Update(ctx context.Context, subscription int, database int, update UpdateDatabase) error {
-	var task taskResponse
+	var task internal.TaskResponse
 	err := a.client.Put(ctx, fmt.Sprintf("update database %d for subscription %d", database, subscription), fmt.Sprintf("/subscriptions/%d/databases/%d", subscription, database), update, &task)
 	if err != nil {
 		return err
@@ -93,7 +93,7 @@ func (a *API) Update(ctx context.Context, subscription int, database int, update
 
 // Delete will destroy an existing database.
 func (a *API) Delete(ctx context.Context, subscription int, database int) error {
-	var task taskResponse
+	var task internal.TaskResponse
 	err := a.client.Delete(ctx, fmt.Sprintf("delete database %d/%d", subscription, database), fmt.Sprintf("/subscriptions/%d/databases/%d", subscription, database), &task)
 	if err != nil {
 		return err
@@ -111,7 +111,7 @@ func (a *API) Delete(ctx context.Context, subscription int, database int) error 
 
 // Backup will create a manual backup of the database to the destination the database has been configured to backup to.
 func (a *API) Backup(ctx context.Context, subscription int, database int) error {
-	var task taskResponse
+	var task internal.TaskResponse
 	err := a.client.Post(ctx, fmt.Sprintf("backup database %d for subscription %d", database, subscription), fmt.Sprintf("/subscriptions/%d/databases/%d/backup", subscription, database), nil, &task)
 	if err != nil {
 		return err
@@ -129,7 +129,7 @@ func (a *API) Backup(ctx context.Context, subscription int, database int) error 
 
 // Import will import data from an RDB file or another Redis database into an existing database.
 func (a *API) Import(ctx context.Context, subscription int, database int, request Import) error {
-	var task taskResponse
+	var task internal.TaskResponse
 	err := a.client.Post(ctx, fmt.Sprintf("import database %d for subscription %d", database, subscription), fmt.Sprintf("/subscriptions/%d/databases/%d/import", subscription, database), request, &task)
 	if err != nil {
 		return err

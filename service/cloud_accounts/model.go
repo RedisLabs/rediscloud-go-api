@@ -1,8 +1,6 @@
 package cloud_accounts
 
 import (
-	"fmt"
-
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 )
 
@@ -33,24 +31,8 @@ func (o UpdateCloudAccount) String() string {
 	return internal.ToString(o)
 }
 
-type NotFound struct {
-	id int
-}
-
-func (f *NotFound) Error() string {
-	return fmt.Sprintf("cloud account %d not found", f.id)
-}
-
 type listCloudAccounts struct {
 	CloudAccounts []*CloudAccount `json:"cloudAccounts"`
-}
-
-type taskResponse struct {
-	ID *string `json:"taskId,omitempty"`
-}
-
-func (o taskResponse) String() string {
-	return internal.ToString(o)
 }
 
 type CloudAccount struct {

@@ -57,7 +57,3 @@ type CreateDatabase struct {
 	Name                       *string                `json:"name,omitempty"`
 	LocalThroughputMeasurement *CreateLocalThroughput `json:"localThroughputMeasurement,omitempty"`
 }
-
-type taskResponse struct {
-	ID *string `json:"taskId,omitempty"`
-}

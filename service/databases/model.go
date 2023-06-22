@@ -7,14 +7,6 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 )
 
-type taskResponse struct {
-	ID *string `json:"taskId,omitempty"`
-}
-
-func (o taskResponse) String() string {
-	return internal.ToString(o)
-}
-
 type CreateDatabase struct {
 	DryRun                              *bool                        `json:"dryRun,omitempty"`
 	Name                                *string                      `json:"name,omitempty"`

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
@@ -165,4 +166,20 @@ func (e *taskNotFoundError) Error() string {
 
 func (e taskNotFoundError) Unwrap() error {
 	return e.wrapped
+}
+
+func Wrap404Error(id int, entityType string, err error) error {
+	if v, ok := err.(*HTTPError); ok && v.StatusCode == http.StatusNotFound {
+		return &NotFound{ID: id, EntityType: entityType}
+	}
+	return err
+}
+
+type NotFound struct {
+	ID         int
+	EntityType string
+}
+
+func (f *NotFound) Error() string {
+	return fmt.Sprintf("%s %d not found", f.EntityType, f.ID)
 }
