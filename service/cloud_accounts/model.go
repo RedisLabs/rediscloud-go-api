@@ -46,3 +46,21 @@ type CloudAccount struct {
 func (o CloudAccount) String() string {
 	return internal.ToString(o)
 }
+
+const (
+	// Active value of the `Status` field in `CloudAccount`
+	StatusActive = "active"
+	// Draft value of the `Status` field in `CloudAccount`
+	StatusDraft = "draft"
+	// Change draft value of the `Status` field in `CloudAccount`
+	StatusChangeDraft = "change-draft"
+	// Error value of the `Status` field in `CloudAccount`
+	StatusError = "error"
+)
+
+func ProviderValues() []string {
+	return []string{
+		"AWS",
+		"GCP",
+	}
+}
