@@ -6,8 +6,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/RedisLabs/rediscloud-go-api/internal"
-
 	"github.com/RedisLabs/rediscloud-go-api/redis"
 	"github.com/RedisLabs/rediscloud-go-api/service/cloud_accounts"
 	"github.com/stretchr/testify/assert"
@@ -158,7 +156,7 @@ func TestCloudAccount_Get_wraps404(t *testing.T) {
 	actual, err := subject.CloudAccount.Get(context.TODO(), 98765)
 
 	assert.Nil(t, actual)
-	assert.IsType(t, &internal.NotFound{}, err)
+	assert.IsType(t, &cloud_accounts.NotFound{}, err)
 }
 
 func TestCloudAccount_List(t *testing.T) {

@@ -3,6 +3,7 @@ package redis_rules
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 )
@@ -69,7 +70,7 @@ func (a *API) Update(ctx context.Context, id int, redisRule CreateRedisRuleReque
 	var task internal.TaskResponse
 	err := a.client.Put(ctx, fmt.Sprintf("update redisRule %d", id), fmt.Sprintf("/acl/redisRules/%d", id), redisRule, &task)
 	if err != nil {
-		return internal.Wrap404Error(id, "redisRule", err)
+		return wrap404Error(id, err)
 	}
 
 	a.logger.Printf("Waiting for task %s to finish updating the redisRule", task)
@@ -87,7 +88,7 @@ func (a *API) Delete(ctx context.Context, id int) error {
 	var task internal.TaskResponse
 	err := a.client.Delete(ctx, fmt.Sprintf("delete redisRule %d", id), fmt.Sprintf("/acl/redisRules/%d", id), &task)
 	if err != nil {
-		return internal.Wrap404Error(id, "redisRule", err)
+		return wrap404Error(id, err)
 	}
 
 	a.logger.Printf("Waiting for redisRule %d to finish being deleted", id)
@@ -98,4 +99,19 @@ func (a *API) Delete(ctx context.Context, id int) error {
 	}
 
 	return nil
+}
+
+type NotFound struct {
+	ID int
+}
+
+func (f *NotFound) Error() string {
+	return fmt.Sprintf("redisRule %d not found", f.ID)
+}
+
+func wrap404Error(id int, err error) error {
+	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
+		return &NotFound{ID: id}
+	}
+	return err
 }

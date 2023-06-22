@@ -3,6 +3,7 @@ package roles
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 )
@@ -87,7 +88,7 @@ func (a *API) Delete(ctx context.Context, id int) error {
 	var task internal.TaskResponse
 	err := a.client.Delete(ctx, fmt.Sprintf("delete role %d", id), fmt.Sprintf("/acl/roles/%d", id), &task)
 	if err != nil {
-		return internal.Wrap404Error(id, "role", err)
+		return wrap404Error(id, err)
 	}
 
 	a.logger.Printf("Waiting for role %d to finish being deleted", id)
@@ -98,4 +99,19 @@ func (a *API) Delete(ctx context.Context, id int) error {
 	}
 
 	return nil
+}
+
+type NotFound struct {
+	ID int
+}
+
+func (f *NotFound) Error() string {
+	return fmt.Sprintf("role %d not found", f.ID)
+}
+
+func wrap404Error(id int, err error) error {
+	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
+		return &NotFound{ID: id}
+	}
+	return err
 }
