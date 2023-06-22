@@ -6,8 +6,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/RedisLabs/rediscloud-go-api/internal"
-
 	"github.com/RedisLabs/rediscloud-go-api/redis"
 	"github.com/RedisLabs/rediscloud-go-api/service/subscriptions"
 	"github.com/stretchr/testify/assert"
@@ -409,7 +407,7 @@ func TestSubscription_Get_wraps404Error(t *testing.T) {
 	actual, err := subject.Subscription.Get(context.TODO(), 123)
 
 	assert.Nil(t, actual)
-	assert.IsType(t, &internal.NotFound{}, err)
+	assert.IsType(t, &subscriptions.NotFound{}, err)
 }
 
 func TestSubscription_Update(t *testing.T) {

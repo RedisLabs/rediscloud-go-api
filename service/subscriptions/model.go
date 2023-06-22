@@ -1,6 +1,8 @@
 package subscriptions
 
 import (
+	"fmt"
+
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 )
 
@@ -271,6 +273,14 @@ func (o CIDR) String() string {
 
 type listSubscriptionResponse struct {
 	Subscriptions []*Subscription `json:"subscriptions"`
+}
+
+type NotFound struct {
+	ID int
+}
+
+func (f *NotFound) Error() string {
+	return fmt.Sprintf("subscription %d not found", f.ID)
 }
 
 const (
