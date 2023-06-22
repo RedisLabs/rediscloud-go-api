@@ -17,8 +17,6 @@ type GetUserResponse struct {
 	ID   *int    `json:"id,omitempty"`
 	Name *string `json:"name,omitempty"`
 	Role *string `json:"role,omitempty"`
-	// Not present on getById
-	//Links  *string `json:"links,omitempty"` // TODO Unclear of type
 }
 
 func (o GetUserResponse) String() string {
