@@ -58,13 +58,13 @@ func (o CloudAccount) String() string {
 }
 
 const (
-	// Active value of the `Status` field in `CloudAccount`
+	// StatusActive is the active value of the `Status` field in `CloudAccount`
 	StatusActive = "active"
-	// Draft value of the `Status` field in `CloudAccount`
+	// StatusDraft is the draft value of the `Status` field in `CloudAccount`
 	StatusDraft = "draft"
-	// Change draft value of the `Status` field in `CloudAccount`
+	// StatusChangeDraft is the change draft value of the `Status` field in `CloudAccount`
 	StatusChangeDraft = "change-draft"
-	// Error value of the `Status` field in `CloudAccount`
+	// StatusError is the error value of the `Status` field in `CloudAccount`
 	StatusError = "error"
 )
 
