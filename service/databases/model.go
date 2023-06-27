@@ -234,28 +234,31 @@ func (f *NotFound) Error() string {
 }
 
 const (
-	// Active value of the `Status` field in `Database`
+	// StatusActive is the active value of the `Status` field in `Database`
 	StatusActive = "active"
-	// Draft value of the `Status` field in `Database`
+	// StatusDraft is the draft value of the `Status` field in `Database`
 	StatusDraft = "draft"
-	// Pending value of the `Status` field in `Database`
+	// StatusPending is the pending value of the `Status` field in `Database`
 	StatusPending = "pending"
-	// RCP change pending value of the `Status` field in `Database`
+	// StatusRCPChangePending is the RCP change pending value of the `Status` field in `Database`
 	StatusRCPChangePending = "rcp-change-pending"
-	// RCP draft value of the `Status` field in `Database`
+	// StatusRCPDraft is the RCP draft value of the `Status` field in `Database`
 	StatusRCPDraft = "rcp-draft"
-	// RCP active change draft value of the `Status` field in `Database`
+	// StatusRCPActiveChangeDraft is the RCP active change draft value of the `Status` field in `Database`
 	StatusRCPActiveChangeDraft = "rcp-active-change-draft"
-	// Active change draft value of the `Status` field in `Database`
+	// StatusActiveChangeDraft is the Active change draft value of the `Status` field in `Database`
 	StatusActiveChangeDraft = "active-change-draft"
-	// Active change pending value of the `Status` field in `Database`
+	// StatusActiveChangePending is the Active change pending value of the `Status` field in `Database`
 	StatusActiveChangePending = "active-change-pending"
-	// The below two Proxy Policy states are caused by a change to the 'support_oss_cluster_api' attribute
-	// Proxy Policy change pending value of the `Status` field in `Database`.
+
+	// StatusProxyPolicyChangePending and StatusProxyPolicyChangeDraft
+	//The below two Proxy Policy states are caused by a change to the 'support_oss_cluster_api' attribute
+	// StatusProxyPolicyChangePending is the Proxy Policy change pending value of the `Status` field in `Database`.
 	StatusProxyPolicyChangePending = "proxy-policy-change-pending"
-	// Proxy Policy change draft value of the `Status` field in `Database`
+	// StatusProxyPolicyChangeDraft is the Proxy Policy change draft value of the `Status` field in `Database`
 	StatusProxyPolicyChangeDraft = "proxy-policy-change-draft"
-	// Error value of the `Status` field in `Database`
+
+	// StatusError is the error value of the `Status` field in `Database`
 	StatusError = "error"
 	// BackupIntervalEvery24Hours is the schedule to back up once a day
 	BackupIntervalEvery24Hours = "every-24-hours"

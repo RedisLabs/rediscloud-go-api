@@ -716,3 +716,196 @@ func TestListRoles(t *testing.T) {
 	}, actual)
 
 }
+
+func TestGetNonExistentRole(t *testing.T) {
+	server := httptest.NewServer(
+		testServer(
+			"key",
+			"secret",
+			getRequest(t, "/acl/roles", `{
+			  "accountId": 53012,
+			  "roles": [
+				{
+				  "id": 998,
+				  "name": "ACL-role-example",
+				  "redisRules": [
+					{
+					  "ruleId": 78,
+					  "ruleName": "Read-Only",
+					  "databases": [
+						{
+						  "subscriptionId": 156983,
+						  "databaseId": 51332750,
+						  "databaseName": "john-test-database-keen-lab",
+						  "regions": []
+						}
+					  ]
+					}
+				  ],
+				  "users": [],
+				  "status": "active"
+				},
+				{
+				  "id": 999,
+				  "name": "ACL-role-another-example",
+				  "redisRules": [
+					{
+					  "ruleId": 78,
+					  "ruleName": "Read-Only",
+					  "databases": [
+						{
+						  "subscriptionId": 156983,
+						  "databaseId": 51332750,
+						  "databaseName": "john-test-database-keen-lab",
+						  "regions": []
+						}
+					  ]
+					}
+				  ],
+				  "users": [],
+				  "status": "active"
+				},
+				{
+				  "id": 27,
+				  "name": "test-role",
+				  "redisRules": [],
+				  "users": [
+					{
+					  "id": 24,
+					  "name": "test-user"
+					}
+				  ],
+				  "status": "active"
+				}
+			  ],
+			  "links": [
+				{
+				  "rel": "self",
+				  "href": "https://api-cloudapi.qa.redislabs.com/v1/acl/roles",
+				  "type": "GET"
+				}
+			  ]
+			}`),
+		),
+	)
+
+	subject, err := clientFromTestServer(server, "key", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Roles.Get(context.TODO(), 40004)
+
+	assert.Nil(t, actual)
+	assert.IsType(t, &roles.NotFound{}, err)
+
+}
+
+func TestGetRole(t *testing.T) {
+	server := httptest.NewServer(
+		testServer(
+			"key",
+			"secret",
+			getRequest(t, "/acl/roles", `{
+			  "accountId": 53012,
+			  "roles": [
+				{
+				  "id": 998,
+				  "name": "ACL-role-example",
+				  "redisRules": [
+					{
+					  "ruleId": 78,
+					  "ruleName": "Read-Only",
+					  "databases": [
+						{
+						  "subscriptionId": 156983,
+						  "databaseId": 51332750,
+						  "databaseName": "john-test-database-keen-lab",
+						  "regions": []
+						}
+					  ]
+					}
+				  ],
+				  "users": [],
+				  "status": "active"
+				},
+				{
+				  "id": 999,
+				  "name": "ACL-role-another-example",
+				  "redisRules": [
+					{
+					  "ruleId": 78,
+					  "ruleName": "Read-Only",
+					  "databases": [
+						{
+						  "subscriptionId": 156983,
+						  "databaseId": 51332750,
+						  "databaseName": "john-test-database-keen-lab",
+						  "regions": []
+						}
+					  ]
+					}
+				  ],
+				  "users": [
+				    {
+					  "id": 24,
+					  "name": "test-user"
+					}
+				  ],
+				  "status": "active"
+				},
+				{
+				  "id": 27,
+				  "name": "test-role",
+				  "redisRules": [],
+				  "users": [
+					{
+					  "id": 24,
+					  "name": "test-user"
+					}
+				  ],
+				  "status": "active"
+				}
+			  ],
+			  "links": [
+				{
+				  "rel": "self",
+				  "href": "https://api-cloudapi.qa.redislabs.com/v1/acl/roles",
+				  "type": "GET"
+				}
+			  ]
+			}`),
+		),
+	)
+
+	subject, err := clientFromTestServer(server, "key", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Roles.Get(context.TODO(), 999)
+	require.NoError(t, err)
+
+	assert.Equal(t, &roles.GetRoleResponse{
+		ID:   redis.Int(999),
+		Name: redis.String("ACL-role-another-example"),
+		RedisRules: []*roles.GetRuleInRoleResponse{
+			{
+				RuleId:   redis.Int(78),
+				RuleName: redis.String("Read-Only"),
+				Databases: []*roles.GetDatabaseInRuleInRoleResponse{
+					{
+						SubscriptionId: redis.Int(156983),
+						DatabaseId:     redis.Int(51332750),
+						DatabaseName:   redis.String("john-test-database-keen-lab"),
+						Regions:        []*string{},
+					},
+				},
+			},
+		},
+		Users: []*roles.GetUserInRoleResponse{
+			{
+				ID:   redis.Int(24),
+				Name: redis.String("test-user"),
+			},
+		},
+		Status: redis.String("active"),
+	}, actual)
+
+}

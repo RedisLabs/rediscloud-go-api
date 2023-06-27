@@ -45,7 +45,21 @@ func (a API) List(ctx context.Context) ([]*GetRedisRuleResponse, error) {
 	return response.RedisRules, nil
 }
 
-// No getById
+// Get has to use the List behaviour to simulate getById
+func (a API) Get(ctx context.Context, id int) (*GetRedisRuleResponse, error) {
+	rules, err := a.List(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, rule := range rules {
+		if id == *rule.ID {
+			return rule, nil
+		}
+	}
+
+	return nil, &NotFound{ID: id}
+}
 
 // Create will create a new redisRule and return the identifier of the redisRule.
 func (a *API) Create(ctx context.Context, redisRule CreateRedisRuleRequest) (int, error) {

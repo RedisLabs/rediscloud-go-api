@@ -45,7 +45,21 @@ func (a API) List(ctx context.Context) ([]*GetRoleResponse, error) {
 	return response.Roles, nil
 }
 
-// No getById
+// Get has to use the List behaviour to simulate getById
+func (a API) Get(ctx context.Context, id int) (*GetRoleResponse, error) {
+	roles, err := a.List(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, role := range roles {
+		if id == *role.ID {
+			return role, nil
+		}
+	}
+
+	return nil, &NotFound{ID: id}
+}
 
 // Create will create a new role and return the identifier of the role.
 func (a *API) Create(ctx context.Context, role CreateRoleRequest) (int, error) {

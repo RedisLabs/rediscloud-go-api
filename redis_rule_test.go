@@ -621,3 +621,125 @@ func TestListRedisRules(t *testing.T) {
 	}, actual)
 
 }
+
+func TestGetNonExistentRedisRule(t *testing.T) {
+	server := httptest.NewServer(
+		testServer(
+			"key",
+			"secret",
+			getRequest(t, "/acl/redisRules", `{
+			  "accountId": 53012,
+			  "redisRules": [
+				{
+				  "id": 3923,
+				  "name": "ACL-rule-example",
+				  "acl": "+@all",
+				  "isDefault": false,
+				  "status": "active"
+				},
+				{
+				  "id": 76,
+				  "name": "Full-Access",
+				  "acl": "+@all  ~*",
+				  "isDefault": true,
+				  "status": "active"
+				},
+				{
+				  "id": 77,
+				  "name": "Read-Write",
+				  "acl": "+@all -@dangerous ~*",
+				  "isDefault": true,
+				  "status": "active"
+				},
+				{
+				  "id": 78,
+				  "name": "Read-Only",
+				  "acl": "+@read ~*",
+				  "isDefault": true,
+				  "status": "active"
+				}
+			  ],
+			  "links": [
+				{
+				  "rel": "self",
+				  "href": "https://api-cloudapi.qa.redislabs.com/v1/acl/redisRules",
+				  "type": "GET"
+				}
+			  ]
+			}`),
+		),
+	)
+
+	subject, err := clientFromTestServer(server, "key", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.RedisRules.Get(context.TODO(), 40004)
+
+	assert.Nil(t, actual)
+	assert.IsType(t, &redis_rules.NotFound{}, err)
+
+}
+
+func TestGetRedisRule(t *testing.T) {
+	server := httptest.NewServer(
+		testServer(
+			"key",
+			"secret",
+			getRequest(t, "/acl/redisRules", `{
+			  "accountId": 53012,
+			  "redisRules": [
+				{
+				  "id": 3923,
+				  "name": "ACL-rule-example",
+				  "acl": "+@all",
+				  "isDefault": false,
+				  "status": "active"
+				},
+				{
+				  "id": 76,
+				  "name": "Full-Access",
+				  "acl": "+@all  ~*",
+				  "isDefault": true,
+				  "status": "active"
+				},
+				{
+				  "id": 77,
+				  "name": "Read-Write",
+				  "acl": "+@all -@dangerous ~*",
+				  "isDefault": true,
+				  "status": "active"
+				},
+				{
+				  "id": 78,
+				  "name": "Read-Only",
+				  "acl": "+@read ~*",
+				  "isDefault": true,
+				  "status": "active"
+				}
+			  ],
+			  "links": [
+				{
+				  "rel": "self",
+				  "href": "https://api-cloudapi.qa.redislabs.com/v1/acl/redisRules",
+				  "type": "GET"
+				}
+			  ]
+			}`),
+		),
+	)
+
+	subject, err := clientFromTestServer(server, "key", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.RedisRules.Get(context.TODO(), 3923)
+	require.NoError(t, err)
+
+	assert.Equal(t, &redis_rules.GetRedisRuleResponse{
+		ID:        redis.Int(3923),
+		Name:      redis.String("ACL-rule-example"),
+		ACL:       redis.String("+@all"),
+		IsDefault: redis.Bool(false),
+		Status:    redis.String("active"),
+	}, actual)
+
+}
