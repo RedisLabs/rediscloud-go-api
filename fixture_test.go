@@ -3,6 +3,9 @@ package rediscloud_api
 import (
 	"testing"
 
+	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/redis_rules"
+	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/roles"
+
 	"github.com/RedisLabs/rediscloud-go-api/service/cloud_accounts"
 	"github.com/RedisLabs/rediscloud-go-api/service/databases"
 	"github.com/RedisLabs/rediscloud-go-api/service/subscriptions"
@@ -97,4 +100,18 @@ func TestCloudAccountFixtures(t *testing.T) {
 	assert.Equal(t, "change-draft", cloud_accounts.StatusChangeDraft)
 	assert.Equal(t, "error", cloud_accounts.StatusError)
 	assert.Equal(t, []string{"AWS", "GCP"}, cloud_accounts.ProviderValues())
+}
+
+func TestRedisRuleFixtures(t *testing.T) {
+	assert.Equal(t, "active", redis_rules.StatusActive)
+	assert.Equal(t, "pending", redis_rules.StatusPending)
+	assert.Equal(t, "error", redis_rules.StatusError)
+	assert.Equal(t, "deleting", redis_rules.StatusDeleting)
+}
+
+func TestRoleFixtures(t *testing.T) {
+	assert.Equal(t, "active", roles.StatusActive)
+	assert.Equal(t, "pending", roles.StatusPending)
+	assert.Equal(t, "error", roles.StatusError)
+	assert.Equal(t, "deleting", roles.StatusDeleting)
 }
