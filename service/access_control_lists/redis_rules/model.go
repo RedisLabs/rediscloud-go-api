@@ -35,3 +35,14 @@ type CreateRedisRuleRequest struct {
 func (o CreateRedisRuleRequest) String() string {
 	return internal.ToString(o)
 }
+
+const (
+	// StatusActive is the active value of the `Status` field in `RedisRule`
+	StatusActive = "active"
+	// StatusPending is the pending value of the `Status` field in `RedisRule`
+	StatusPending = "pending"
+	// StatusError is the error value of the `Status` field in `RedisRule`
+	StatusError = "error"
+	// StatusDeleting is the deleting value of the `Status` field in `RedisRule`
+	StatusDeleting = "deleting"
+)

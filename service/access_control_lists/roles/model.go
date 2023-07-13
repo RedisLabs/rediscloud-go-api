@@ -77,3 +77,14 @@ type CreateDatabaseInRuleInRoleRequest struct {
 func (o CreateDatabaseInRuleInRoleRequest) String() string {
 	return internal.ToString(o)
 }
+
+const (
+	// StatusActive is the active value of the `Status` field in `Role`
+	StatusActive = "active"
+	// StatusPending is the pending value of the `Status` field in `Role`
+	StatusPending = "pending"
+	// StatusError is the error value of the `Status` field in `Role`
+	StatusError = "error"
+	// StatusDeleting is the deleting value of the `Status` field in `Role`
+	StatusDeleting = "deleting"
+)
