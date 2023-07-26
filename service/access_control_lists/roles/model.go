@@ -7,7 +7,6 @@ import "github.com/RedisLabs/rediscloud-go-api/internal"
 type ListRolesResponse struct {
 	AccountId *int               `json:"accountId,omitempty"`
 	Roles     []*GetRoleResponse `json:"roles,omitempty"`
-	// Links []*AnotherThing
 }
 
 type GetRoleResponse struct {
@@ -23,9 +22,9 @@ func (o GetRoleResponse) String() string {
 }
 
 type GetRuleInRoleResponse struct {
-	RuleId    *int
-	RuleName  *string
-	Databases []*GetDatabaseInRuleInRoleResponse
+	RuleId    *int                               `json:"ruleId,omitempty"`
+	RuleName  *string                            `json:"ruleName,omitempty"`
+	Databases []*GetDatabaseInRuleInRoleResponse `json:"databases,omitempty"`
 }
 
 func (o GetRuleInRoleResponse) String() string {
@@ -36,7 +35,7 @@ type GetDatabaseInRuleInRoleResponse struct {
 	SubscriptionId *int      `json:"subscriptionId,omitempty"`
 	DatabaseId     *int      `json:"databaseId,omitempty"`
 	DatabaseName   *string   `json:"databaseName,omitempty"`
-	Regions        []*string `json:"regions,omitempty"` // Docs are unclear
+	Regions        []*string `json:"regions,omitempty"`
 }
 
 func (o GetDatabaseInRuleInRoleResponse) String() string {
@@ -71,7 +70,7 @@ func (o CreateRuleInRoleRequest) String() string {
 type CreateDatabaseInRuleInRoleRequest struct {
 	SubscriptionId *int      `json:"subscriptionId,omitempty"`
 	DatabaseId     *int      `json:"databaseId,omitempty"`
-	Regions        []*string `json:"regions,omitempty"` // Docs are unclear
+	Regions        []*string `json:"regions,omitempty"`
 }
 
 func (o CreateDatabaseInRuleInRoleRequest) String() string {
