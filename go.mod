@@ -3,7 +3,7 @@ module github.com/RedisLabs/rediscloud-go-api
 go 1.18
 
 require (
-	github.com/avast/retry-go/v4 v4.3.4
+	github.com/avast/retry-go/v4 v4.5.0
 	github.com/stretchr/testify v1.8.3
 	golang.org/x/tools v0.9.1
 )
