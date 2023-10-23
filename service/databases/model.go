@@ -13,6 +13,7 @@ type CreateDatabase struct {
 	Protocol                            *string                      `json:"protocol,omitempty"`
 	MemoryLimitInGB                     *float64                     `json:"memoryLimitInGb,omitempty"`
 	SupportOSSClusterAPI                *bool                        `json:"supportOSSClusterApi,omitempty"`
+	RespVersion                         *string                      `json:"respVersion,omitempty"`
 	UseExternalEndpointForOSSClusterAPI *bool                        `json:"useExternalEndpointForOSSClusterApi,omitempty"`
 	DataPersistence                     *string                      `json:"dataPersistence,omitempty"`
 	DataEvictionPolicy                  *string                      `json:"dataEvictionPolicy,omitempty"`
@@ -62,7 +63,6 @@ func (o CreateModule) String() string {
 	return internal.ToString(o)
 }
 
-// TODO: do we need a separate ActiveActiveDatabase type as well?
 type Database struct {
 	ID                     *int        `json:"databaseId,omitempty"`
 	Name                   *string     `json:"name,omitempty"`
@@ -73,6 +73,7 @@ type Database struct {
 	MemoryLimitInGB        *float64    `json:"memoryLimitInGb,omitempty"`
 	MemoryUsedInMB         *float64    `json:"memoryUsedInMb,omitempty"`
 	SupportOSSClusterAPI   *bool       `json:"supportOSSClusterApi,omitempty"`
+	RespVersion            *string     `json:"respVersion,omitempty"`
 	DataPersistence        *string     `json:"dataPersistence,omitempty"`
 	Replication            *bool       `json:"replication,omitempty"`
 	DataEvictionPolicy     *string     `json:"dataEvictionPolicy,omitempty"`
@@ -119,6 +120,7 @@ func (o RegexRule) String() string {
 }
 
 type Security struct {
+	EnableDefaultUser       *bool     `json:"enableDefaultUser,omitempty"`
 	SSLClientAuthentication *bool     `json:"sslClientAuthentication,omitempty"`
 	SourceIPs               []*string `json:"sourceIps,omitempty"`
 	Password                *string   `json:"password,omitempty"`
@@ -160,6 +162,7 @@ type UpdateDatabase struct {
 	Name                                *string                      `json:"name,omitempty"`
 	MemoryLimitInGB                     *float64                     `json:"memoryLimitInGb,omitempty"`
 	SupportOSSClusterAPI                *bool                        `json:"supportOSSClusterApi,omitempty"`
+	RespVersion                         *string                      `json:"respVersion,omitempty"`
 	UseExternalEndpointForOSSClusterAPI *bool                        `json:"useExternalEndpointForOSSClusterApi,omitempty"`
 	DataEvictionPolicy                  *string                      `json:"dataEvictionPolicy,omitempty"`
 	Replication                         *bool                        `json:"replication,omitempty"`
@@ -171,14 +174,13 @@ type UpdateDatabase struct {
 	SourceIP                            []*string                    `json:"sourceIp,omitempty"`
 	ClientSSLCertificate                *string                      `json:"clientSslCertificate,omitempty"`
 	Password                            *string                      `json:"password,omitempty"`
-
 	// It's important to use a pointer here, because the terraform user may want to send an empty list.
 	// In that case, the developer must pass a (pointer to a) non-nil, zero-length slice
 	// If the developer really wants to omit this value, passing a nil slice value would work
-	Alerts *[]*UpdateAlert `json:"alerts,omitempty"`
-
-	EnableTls    *bool                 `json:"enableTls,omitempty"`
-	RemoteBackup *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
+	Alerts            *[]*UpdateAlert       `json:"alerts,omitempty"`
+	EnableTls         *bool                 `json:"enableTls,omitempty"`
+	RemoteBackup      *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
+	EnableDefaultUser *bool                 `json:"enableDefaultUser,omitempty"`
 }
 
 func (o UpdateDatabase) String() string {
