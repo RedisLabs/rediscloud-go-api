@@ -383,7 +383,7 @@ func TestDatabase_Update(t *testing.T) {
 		SourceIP:             redis.StringSlice("10.0.0.1"),
 		ClientSSLCertificate: redis.String("something"),
 		Password:             redis.String("fooBar"),
-		Alerts: []*databases.UpdateAlert{
+		Alerts: &[]*databases.UpdateAlert{
 			{
 				Name:  redis.String("dataset-size"),
 				Value: redis.Int(80),

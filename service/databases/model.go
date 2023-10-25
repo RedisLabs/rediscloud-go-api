@@ -171,9 +171,14 @@ type UpdateDatabase struct {
 	SourceIP                            []*string                    `json:"sourceIp,omitempty"`
 	ClientSSLCertificate                *string                      `json:"clientSslCertificate,omitempty"`
 	Password                            *string                      `json:"password,omitempty"`
-	Alerts                              []*UpdateAlert               `json:"alerts,omitempty"`
-	EnableTls                           *bool                        `json:"enableTls,omitempty"`
-	RemoteBackup                        *DatabaseBackupConfig        `json:"remoteBackup,omitempty"`
+
+	// It's important to use a pointer here, because the terraform user may want to send an empty list.
+	// In that case, the developer must pass a (pointer to a) non-nil, zero-length slice
+	// If the developer really wants to omit this value, passing a nil slice value would work
+	Alerts *[]*UpdateAlert `json:"alerts,omitempty"`
+
+	EnableTls    *bool                 `json:"enableTls,omitempty"`
+	RemoteBackup *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
 }
 
 func (o UpdateDatabase) String() string {

@@ -88,18 +88,19 @@ func (o LocalThroughput) String() string {
 }
 
 type UpdateActiveActiveDatabase struct {
-	DryRun                              *bool                    `json:"dryRun,omitempty"`
-	MemoryLimitInGB                     *float64                 `json:"memoryLimitInGb,omitempty"`
-	SupportOSSClusterAPI                *bool                    `json:"supportOSSClusterApi,omitempty"`
-	UseExternalEndpointForOSSClusterAPI *bool                    `json:"useExternalEndpointForOSSClusterApi,omitempty"`
-	ClientSSLCertificate                *string                  `json:"clientSslCertificate,omitempty"`
-	EnableTls                           *bool                    `json:"enableTls,omitempty"`
-	GlobalDataPersistence               *string                  `json:"globalDataPersistence,omitempty"`
-	GlobalPassword                      *string                  `json:"globalPassword,omitempty"`
-	GlobalSourceIP                      []*string                `json:"globalSourceIp,omitempty"`
-	GlobalAlerts                        []*UpdateAlert           `json:"globalAlerts,omitempty"`
-	Regions                             []*LocalRegionProperties `json:"regions,omitempty"`
-	DataEvictionPolicy                  *string                  `json:"dataEvictionPolicy,omitempty"`
+	DryRun                              *bool     `json:"dryRun,omitempty"`
+	MemoryLimitInGB                     *float64  `json:"memoryLimitInGb,omitempty"`
+	SupportOSSClusterAPI                *bool     `json:"supportOSSClusterApi,omitempty"`
+	UseExternalEndpointForOSSClusterAPI *bool     `json:"useExternalEndpointForOSSClusterApi,omitempty"`
+	ClientSSLCertificate                *string   `json:"clientSslCertificate,omitempty"`
+	EnableTls                           *bool     `json:"enableTls,omitempty"`
+	GlobalDataPersistence               *string   `json:"globalDataPersistence,omitempty"`
+	GlobalPassword                      *string   `json:"globalPassword,omitempty"`
+	GlobalSourceIP                      []*string `json:"globalSourceIp,omitempty"`
+	// Using a pointer to allow empty slices to be serialised/sent
+	GlobalAlerts       *[]*UpdateAlert          `json:"globalAlerts,omitempty"`
+	Regions            []*LocalRegionProperties `json:"regions,omitempty"`
+	DataEvictionPolicy *string                  `json:"dataEvictionPolicy,omitempty"`
 }
 
 func (o UpdateActiveActiveDatabase) String() string {
@@ -113,7 +114,8 @@ type LocalRegionProperties struct {
 	DataPersistence            *string               `json:"dataPersistence,omitempty"`
 	Password                   *string               `json:"password,omitempty"`
 	SourceIP                   []*string             `json:"sourceIp,omitempty"`
-	Alerts                     []*UpdateAlert        `json:"alerts,omitempty"`
+	// Using a pointer to allow empty slices to be serialised/sent
+	Alerts *[]*UpdateAlert `json:"alerts,omitempty"`
 }
 
 func (o LocalRegionProperties) String() string {
