@@ -526,6 +526,7 @@ func TestGetUser(t *testing.T) {
 			  "id": 20000,
 			  "name": "test-user",
 			  "role": "test-role",
+			  "status": "pending",
 			  "links": [
 				{
 				  "rel": "self",
@@ -544,8 +545,9 @@ func TestGetUser(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, &users.GetUserResponse{
-		ID:   redis.Int(20000),
-		Name: redis.String("test-user"),
-		Role: redis.String("test-role"),
+		ID:     redis.Int(20000),
+		Name:   redis.String("test-user"),
+		Role:   redis.String("test-role"),
+		Status: redis.String(users.StatusPending),
 	}, actual)
 }
