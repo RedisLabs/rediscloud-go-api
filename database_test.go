@@ -21,6 +21,7 @@ func TestDatabase_Create(t *testing.T) {
   "protocol": "redis",
   "memoryLimitInGb": 1,
   "supportOSSClusterApi": false,
+  "respVersion": "resp3",
   "useExternalEndpointForOSSClusterApi": false,
   "dataPersistence": "none",
   "dataEvictionPolicy": "allkeys-lru",
@@ -87,6 +88,7 @@ func TestDatabase_Create(t *testing.T) {
 		Protocol:                            redis.String("redis"),
 		MemoryLimitInGB:                     redis.Float64(1),
 		SupportOSSClusterAPI:                redis.Bool(false),
+		RespVersion:                         redis.String("resp3"),
 		UseExternalEndpointForOSSClusterAPI: redis.Bool(false),
 		DataPersistence:                     redis.String("none"),
 		DataEvictionPolicy:                  redis.String("allkeys-lru"),
@@ -191,6 +193,7 @@ func TestDatabase_Get(t *testing.T) {
   "memoryUsedInMb": 5,
   "memoryStorage": "ram",
   "supportOSSClusterApi": true,
+  "respVersion": "resp2",
   "dataPersistence": "none",
   "replication": false,
   "dataEvictionPolicy": "volatile-random",
@@ -220,6 +223,7 @@ func TestDatabase_Get(t *testing.T) {
     "hashingPolicy": "custom"
   },
   "security": {
+	"enableDefaultUser": false,
     "password": "test",
     "sslClientAuthentication": false,
     "sourceIps": [
@@ -252,6 +256,7 @@ func TestDatabase_Get(t *testing.T) {
 		MemoryLimitInGB:      redis.Float64(7),
 		MemoryUsedInMB:       redis.Float64(5),
 		SupportOSSClusterAPI: redis.Bool(true),
+		RespVersion:          redis.String("resp2"),
 		DataPersistence:      redis.String("none"),
 		Replication:          redis.Bool(false),
 		ReplicaOf: &databases.ReplicaOf{
@@ -282,6 +287,7 @@ func TestDatabase_Get(t *testing.T) {
 			},
 		},
 		Security: &databases.Security{
+			EnableDefaultUser:       redis.Bool(false),
 			SSLClientAuthentication: redis.Bool(false),
 			SourceIPs:               redis.StringSlice("0.0.0.0/0"),
 			Password:                redis.String("test"),
@@ -309,6 +315,7 @@ func TestDatabase_Update(t *testing.T) {
   "name": "example",
   "memoryLimitInGb": 1,
   "supportOSSClusterApi": false,
+  "respVersion": "resp3",
   "useExternalEndpointForOSSClusterApi": false,
   "dataEvictionPolicy": "allkeys-lru",
   "replication": true,
@@ -332,7 +339,8 @@ func TestDatabase_Update(t *testing.T) {
       "name": "dataset-size",
       "value": 80
     }
-  ]
+  ],
+  "enableDefaultUser": false
 }`, `{
   "taskId": "task",
   "commandType": "databaseUpdateRequest",
@@ -369,6 +377,7 @@ func TestDatabase_Update(t *testing.T) {
 		Name:                                redis.String("example"),
 		MemoryLimitInGB:                     redis.Float64(1),
 		SupportOSSClusterAPI:                redis.Bool(false),
+		RespVersion:                         redis.String("resp3"),
 		UseExternalEndpointForOSSClusterAPI: redis.Bool(false),
 		DataPersistence:                     redis.String("none"),
 		DataEvictionPolicy:                  redis.String("allkeys-lru"),
@@ -389,6 +398,7 @@ func TestDatabase_Update(t *testing.T) {
 				Value: redis.Int(80),
 			},
 		},
+		EnableDefaultUser: redis.Bool(false),
 	})
 	require.NoError(t, err)
 }

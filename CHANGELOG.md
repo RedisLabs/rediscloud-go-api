@@ -2,7 +2,44 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
-## 0.1.10 (unreleased)
+## 0.6.0
+
+### Added
+
+* A `status` property for ACL Users
+* A `resp_version` property for databases
+* An `enable_default_user` property for databases
+
+## 0.5.4
+
+### Updated
+
+* Fixed `alert` properties on databases and regions to allow empty lists
+
+## 0.5.3
+
+### Updated
+
+* Fixed some json serialization rules for ACL entities
+
+## 0.5.2
+
+### Added
+
+* A `status` property for ACL Rules
+* A `status` property for ACL Roles
+
+## 0.5.1
+
+### Added
+
+* Support for ACL APIs: `Users`, `Roles` and `Rules`
+
+## 0.1.10 - 0.4.1
+
+* ...
+
+## 0.1.10
 ### Updated
 
 * Dependencies for CI and Testing
