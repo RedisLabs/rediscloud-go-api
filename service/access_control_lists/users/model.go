@@ -14,9 +14,10 @@ func (o ListUsersResponse) String() string {
 }
 
 type GetUserResponse struct {
-	ID   *int    `json:"id,omitempty"`
-	Name *string `json:"name,omitempty"`
-	Role *string `json:"role,omitempty"`
+	ID     *int    `json:"id,omitempty"`
+	Name   *string `json:"name,omitempty"`
+	Role   *string `json:"role,omitempty"`
+	Status *string `json:"status,omitempty"`
 }
 
 func (o GetUserResponse) String() string {
@@ -45,3 +46,14 @@ type UpdateUserRequest struct {
 func (o UpdateUserRequest) String() string {
 	return internal.ToString(o)
 }
+
+const (
+	// StatusActive is the active value of the `Status` field in `User`
+	StatusActive = "active"
+	// StatusPending is the pending value of the `Status` field in `User`
+	StatusPending = "pending"
+	// StatusError is the error value of the `Status` field in `User`
+	StatusError = "error"
+	// StatusDeleting is the deleting value of the `Status` field in `User`
+	StatusDeleting = "deleting"
+)

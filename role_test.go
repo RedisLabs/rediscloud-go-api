@@ -679,7 +679,7 @@ func TestListRoles(t *testing.T) {
 				},
 			},
 			Users:  []*roles.GetUserInRoleResponse{},
-			Status: redis.String("active"),
+			Status: redis.String(roles.StatusActive),
 		},
 		{
 			ID:   redis.Int(999),
@@ -711,7 +711,7 @@ func TestListRoles(t *testing.T) {
 					Name: redis.String("test-user"),
 				},
 			},
-			Status: redis.String("active"),
+			Status: redis.String(roles.StatusActive),
 		},
 	}, actual)
 
@@ -905,7 +905,7 @@ func TestGetRole(t *testing.T) {
 				Name: redis.String("test-user"),
 			},
 		},
-		Status: redis.String("active"),
+		Status: redis.String(roles.StatusActive),
 	}, actual)
 
 }
