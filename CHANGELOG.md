@@ -2,19 +2,26 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.7.0
+
+### Added
+
+* A `redis_version` property Subscriptions
+* A `resp_version` property for ActiveActive Databases (creation only)
+
 ## 0.6.0
 
 ### Added
 
 * A `status` property for ACL Users
-* A `resp_version` property for databases
-* An `enable_default_user` property for databases
+* A `resp_version` property for Databases
+* An `enable_default_user` property for Databases
 
 ## 0.5.4
 
 ### Updated
 
-* Fixed `alert` properties on databases and regions to allow empty lists
+* Fixed `alert` properties on Databases and Regions to allow empty lists
 
 ## 0.5.3
 
