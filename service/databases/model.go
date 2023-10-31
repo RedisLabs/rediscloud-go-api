@@ -31,7 +31,6 @@ type CreateDatabase struct {
 	EnableTls            *bool                 `json:"enableTls,omitempty"`
 	PortNumber           *int                  `json:"port,omitempty"`
 	RemoteBackup         *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
-	RedisVersion         *string               `json:"redisVersion,omitempty"`
 }
 
 func (o CreateDatabase) String() string {

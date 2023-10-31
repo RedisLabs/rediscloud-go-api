@@ -49,8 +49,7 @@ func TestDatabase_Create(t *testing.T) {
     {
       "name": "RedisSearch"
     }
-  ],
-  "redisVersion": "latest"
+  ]
 }`, `{
   "taskId": "task",
   "commandType": "databaseCreateRequest",
@@ -114,7 +113,6 @@ func TestDatabase_Create(t *testing.T) {
 				Name: redis.String("RedisSearch"),
 			},
 		},
-		RedisVersion: redis.String("latest"),
 	})
 	require.NoError(t, err)
 

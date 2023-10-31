@@ -46,7 +46,8 @@ func TestSubscription_Create(t *testing.T) {
       },
       "quantity": 1
     }
-  ]
+  ],
+  "redisVersion": "latest"
 }`, `{
   "taskId": "task-id",
   "commandType": "subscriptionCreateRequest",
@@ -135,6 +136,7 @@ func TestSubscription_Create(t *testing.T) {
 				Quantity: redis.Int(1),
 			},
 		},
+		RedisVersion: redis.String("latest"),
 	})
 	require.NoError(t, err)
 	assert.Equal(t, expected, actual)

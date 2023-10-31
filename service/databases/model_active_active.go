@@ -71,7 +71,6 @@ type CreateActiveActiveDatabase struct {
 	GlobalAlerts                        []*CreateAlert     `json:"alerts,omitempty"`
 	LocalThroughputMeasurement          []*LocalThroughput `json:"localThroughputMeasurement,omitempty"`
 	PortNumber                          *int               `json:"port,omitempty"`
-	RedisVersion                        *string            `json:"redisVersion,omitempty"`
 }
 
 func (o CreateActiveActiveDatabase) String() string {
