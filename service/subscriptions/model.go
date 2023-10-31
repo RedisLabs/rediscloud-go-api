@@ -15,6 +15,7 @@ type CreateSubscription struct {
 	MemoryStorage   *string                `json:"memoryStorage,omitempty"`
 	CloudProviders  []*CreateCloudProvider `json:"cloudProviders,omitempty"`
 	Databases       []*CreateDatabase      `json:"databases,omitempty"`
+	RedisVersion    *string                `json:"redisVersion,omitempty"`
 }
 
 func (o CreateSubscription) String() string {
