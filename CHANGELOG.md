@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.8.0
+
+### Added
+
+* A `resp_version` property for Regions (creation only)
+
 ## 0.7.0
 
 ### Added
