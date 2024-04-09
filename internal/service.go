@@ -83,28 +83,31 @@ func (a *api) WaitForResource(ctx context.Context, id string, resource interface
 func (a *api) waitForTaskToComplete(ctx context.Context, id string) (*task, error) {
 	var task *task
 	notFoundCount := 0
-	err := retry.Do(func() error {
-		var err error
-		task, err = a.get(ctx, id)
-		if err != nil {
-			if status, ok := err.(*HTTPError); ok && status.StatusCode == 404 {
-				return &taskNotFoundError{err}
+	err := retry.Do(
+		func() error {
+			var err error
+			task, err = a.get(ctx, id)
+			if err != nil {
+				if status, ok := err.(*HTTPError); ok && status.StatusCode == 404 {
+					return &taskNotFoundError{err}
+				}
+				return retry.Unrecoverable(err)
 			}
-			return retry.Unrecoverable(err)
-		}
 
-		status := redis.StringValue(task.Status)
-		if status == processedState {
-			return nil
-		}
+			status := redis.StringValue(task.Status)
+			if status == processedState {
+				return nil
+			}
 
-		if _, ok := processingStates[status]; !ok {
-			return retry.Unrecoverable(fmt.Errorf("task %s failed %s - %s", id, status, redis.StringValue(task.Description)))
-		}
+			if _, ok := processingStates[status]; !ok {
+				return retry.Unrecoverable(fmt.Errorf("task %s failed %s - %s", id, status, redis.StringValue(task.Description)))
+			}
 
-		return fmt.Errorf("task %s not processed yet: %s", id, status)
-	},
-		retry.Attempts(math.MaxUint16), retry.Delay(1*time.Second), retry.MaxDelay(30*time.Second),
+			return fmt.Errorf("task %s not processed yet: %s", id, status)
+		},
+		retry.Attempts(math.MaxUint16),
+		retry.Delay(5*time.Second),
+		retry.DelayType(retry.FixedDelay),
 		retry.RetryIf(func(err error) bool {
 			if !retry.IsRecoverable(err) {
 				return false
