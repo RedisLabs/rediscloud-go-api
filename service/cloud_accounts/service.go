@@ -19,19 +19,19 @@ type HttpClient interface {
 	Delete(ctx context.Context, name, path string, responseBody interface{}) error
 }
 
-type Task interface {
+type TaskWaiter interface {
 	WaitForResourceId(ctx context.Context, id string) (int, error)
 	Wait(ctx context.Context, id string) error
 }
 
 type API struct {
-	client HttpClient
-	task   Task
-	logger Log
+	client     HttpClient
+	taskWaiter TaskWaiter
+	logger     Log
 }
 
-func NewAPI(client HttpClient, task Task, logger Log) *API {
-	return &API{client: client, task: task, logger: logger}
+func NewAPI(client HttpClient, taskWaiter TaskWaiter, logger Log) *API {
+	return &API{client: client, taskWaiter: taskWaiter, logger: logger}
 }
 
 // Create will create a new Cloud Account and return the identifier of the new account.
@@ -43,7 +43,7 @@ func (a *API) Create(ctx context.Context, account CreateCloudAccount) (int, erro
 
 	a.logger.Printf("Waiting for task %s to finish creating the cloud account", response)
 
-	id, err := a.task.WaitForResourceId(ctx, *response.ID)
+	id, err := a.taskWaiter.WaitForResourceId(ctx, *response.ID)
 	if err != nil {
 		return 0, err
 	}
@@ -79,7 +79,7 @@ func (a *API) Update(ctx context.Context, id int, account UpdateCloudAccount) er
 
 	a.logger.Printf("Waiting for cloud account %d to finish being updated", id)
 
-	err := a.task.Wait(ctx, *response.ID)
+	err := a.taskWaiter.Wait(ctx, *response.ID)
 	if err != nil {
 		return fmt.Errorf("failed when updating account %d: %w", id, err)
 	}
@@ -96,7 +96,7 @@ func (a *API) Delete(ctx context.Context, id int) error {
 
 	a.logger.Printf("Waiting for cloud account %d to finish being deleted", id)
 
-	if err := a.task.Wait(ctx, *response.ID); err != nil {
+	if err := a.taskWaiter.Wait(ctx, *response.ID); err != nil {
 		return fmt.Errorf("failed when deleting account %d: %w", id, err)
 	}
 

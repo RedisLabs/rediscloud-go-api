@@ -17,26 +17,30 @@ type Log interface {
 }
 
 type Api interface {
-	// WaitForResourceId will poll the task, waiting for the task to finish processing, where it will then return.
-	// An error will be returned if the task couldn't be retrieved or the task was not processed successfully.
+	// WaitForResourceId will poll the Task, waiting for the Task to finish processing, where it will then return.
+	// An error will be returned if the Task couldn't be retrieved or the Task was not processed successfully.
 	//
-	// The task will be continuously polled until the task either fails or succeeds - cancellation can be achieved
+	// The Task will be continuously polled until the Task either fails or succeeds - cancellation can be achieved
 	// by cancelling the context.
 	WaitForResourceId(ctx context.Context, id string) (int, error)
 
-	// Wait will poll the task, waiting for the task to finish processing, where it will then return.
-	// An error will be returned if the task couldn't be retrieved or the task was not processed successfully.
+	// Wait will poll the Task, waiting for the Task to finish processing, where it will then return.
+	// An error will be returned if the Task couldn't be retrieved or the Task was not processed successfully.
 	//
-	// The task will be continuously polled until the task either fails or succeeds - cancellation can be achieved
+	// The Task will be continuously polled until the Task either fails or succeeds - cancellation can be achieved
 	// by cancelling the context.
 	Wait(ctx context.Context, id string) error
 
-	// WaitForResource will poll the task, waiting for the task to finish processing, where it will then marshal the
+	// WaitForResource will poll the Task, waiting for the Task to finish processing, where it will then marshal the
 	// returned resource into the value pointed to be `resource`.
 	//
-	// The task will be continuously polled until the task either fails or succeeds - cancellation can be achieved
+	// The Task will be continuously polled until the Task either fails or succeeds - cancellation can be achieved
 	// by cancelling the context.
 	WaitForResource(ctx context.Context, id string, resource interface{}) error
+
+	// WaitForTask will poll the Task, waiting for it to enter a terminal state (i.e Done or Error). This task
+	// will then be returned, or an error in case it cannot be retrieved.
+	WaitForTask(ctx context.Context, id string) (*Task, error)
 }
 
 type api struct {
@@ -59,11 +63,7 @@ func (a *api) WaitForResourceId(ctx context.Context, id string) (int, error) {
 
 func (a *api) Wait(ctx context.Context, id string) error {
 	_, err := a.waitForTaskToComplete(ctx, id)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func (a *api) WaitForResource(ctx context.Context, id string, resource interface{}) error {
@@ -72,39 +72,37 @@ func (a *api) WaitForResource(ctx context.Context, id string, resource interface
 		return err
 	}
 
-	err = json.Unmarshal(*task.Response.Resource, resource)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return json.Unmarshal(*task.Response.Resource, resource)
 }
 
-func (a *api) waitForTaskToComplete(ctx context.Context, id string) (*task, error) {
-	var task *task
+func (a *api) waitForTaskToComplete(ctx context.Context, id string) (*Task, error) {
+	var task *Task
 	notFoundCount := 0
-	err := retry.Do(func() error {
-		var err error
-		task, err = a.get(ctx, id)
-		if err != nil {
-			if status, ok := err.(*HTTPError); ok && status.StatusCode == 404 {
-				return &taskNotFoundError{err}
+	err := retry.Do(
+		func() error {
+			var err error
+			task, err = a.get(ctx, id)
+			if err != nil {
+				if status, ok := err.(*HTTPError); ok && status.StatusCode == 404 {
+					return &taskNotFoundError{err}
+				}
+				return retry.Unrecoverable(err)
 			}
-			return retry.Unrecoverable(err)
-		}
 
-		status := redis.StringValue(task.Status)
-		if status == processedState {
-			return nil
-		}
+			status := redis.StringValue(task.Status)
+			if status == processedState {
+				return nil
+			}
 
-		if _, ok := processingStates[status]; !ok {
-			return retry.Unrecoverable(fmt.Errorf("task %s failed %s - %s", id, status, redis.StringValue(task.Description)))
-		}
+			if _, ok := processingStates[status]; !ok {
+				return retry.Unrecoverable(fmt.Errorf("task %s failed %s - %s", id, status, redis.StringValue(task.Description)))
+			}
 
-		return fmt.Errorf("task %s not processed yet: %s", id, status)
-	},
-		retry.Attempts(math.MaxUint16), retry.Delay(1*time.Second), retry.MaxDelay(30*time.Second),
+			return fmt.Errorf("task %s not processed yet: %s", id, status)
+		},
+		retry.Attempts(math.MaxUint16),
+		retry.Delay(1*time.Second),
+		retry.MaxDelay(30*time.Second),
 		retry.RetryIf(func(err error) bool {
 			if !retry.IsRecoverable(err) {
 				return false
@@ -127,9 +125,57 @@ func (a *api) waitForTaskToComplete(ctx context.Context, id string) (*task, erro
 	return task, nil
 }
 
-func (a *api) get(ctx context.Context, id string) (*task, error) {
-	var task task
-	if err := a.client.Get(ctx, fmt.Sprintf("retrieve task %s", id), "/tasks/"+url.PathEscape(id), &task); err != nil {
+func (a *api) WaitForTask(ctx context.Context, id string) (*Task, error) {
+	var task *Task
+	notFoundCount := 0
+	err := retry.Do(
+		func() error {
+			var err error
+			task, err = a.get(ctx, id)
+			if err != nil {
+				if status, ok := err.(*HTTPError); ok && status.StatusCode == 404 {
+					return &taskNotFoundError{err}
+				}
+				return retry.Unrecoverable(err)
+			}
+
+			status := redis.StringValue(task.Status)
+
+			if _, ok := processingStates[status]; !ok {
+				// The task is no longer processing for whatever reason
+				return nil
+			}
+
+			return fmt.Errorf("task %s not processed yet: %s", id, status)
+		},
+		retry.Attempts(math.MaxUint16),
+		retry.Delay(1*time.Second),
+		retry.MaxDelay(30*time.Second),
+		retry.RetryIf(func(err error) bool {
+			if !retry.IsRecoverable(err) {
+				return false
+			}
+			if _, ok := err.(*taskNotFoundError); ok {
+				notFoundCount++
+				if notFoundCount > max404Errors {
+					return false
+				}
+			}
+			return true
+		}),
+		retry.LastErrorOnly(true), retry.Context(ctx), retry.OnRetry(func(_ uint, err error) {
+			a.logger.Println(err)
+		}))
+	if err != nil {
+		return nil, err
+	}
+
+	return task, nil
+}
+
+func (a *api) get(ctx context.Context, id string) (*Task, error) {
+	var task Task
+	if err := a.client.Get(ctx, fmt.Sprintf("retrieve Task %s", id), "/tasks/"+url.PathEscape(id), &task); err != nil {
 		return nil, err
 	}
 
@@ -140,11 +186,11 @@ func (a *api) get(ctx context.Context, id string) (*task, error) {
 	return &task, nil
 }
 
-// Number of 404 errors to swallow before returning an error while waiting for a task to finish.
+// Number of 404 errors to swallow before returning an error while waiting for a Task to finish.
 //
-// There's a short window between the API returning a task ID and the task being known by the
-// Task service, so by ignoring _a number_ of 404 errors we give the task service enough time to
-// learn about the task but also handle the situation where there really is no task.
+// There's a short window between the API returning a Task ID and the Task being known by the
+// Task service, so by ignoring _a number_ of 404 errors we give the Task service enough time to
+// learn about the Task but also handle the situation where there really is no Task.
 const max404Errors = 5
 
 var processingStates = map[string]bool{

@@ -19,19 +19,19 @@ type HttpClient interface {
 	Delete(ctx context.Context, name, path string, responseBody interface{}) error
 }
 
-type Task interface {
+type TaskWaiter interface {
 	WaitForResourceId(ctx context.Context, id string) (int, error)
 	Wait(ctx context.Context, id string) error
 }
 
 type API struct {
-	client HttpClient
-	task   Task
-	logger Log
+	client     HttpClient
+	taskWaiter TaskWaiter
+	logger     Log
 }
 
-func NewAPI(client HttpClient, task Task, logger Log) *API {
-	return &API{client: client, task: task, logger: logger}
+func NewAPI(client HttpClient, taskWaiter TaskWaiter, logger Log) *API {
+	return &API{client: client, taskWaiter: taskWaiter, logger: logger}
 }
 
 // List will list all of the current account's users.
@@ -66,7 +66,7 @@ func (a *API) Create(ctx context.Context, user CreateUserRequest) (int, error) {
 
 	a.logger.Printf("Waiting for task %s to finish creating the user", task)
 
-	id, err := a.task.WaitForResourceId(ctx, *task.ID)
+	id, err := a.taskWaiter.WaitForResourceId(ctx, *task.ID)
 	if err != nil {
 		return 0, err
 	}
@@ -84,7 +84,7 @@ func (a *API) Update(ctx context.Context, id int, user UpdateUserRequest) error 
 
 	a.logger.Printf("Waiting for task %s to finish updating the user", task)
 
-	err = a.task.Wait(ctx, *task.ID)
+	err = a.taskWaiter.Wait(ctx, *task.ID)
 	if err != nil {
 		return fmt.Errorf("failed when updating user %d: %w", id, err)
 	}
@@ -102,7 +102,7 @@ func (a *API) Delete(ctx context.Context, id int) error {
 
 	a.logger.Printf("Waiting for user %d to finish being deleted", id)
 
-	err = a.task.Wait(ctx, *task.ID)
+	err = a.taskWaiter.Wait(ctx, *task.ID)
 	if err != nil {
 		return fmt.Errorf("failed when deleting user %d: %w", id, err)
 	}

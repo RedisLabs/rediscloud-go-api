@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+// TODO Add LatestBackupStatus model and conversion from internal.task
+
 type NotFound struct {
 	subId int
 	dbId  int

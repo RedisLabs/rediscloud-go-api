@@ -10,7 +10,7 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/redis"
 )
 
-// Create will create a new database for the subscription and return the identifier of the database.
+// ActiveActiveCreate will create a new database for the subscription and return the identifier of the database.
 func (a *API) ActiveActiveCreate(ctx context.Context, subscription int, db CreateActiveActiveDatabase) (int, error) {
 	var task internal.TaskResponse
 	err := a.client.Post(ctx, fmt.Sprintf("create database for subscription %d", subscription), fmt.Sprintf("/subscriptions/%d/databases", subscription), db, &task)
@@ -20,7 +20,7 @@ func (a *API) ActiveActiveCreate(ctx context.Context, subscription int, db Creat
 
 	a.logger.Printf("Waiting for new database for subscription %d to finish being created", subscription)
 
-	id, err := a.task.WaitForResourceId(ctx, *task.ID)
+	id, err := a.taskWaiter.WaitForResourceId(ctx, *task.ID)
 	if err != nil {
 		return 0, err
 	}
@@ -28,7 +28,7 @@ func (a *API) ActiveActiveCreate(ctx context.Context, subscription int, db Creat
 	return id, nil
 }
 
-// Update will update certain values of an existing database.
+// ActiveActiveUpdate will update certain values of an existing database.
 func (a *API) ActiveActiveUpdate(ctx context.Context, subscription int, database int, update UpdateActiveActiveDatabase) error {
 	var task internal.TaskResponse
 	err := a.client.Put(ctx, fmt.Sprintf("update database %d for subscription %d", database, subscription), fmt.Sprintf("/subscriptions/%d/databases/%d/regions", subscription, database), update, &task)
@@ -38,21 +38,16 @@ func (a *API) ActiveActiveUpdate(ctx context.Context, subscription int, database
 
 	a.logger.Printf("Waiting for database %d for subscription %d to finish being updated", database, subscription)
 
-	err = a.task.Wait(ctx, *task.ID)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return a.taskWaiter.Wait(ctx, *task.ID)
 }
 
-// List will return a ListDatabase that is capable of paging through all of the databases associated with a
+// ListActiveActive will return a ListDatabase that is capable of paging through all of the databases associated with a
 // subscription.
 func (a *API) ListActiveActive(ctx context.Context, subscription int) *ListActiveActiveDatabase {
 	return newListActiveActiveDatabase(ctx, a.client, subscription, 100)
 }
 
-// Get will retrieve an existing database.
+// GetActiveActive will retrieve an existing database.
 func (a *API) GetActiveActive(ctx context.Context, subscription int, database int) (*ActiveActiveDatabase, error) {
 	var db ActiveActiveDatabase
 	err := a.client.Get(ctx, fmt.Sprintf("get database %d for subscription %d", subscription, database), fmt.Sprintf("/subscriptions/%d/databases/%d", subscription, database), &db)
