@@ -32,7 +32,6 @@ type Client struct {
 	Regions      *regions.API
 	LatestBackup *latest_backups.API
 	LatestImport *latest_imports.API
-	//Pricing      *pricing.API
 	// acl
 	RedisRules *redis_rules.API
 	Roles      *roles.API
@@ -72,7 +71,6 @@ func NewClient(configs ...Option) (*Client, error) {
 		Regions:      regions.NewAPI(client, t, config.logger),
 		LatestBackup: latest_backups.NewAPI(client, t, config.logger),
 		LatestImport: latest_imports.NewAPI(client, t, config.logger),
-		//Pricing:      pricing.NewAPI(client),
 		// acl
 		RedisRules: redis_rules.NewAPI(client, t, config.logger),
 		Roles:      roles.NewAPI(client, t, config.logger),
