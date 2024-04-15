@@ -21,20 +21,20 @@ type HttpClient interface {
 	DeleteWithQuery(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 }
 
-type Task interface {
+type TaskWaiter interface {
 	WaitForResourceId(ctx context.Context, id string) (int, error)
 	WaitForResource(ctx context.Context, id string, resource interface{}) error
 	Wait(ctx context.Context, id string) error
 }
 
 type API struct {
-	client HttpClient
-	task   Task
-	logger Log
+	client     HttpClient
+	taskWaiter TaskWaiter
+	logger     Log
 }
 
-func NewAPI(client HttpClient, task Task, logger Log) *API {
-	return &API{client: client, task: task, logger: logger}
+func NewAPI(client HttpClient, taskWaiter TaskWaiter, logger Log) *API {
+	return &API{client: client, taskWaiter: taskWaiter, logger: logger}
 }
 
 // Create will create a new region
@@ -47,7 +47,7 @@ func (a *API) Create(ctx context.Context, subId int, region CreateRegion) (int, 
 
 	a.logger.Printf("Waiting for task %s to finish creating the subscription region", task)
 
-	id, err := a.task.WaitForResourceId(ctx, *task.ID)
+	id, err := a.taskWaiter.WaitForResourceId(ctx, *task.ID)
 	if err != nil {
 		return 0, err
 	}
@@ -75,12 +75,7 @@ func (a *API) DeleteWithQuery(ctx context.Context, id int, regions DeleteRegions
 
 	a.logger.Printf("Waiting for region %d to finish being deleted", id)
 
-	err = a.task.Wait(ctx, *task.ID)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return a.taskWaiter.Wait(ctx, *task.ID)
 }
 
 func wrap404Error(id int, err error) error {

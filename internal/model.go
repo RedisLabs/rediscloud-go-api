@@ -8,7 +8,7 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/redis"
 )
 
-type task struct {
+type Task struct {
 	CommandType *string   `json:"commandType,omitempty"`
 	Description *string   `json:"description,omitempty"`
 	Status      *string   `json:"status,omitempty"`
@@ -16,7 +16,7 @@ type task struct {
 	Response    *response `json:"response,omitempty"`
 }
 
-func (o task) String() string {
+func (o Task) String() string {
 	return ToString(o)
 }
 

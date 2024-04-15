@@ -19,20 +19,20 @@ type HttpClient interface {
 	Delete(ctx context.Context, name, path string, responseBody interface{}) error
 }
 
-type Task interface {
+type TaskWaiter interface {
 	WaitForResourceId(ctx context.Context, id string) (int, error)
 	WaitForResource(ctx context.Context, id string, resource interface{}) error
 	Wait(ctx context.Context, id string) error
 }
 
 type API struct {
-	client HttpClient
-	task   Task
-	logger Log
+	client     HttpClient
+	taskWaiter TaskWaiter
+	logger     Log
 }
 
-func NewAPI(client HttpClient, task Task, logger Log) *API {
-	return &API{client: client, task: task, logger: logger}
+func NewAPI(client HttpClient, taskWaiter TaskWaiter, logger Log) *API {
+	return &API{client: client, taskWaiter: taskWaiter, logger: logger}
 }
 
 // Create will create a new subscription.
@@ -45,7 +45,7 @@ func (a *API) Create(ctx context.Context, subscription CreateSubscription) (int,
 
 	a.logger.Printf("Waiting for task %s to finish creating the subscription", task)
 
-	id, err := a.task.WaitForResourceId(ctx, *task.ID)
+	id, err := a.taskWaiter.WaitForResourceId(ctx, *task.ID)
 	if err != nil {
 		return 0, err
 	}
@@ -85,7 +85,7 @@ func (a *API) Update(ctx context.Context, id int, subscription UpdateSubscriptio
 
 	a.logger.Printf("Waiting for task %s to finish updating the subscription", task)
 
-	err = a.task.Wait(ctx, *task.ID)
+	err = a.taskWaiter.Wait(ctx, *task.ID)
 	if err != nil {
 		return fmt.Errorf("failed when updating subscription %d: %w", id, err)
 	}
@@ -104,12 +104,7 @@ func (a *API) Delete(ctx context.Context, id int) error {
 
 	a.logger.Printf("Waiting for subscription %d to finish being deleted", id)
 
-	err = a.task.Wait(ctx, *task.ID)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return a.taskWaiter.Wait(ctx, *task.ID)
 }
 
 // GetCIDRAllowlist retrieves the CIDR addresses that are allowed to access an endpoint for a database associated with
@@ -124,7 +119,7 @@ func (a *API) GetCIDRAllowlist(ctx context.Context, id int) (*CIDRAllowlist, err
 	a.logger.Printf("Waiting for subscription %d CIDR allowlist to be retrieved", id)
 
 	var response CIDRAllowlist
-	err = a.task.WaitForResource(ctx, *task.ID, &response)
+	err = a.taskWaiter.WaitForResource(ctx, *task.ID, &response)
 	if err != nil {
 		return nil, err
 	}
@@ -143,12 +138,7 @@ func (a *API) UpdateCIDRAllowlist(ctx context.Context, id int, cidr UpdateCIDRAl
 
 	a.logger.Printf("Waiting for subscription %d CIDR allowlist to finish being updated", id)
 
-	err = a.task.Wait(ctx, *task.ID)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return a.taskWaiter.Wait(ctx, *task.ID)
 }
 
 // ListVPCPeering retrieves the VPCs that have been peered to the subscription VPC.
@@ -162,7 +152,7 @@ func (a *API) ListVPCPeering(ctx context.Context, id int) ([]*VPCPeering, error)
 	a.logger.Printf("Waiting for subscription %d peering details to be retrieved", id)
 
 	var peering listVpcPeering
-	err = a.task.WaitForResource(ctx, *task.ID, &peering)
+	err = a.taskWaiter.WaitForResource(ctx, *task.ID, &peering)
 	if err != nil {
 		return nil, err
 	}
@@ -180,7 +170,7 @@ func (a *API) ListActiveActiveVPCPeering(ctx context.Context, id int) ([]*Active
 	a.logger.Printf("Waiting for subscription %d peering details to be retrieved", id)
 
 	var peering listActiveActiveVpcPeering
-	err = a.task.WaitForResource(ctx, *task.ID, &peering)
+	err = a.taskWaiter.WaitForResource(ctx, *task.ID, &peering)
 	if err != nil {
 		return nil, err
 	}
@@ -198,7 +188,7 @@ func (a *API) CreateVPCPeering(ctx context.Context, id int, create CreateVPCPeer
 
 	a.logger.Printf("Waiting for subscription %d peering details to be retrieved", id)
 
-	id, err = a.task.WaitForResourceId(ctx, *task.ID)
+	id, err = a.taskWaiter.WaitForResourceId(ctx, *task.ID)
 	if err != nil {
 		return 0, err
 	}
@@ -215,7 +205,7 @@ func (a *API) CreateActiveActiveVPCPeering(ctx context.Context, id int, create C
 
 	a.logger.Printf("Waiting for subscription %d peering details to be retrieved", id)
 
-	id, err = a.task.WaitForResourceId(ctx, *task.ID)
+	id, err = a.taskWaiter.WaitForResourceId(ctx, *task.ID)
 	if err != nil {
 		return 0, err
 	}
@@ -233,12 +223,7 @@ func (a *API) DeleteVPCPeering(ctx context.Context, subscription int, peering in
 
 	a.logger.Printf("Waiting for peering %d for subscription %d to be deleted", peering, subscription)
 
-	err = a.task.Wait(ctx, *task.ID)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return a.taskWaiter.Wait(ctx, *task.ID)
 }
 
 func (a *API) DeleteActiveActiveVPCPeering(ctx context.Context, subscription int, peering int) error {
@@ -250,12 +235,7 @@ func (a *API) DeleteActiveActiveVPCPeering(ctx context.Context, subscription int
 
 	a.logger.Printf("Waiting for peering %d for subscription %d to be deleted", peering, subscription)
 
-	err = a.task.Wait(ctx, *task.ID)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return a.taskWaiter.Wait(ctx, *task.ID)
 }
 
 func wrap404Error(id int, err error) error {

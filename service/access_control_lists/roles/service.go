@@ -19,19 +19,19 @@ type HttpClient interface {
 	Delete(ctx context.Context, name, path string, responseBody interface{}) error
 }
 
-type Task interface {
+type TaskWaiter interface {
 	WaitForResourceId(ctx context.Context, id string) (int, error)
 	Wait(ctx context.Context, id string) error
 }
 
 type API struct {
-	client HttpClient
-	task   Task
-	logger Log
+	client     HttpClient
+	taskWaiter TaskWaiter
+	logger     Log
 }
 
-func NewAPI(client HttpClient, task Task, logger Log) *API {
-	return &API{client: client, task: task, logger: logger}
+func NewAPI(client HttpClient, taskWaiter TaskWaiter, logger Log) *API {
+	return &API{client: client, taskWaiter: taskWaiter, logger: logger}
 }
 
 // List will list all of the current account's roles.
@@ -71,7 +71,7 @@ func (a *API) Create(ctx context.Context, role CreateRoleRequest) (int, error) {
 
 	a.logger.Printf("Waiting for task %s to finish creating the role", task)
 
-	id, err := a.task.WaitForResourceId(ctx, *task.ID)
+	id, err := a.taskWaiter.WaitForResourceId(ctx, *task.ID)
 	if err != nil {
 		return 0, fmt.Errorf("failed when creating role %d: %w", id, err)
 	}
@@ -89,7 +89,7 @@ func (a *API) Update(ctx context.Context, id int, role CreateRoleRequest) error 
 
 	a.logger.Printf("Waiting for task %s to finish updating the role", task)
 
-	err = a.task.Wait(ctx, *task.ID)
+	err = a.taskWaiter.Wait(ctx, *task.ID)
 	if err != nil {
 		return fmt.Errorf("failed when updating role %d: %w", id, err)
 	}
@@ -107,7 +107,7 @@ func (a *API) Delete(ctx context.Context, id int) error {
 
 	a.logger.Printf("Waiting for role %d to finish being deleted", id)
 
-	err = a.task.Wait(ctx, *task.ID)
+	err = a.taskWaiter.Wait(ctx, *task.ID)
 	if err != nil {
 		return fmt.Errorf("failed when deleting role %d: %w", id, err)
 	}

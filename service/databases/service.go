@@ -23,19 +23,19 @@ type HttpClient interface {
 	Delete(ctx context.Context, name, path string, responseBody interface{}) error
 }
 
-type Task interface {
+type TaskWaiter interface {
 	WaitForResourceId(ctx context.Context, id string) (int, error)
 	Wait(ctx context.Context, id string) error
 }
 
 type API struct {
-	client HttpClient
-	task   Task
-	logger Log
+	client     HttpClient
+	taskWaiter TaskWaiter
+	logger     Log
 }
 
-func NewAPI(client HttpClient, task Task, logger Log) *API {
-	return &API{client: client, task: task, logger: logger}
+func NewAPI(client HttpClient, taskWaiter TaskWaiter, logger Log) *API {
+	return &API{client: client, taskWaiter: taskWaiter, logger: logger}
 }
 
 // Create will create a new database for the subscription and return the identifier of the database.
@@ -48,7 +48,7 @@ func (a *API) Create(ctx context.Context, subscription int, db CreateDatabase) (
 
 	a.logger.Printf("Waiting for new database for subscription %d to finish being created", subscription)
 
-	id, err := a.task.WaitForResourceId(ctx, *task.ID)
+	id, err := a.taskWaiter.WaitForResourceId(ctx, *task.ID)
 	if err != nil {
 		return 0, err
 	}
@@ -83,12 +83,7 @@ func (a *API) Update(ctx context.Context, subscription int, database int, update
 
 	a.logger.Printf("Waiting for database %d for subscription %d to finish being updated", database, subscription)
 
-	err = a.task.Wait(ctx, *task.ID)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return a.taskWaiter.Wait(ctx, *task.ID)
 }
 
 // Delete will destroy an existing database.
@@ -101,12 +96,7 @@ func (a *API) Delete(ctx context.Context, subscription int, database int) error 
 
 	a.logger.Printf("Waiting for database %d for subscription %d to finish being deleted", database, subscription)
 
-	err = a.task.Wait(ctx, *task.ID)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return a.taskWaiter.Wait(ctx, *task.ID)
 }
 
 // Backup will create a manual backup of the database to the destination the database has been configured to backup to.
@@ -119,12 +109,7 @@ func (a *API) Backup(ctx context.Context, subscription int, database int) error 
 
 	a.logger.Printf("Waiting for backup of database %d for subscription %d to finish", database, subscription)
 
-	err = a.task.Wait(ctx, *task.ID)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return a.taskWaiter.Wait(ctx, *task.ID)
 }
 
 // Import will import data from an RDB file or another Redis database into an existing database.
@@ -137,12 +122,7 @@ func (a *API) Import(ctx context.Context, subscription int, database int, reques
 
 	a.logger.Printf("Waiting for import into database %d for subscription %d to finish", database, subscription)
 
-	err = a.task.Wait(ctx, *task.ID)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return a.taskWaiter.Wait(ctx, *task.ID)
 }
 
 type ListDatabase struct {

@@ -26,8 +26,8 @@ type CreateDatabase struct {
 	SourceIP             []*string             `json:"sourceIp,omitempty"`
 	ClientSSLCertificate *string               `json:"clientSslCertificate,omitempty"`
 	Password             *string               `json:"password,omitempty"`
-	Alerts               []*CreateAlert        `json:"alerts,omitempty"`
-	Modules              []*CreateModule       `json:"modules,omitempty"`
+	Alerts               []*Alert              `json:"alerts,omitempty"`
+	Modules              []*Module             `json:"modules,omitempty"`
 	EnableTls            *bool                 `json:"enableTls,omitempty"`
 	PortNumber           *int                  `json:"port,omitempty"`
 	RemoteBackup         *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
@@ -43,23 +43,6 @@ type CreateThroughputMeasurement struct {
 }
 
 func (o CreateThroughputMeasurement) String() string {
-	return internal.ToString(o)
-}
-
-type CreateAlert struct {
-	Name  *string `json:"name,omitempty"`
-	Value *int    `json:"value,omitempty"`
-}
-
-func (o CreateAlert) String() string {
-	return internal.ToString(o)
-}
-
-type CreateModule struct {
-	Name *string `json:"name,omitempty"`
-}
-
-func (o CreateModule) String() string {
 	return internal.ToString(o)
 }
 
@@ -131,14 +114,6 @@ func (o Security) String() string {
 	return internal.ToString(o)
 }
 
-type Module struct {
-	Name *string `json:"name,omitempty"`
-}
-
-func (o Module) String() string {
-	return internal.ToString(o)
-}
-
 type Throughput struct {
 	By    *string `json:"by,omitempty"`
 	Value *int    `json:"value,omitempty"`
@@ -154,6 +129,14 @@ type Alert struct {
 }
 
 func (o Alert) String() string {
+	return internal.ToString(o)
+}
+
+type Module struct {
+	Name *string `json:"name,omitempty"`
+}
+
+func (o Module) String() string {
 	return internal.ToString(o)
 }
 
@@ -177,7 +160,7 @@ type UpdateDatabase struct {
 	// It's important to use a pointer here, because the terraform user may want to send an empty list.
 	// In that case, the developer must pass a (pointer to a) non-nil, zero-length slice
 	// If the developer really wants to omit this value, passing a nil slice value would work
-	Alerts            *[]*UpdateAlert       `json:"alerts,omitempty"`
+	Alerts            *[]*Alert             `json:"alerts,omitempty"`
 	EnableTls         *bool                 `json:"enableTls,omitempty"`
 	RemoteBackup      *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
 	EnableDefaultUser *bool                 `json:"enableDefaultUser,omitempty"`
@@ -193,15 +176,6 @@ type UpdateThroughputMeasurement struct {
 }
 
 func (o UpdateThroughputMeasurement) String() string {
-	return internal.ToString(o)
-}
-
-type UpdateAlert struct {
-	Name  *string `json:"name,omitempty"`
-	Value *int    `json:"value,omitempty"`
-}
-
-func (o UpdateAlert) String() string {
 	return internal.ToString(o)
 }
 

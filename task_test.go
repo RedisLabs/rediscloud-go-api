@@ -98,7 +98,7 @@ func TestTask_Handles404Eventually(t *testing.T) {
 	var actual *internal.HTTPError
 	require.True(t, errors.As(err, &actual))
 	assert.Equal(t, &internal.HTTPError{
-		Name:       "retrieve task task",
+		Name:       "retrieve Task task",
 		StatusCode: 404,
 		Body:       []byte{},
 	}, actual)
