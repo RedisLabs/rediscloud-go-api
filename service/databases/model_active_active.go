@@ -19,6 +19,7 @@ type ActiveActiveDatabase struct {
 	UseExternalEndpointForOSSClusterAPI *bool           `json:"useExternalEndpointForOSSClusterApi,omitempty"`
 	Replication                         *bool           `json:"replication,omitempty"`
 	DataEvictionPolicy                  *string         `json:"dataEvictionPolicy,omitempty"`
+	Modules                             []*Module       `json:"modules,omitempty"`
 	CrdbDatabases                       []*CrdbDatabase `json:"crdbDatabases,omitempty"`
 }
 
@@ -69,7 +70,8 @@ type CreateActiveActiveDatabase struct {
 	GlobalDataPersistence               *string            `json:"dataPersistence,omitempty"`
 	GlobalSourceIP                      []*string          `json:"sourceIp,omitempty"`
 	GlobalPassword                      *string            `json:"password,omitempty"`
-	GlobalAlerts                        []*CreateAlert     `json:"alerts,omitempty"`
+	GlobalAlerts                        []*Alert           `json:"alerts,omitempty"`
+	GlobalModules                       []*Module          `json:"modules,omitempty"`
 	LocalThroughputMeasurement          []*LocalThroughput `json:"localThroughputMeasurement,omitempty"`
 	PortNumber                          *int               `json:"port,omitempty"`
 }
@@ -99,7 +101,7 @@ type UpdateActiveActiveDatabase struct {
 	GlobalPassword                      *string   `json:"globalPassword,omitempty"`
 	GlobalSourceIP                      []*string `json:"globalSourceIp,omitempty"`
 	// Using a pointer to allow empty slices to be serialised/sent
-	GlobalAlerts       *[]*UpdateAlert          `json:"globalAlerts,omitempty"`
+	GlobalAlerts       *[]*Alert                `json:"globalAlerts,omitempty"`
 	Regions            []*LocalRegionProperties `json:"regions,omitempty"`
 	DataEvictionPolicy *string                  `json:"dataEvictionPolicy,omitempty"`
 }
@@ -116,7 +118,7 @@ type LocalRegionProperties struct {
 	Password                   *string               `json:"password,omitempty"`
 	SourceIP                   []*string             `json:"sourceIp,omitempty"`
 	// Using a pointer to allow empty slices to be serialised/sent
-	Alerts *[]*UpdateAlert `json:"alerts,omitempty"`
+	Alerts *[]*Alert `json:"alerts,omitempty"`
 }
 
 func (o LocalRegionProperties) String() string {

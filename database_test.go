@@ -102,13 +102,13 @@ func TestDatabase_Create(t *testing.T) {
 		SourceIP:               redis.StringSlice("10.0.0.1"),
 		ClientSSLCertificate:   redis.String("something"),
 		Password:               redis.String("fooBar"),
-		Alerts: []*databases.CreateAlert{
+		Alerts: []*databases.Alert{
 			{
 				Name:  redis.String("dataset-size"),
 				Value: redis.Int(80),
 			},
 		},
-		Modules: []*databases.CreateModule{
+		Modules: []*databases.Module{
 			{
 				Name: redis.String("RedisSearch"),
 			},
@@ -392,7 +392,7 @@ func TestDatabase_Update(t *testing.T) {
 		SourceIP:             redis.StringSlice("10.0.0.1"),
 		ClientSSLCertificate: redis.String("something"),
 		Password:             redis.String("fooBar"),
-		Alerts: &[]*databases.UpdateAlert{
+		Alerts: &[]*databases.Alert{
 			{
 				Name:  redis.String("dataset-size"),
 				Value: redis.Int(80),
