@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 )
@@ -85,7 +84,7 @@ func (c *HttpClient) connection(ctx context.Context, method, name, path string, 
 	defer response.Body.Close()
 
 	if response.StatusCode > 299 {
-		body, _ := ioutil.ReadAll(response.Body)
+		body, _ := io.ReadAll(response.Body)
 		return &HTTPError{
 			Name:       name,
 			StatusCode: response.StatusCode,

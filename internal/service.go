@@ -38,7 +38,7 @@ type Api interface {
 	// by cancelling the context.
 	WaitForResource(ctx context.Context, id string, resource interface{}) error
 
-	// WaitForTask will poll the Task, waiting for it to enter a terminal state (i.e Done or Error). This task
+	// WaitForTask will poll the Task, waiting for it to enter a terminal state (i.e Done or Error). This Task
 	// will then be returned, or an error in case it cannot be retrieved.
 	WaitForTask(ctx context.Context, id string) (*Task, error)
 }
@@ -133,10 +133,8 @@ func (a *api) WaitForTask(ctx context.Context, id string) (*Task, error) {
 			var err error
 			task, err = a.get(ctx, id)
 			if err != nil {
-				if status, ok := err.(*HTTPError); ok && status.StatusCode == 404 {
-					return &taskNotFoundError{err}
-				}
-				return retry.Unrecoverable(err)
+				// An error is a terminal state (any repeated pre-task 404s will have been exhausted by this point)
+				return nil
 			}
 
 			status := redis.StringValue(task.Status)
@@ -180,7 +178,7 @@ func (a *api) get(ctx context.Context, id string) (*Task, error) {
 	}
 
 	if task.Response != nil && task.Response.Error != nil {
-		return nil, task.Response.Error
+		return &task, task.Response.Error
 	}
 
 	return &task, nil

@@ -46,7 +46,7 @@ func (a *API) ListDataPersistence(ctx context.Context) ([]*DataPersistence, erro
 	return body.DataPersistence, nil
 }
 
-// ListDataModules will return the list of available data modules that can be applied to a database.
+// ListDatabaseModules will return the list of available data modules that can be applied to a database.
 func (a *API) ListDatabaseModules(ctx context.Context) ([]*DatabaseModule, error) {
 	var body databaseModules
 	if err := a.client.Get(ctx, "list database modules", "/database-modules", &body); err != nil {

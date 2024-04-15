@@ -19,6 +19,7 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/service/cloud_accounts"
 	"github.com/RedisLabs/rediscloud-go-api/service/databases"
 	"github.com/RedisLabs/rediscloud-go-api/service/latest_backups"
+	"github.com/RedisLabs/rediscloud-go-api/service/latest_imports"
 	"github.com/RedisLabs/rediscloud-go-api/service/regions"
 	"github.com/RedisLabs/rediscloud-go-api/service/subscriptions"
 )
@@ -30,6 +31,8 @@ type Client struct {
 	Subscription *subscriptions.API
 	Regions      *regions.API
 	LatestBackup *latest_backups.API
+	LatestImport *latest_imports.API
+	//Pricing      *pricing.API
 	// acl
 	RedisRules *redis_rules.API
 	Roles      *roles.API
@@ -68,6 +71,8 @@ func NewClient(configs ...Option) (*Client, error) {
 		Subscription: subscriptions.NewAPI(client, t, config.logger),
 		Regions:      regions.NewAPI(client, t, config.logger),
 		LatestBackup: latest_backups.NewAPI(client, t, config.logger),
+		LatestImport: latest_imports.NewAPI(client, t, config.logger),
+		//Pricing:      pricing.NewAPI(client),
 		// acl
 		RedisRules: redis_rules.NewAPI(client, t, config.logger),
 		Roles:      roles.NewAPI(client, t, config.logger),
