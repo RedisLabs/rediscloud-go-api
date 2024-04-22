@@ -10,8 +10,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/RedisLabs/rediscloud-go-api/service/pricing"
-
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/redis_rules"
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/roles"
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/users"
@@ -20,8 +18,10 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/service/account"
 	"github.com/RedisLabs/rediscloud-go-api/service/cloud_accounts"
 	"github.com/RedisLabs/rediscloud-go-api/service/databases"
+	"github.com/RedisLabs/rediscloud-go-api/service/fixed/plans"
 	"github.com/RedisLabs/rediscloud-go-api/service/latest_backups"
 	"github.com/RedisLabs/rediscloud-go-api/service/latest_imports"
+	"github.com/RedisLabs/rediscloud-go-api/service/pricing"
 	"github.com/RedisLabs/rediscloud-go-api/service/regions"
 	"github.com/RedisLabs/rediscloud-go-api/service/subscriptions"
 )
@@ -35,6 +35,8 @@ type Client struct {
 	LatestBackup *latest_backups.API
 	LatestImport *latest_imports.API
 	Pricing      *pricing.API
+	// fixed
+	FixedPlans *plans.API
 	// acl
 	RedisRules *redis_rules.API
 	Roles      *roles.API
@@ -75,6 +77,8 @@ func NewClient(configs ...Option) (*Client, error) {
 		LatestBackup: latest_backups.NewAPI(client, t, config.logger),
 		LatestImport: latest_imports.NewAPI(client, t, config.logger),
 		Pricing:      pricing.NewAPI(client),
+		// fixed
+		FixedPlans: plans.NewAPI(client, config.logger),
 		// acl
 		RedisRules: redis_rules.NewAPI(client, t, config.logger),
 		Roles:      roles.NewAPI(client, t, config.logger),

@@ -35,7 +35,7 @@ func NewAPI(client HttpClient, taskWaiter TaskWaiter, logger Log) *API {
 }
 
 // List will list all of the current account's users.
-func (a API) List(ctx context.Context) ([]*GetUserResponse, error) {
+func (a *API) List(ctx context.Context) ([]*GetUserResponse, error) {
 	var response ListUsersResponse
 	err := a.client.Get(ctx, "list users", "/acl/users", &response)
 	if err != nil {
