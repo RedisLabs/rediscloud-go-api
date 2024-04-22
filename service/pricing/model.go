@@ -6,6 +6,14 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 )
 
+type ListPricingResponse struct {
+	Pricing []*Pricing `json:"pricing,omitempty"`
+}
+
+func (o ListPricingResponse) String() string {
+	return internal.ToString(o)
+}
+
 type Pricing struct {
 	DatabaseName        *string  `json:"databaseName,omitempty"`
 	Type                *string  `json:"type,omitempty"`

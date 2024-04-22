@@ -19,7 +19,7 @@ func NewAPI(client HttpClient) *API {
 
 // List will return the list of available pricing detail blocks for the provided subscription.
 func (a *API) List(ctx context.Context, subscription int) ([]*Pricing, error) {
-	var body []*Pricing
+	var body ListPricingResponse
 
 	message := fmt.Sprintf("get pricing information for subscription %d", subscription)
 	address := fmt.Sprintf("/subscriptions/%d/pricing", subscription)
@@ -28,5 +28,5 @@ func (a *API) List(ctx context.Context, subscription int) ([]*Pricing, error) {
 		return nil, err
 	}
 
-	return body, nil
+	return body.Pricing, nil
 }
