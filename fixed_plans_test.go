@@ -107,7 +107,7 @@ func Test_List(t *testing.T) {
 		{
 			ID:                            redis.Int(34944),
 			Name:                          redis.String("Single-Zone_1GB"),
-			Size:                          redis.Int(1),
+			Size:                          redis.Float64(1),
 			SizeMeasurementUnit:           redis.String("GB"),
 			Provider:                      redis.String("AWS"),
 			Region:                        redis.String("us-west-1"),
@@ -131,7 +131,7 @@ func Test_List(t *testing.T) {
 		{
 			ID:                            redis.Int(34947),
 			Name:                          redis.String("Single-Zone_1GB"),
-			Size:                          redis.Int(1),
+			Size:                          redis.Float64(1),
 			SizeMeasurementUnit:           redis.String("GB"),
 			Provider:                      redis.String("AWS"),
 			Region:                        redis.String("eu-west-1"),
@@ -177,7 +177,7 @@ func Test_ListWithProvider(t *testing.T) {
 		{
 			ID:                            redis.Int(34944),
 			Name:                          redis.String("Single-Zone_1GB"),
-			Size:                          redis.Int(1),
+			Size:                          redis.Float64(1),
 			SizeMeasurementUnit:           redis.String("GB"),
 			Provider:                      redis.String("AWS"),
 			Region:                        redis.String("us-west-1"),
@@ -201,7 +201,7 @@ func Test_ListWithProvider(t *testing.T) {
 		{
 			ID:                            redis.Int(34947),
 			Name:                          redis.String("Single-Zone_1GB"),
-			Size:                          redis.Int(1),
+			Size:                          redis.Float64(1),
 			SizeMeasurementUnit:           redis.String("GB"),
 			Provider:                      redis.String("AWS"),
 			Region:                        redis.String("eu-west-1"),

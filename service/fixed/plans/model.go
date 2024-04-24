@@ -15,7 +15,7 @@ func (o ListPlansResponse) String() string {
 type GetPlanResponse struct {
 	ID                            *int      `json:"id,omitempty"`
 	Name                          *string   `json:"name,omitempty"`
-	Size                          *int      `json:"size,omitempty"`
+	Size                          *float64  `json:"size,omitempty"`
 	SizeMeasurementUnit           *string   `json:"sizeMeasurementUnit,omitempty"`
 	Provider                      *string   `json:"provider,omitempty"`
 	Region                        *string   `json:"region,omitempty"`
@@ -27,7 +27,7 @@ type GetPlanResponse struct {
 	MaximumThroughput             *int      `json:"maximumThroughput,omitempty"`
 	MaximumBandwidthGB            *int      `json:"maximumBandwidthGB,omitempty"`
 	Availability                  *string   `json:"availability,omitempty"`
-	Connections                   *string   `json:"connections,omitempty"` // Not sure why this is a string
+	Connections                   *string   `json:"connections,omitempty"` // Could be a number or 'unlimited'
 	CidrAllowRules                *int      `json:"cidrAllowRules,omitempty"`
 	SupportDataPersistence        *bool     `json:"supportDataPersistence,omitempty"`
 	SupportInstantAndDailyBackups *bool     `json:"supportInstantAndDailyBackups,omitempty"`

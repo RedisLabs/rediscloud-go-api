@@ -33,11 +33,11 @@ func (a *API) ListWithProvider(ctx context.Context, provider string) ([]*GetPlan
 	return a.list(ctx, address)
 }
 
-// List will list all of the plans available to the current account (filtered by provider if given).
+// List will list all the plans available to the current account (filtered by provider if given).
 func (a *API) list(ctx context.Context, address string) ([]*GetPlanResponse, error) {
 	var response ListPlansResponse
 
-	err := a.client.Get(ctx, "list users", address, &response)
+	err := a.client.Get(ctx, "list fixed plans", address, &response)
 	if err != nil {
 		return nil, err
 	}
