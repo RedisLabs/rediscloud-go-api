@@ -42,5 +42,7 @@ func (a *API) list(ctx context.Context, address string) ([]*GetPlanResponse, err
 		return nil, err
 	}
 
+	a.logger.Printf("Listing fixed plans, there are %d available", len(response.Plans))
+
 	return response.Plans, nil
 }

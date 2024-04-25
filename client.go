@@ -230,9 +230,9 @@ func prettyPrint(data []byte) string {
 
 // redactPasswords: Redacts password values from a JSON message.
 func redactPasswords(data string) string {
-	m1 := regexp.MustCompile(`\"password\"\s*:\s*\"(?:[^"\\]|\\.)*\"`)
+	m1 := regexp.MustCompile(`"password"\s*:\s*"(?:[^"\\]|\\.)*"`)
 	output := m1.ReplaceAllString(data, "\"password\": \"REDACTED\"")
-	m2 := regexp.MustCompile(`\"global_password\"\s*:\s*\"(?:[^"\\]|\\.)*\"`)
+	m2 := regexp.MustCompile(`"global_password"\s*:\s*"(?:[^"\\]|\\.)*"`)
 	return m2.ReplaceAllString(output, "\"global_password\": \"REDACTED\"")
 }
 
