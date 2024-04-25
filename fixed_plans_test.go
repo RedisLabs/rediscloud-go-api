@@ -158,9 +158,10 @@ func Test_List(t *testing.T) {
 func Test_ListWithProvider(t *testing.T) {
 	s := httptest.NewServer(
 		testServer("apiKey", "secret",
-			getRequest(
+			getRequestWithQuery(
 				t,
-				"/fixed/plans?provider=AWS",
+				"/fixed/plans",
+				map[string][]string{"provider": {"AWS"}},
 				response,
 			),
 		),
