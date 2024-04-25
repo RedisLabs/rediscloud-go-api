@@ -2,7 +2,7 @@ package plans
 
 import (
 	"context"
-	"fmt"
+	"net/url"
 )
 
 const root = "/fixed/plans"
@@ -13,6 +13,7 @@ type Log interface {
 
 type HttpClient interface {
 	Get(ctx context.Context, name, path string, responseBody interface{}) error
+	GetWithQuery(ctx context.Context, name, path string, query url.Values, responseBody interface{}) error
 }
 
 type API struct {
@@ -26,24 +27,32 @@ func NewAPI(client HttpClient, logger Log) *API {
 
 // List will list all the plans available to the current account
 func (a *API) List(ctx context.Context) ([]*GetPlanResponse, error) {
-	return a.list(ctx, root)
-}
-
-// ListWithProvider will list all the plans available to the current account, filtered by provider
-func (a *API) ListWithProvider(ctx context.Context, provider string) ([]*GetPlanResponse, error) {
-	address := fmt.Sprintf("%s?provider=%s", root, provider)
-	return a.list(ctx, address)
-}
-
-func (a *API) list(ctx context.Context, address string) ([]*GetPlanResponse, error) {
 	var response ListPlansResponse
 
-	err := a.client.Get(ctx, "list fixed plans", address, &response)
+	err := a.client.Get(ctx, "list fixed plans", root, &response)
 	if err != nil {
 		return nil, err
 	}
 
-	a.logger.Printf("Listing fixed plans from %s, there are %d available", address, len(response.Plans))
+	a.logger.Printf("Listing fixed plans, all cloud providers, there are %d available", len(response.Plans))
+
+	return response.Plans, nil
+}
+
+// ListWithProvider will list all the plans available to the current account, filtered by provider
+func (a *API) ListWithProvider(ctx context.Context, provider string) ([]*GetPlanResponse, error) {
+	var response ListPlansResponse
+
+	q := map[string][]string{
+		"provider": {provider},
+	}
+
+	err := a.client.GetWithQuery(ctx, "list fixed plans", root, q, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	a.logger.Printf("Listing fixed plans for cloud provider %s, there are %d available", provider, len(response.Plans))
 
 	return response.Plans, nil
 }
