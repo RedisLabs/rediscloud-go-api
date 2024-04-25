@@ -24,16 +24,17 @@ func NewAPI(client HttpClient, logger Log) *API {
 	return &API{client: client, logger: logger}
 }
 
+// List will list all the plans available to the current account
 func (a *API) List(ctx context.Context) ([]*GetPlanResponse, error) {
 	return a.list(ctx, root)
 }
 
+// ListWithProvider will list all the plans available to the current account, filtered by provider
 func (a *API) ListWithProvider(ctx context.Context, provider string) ([]*GetPlanResponse, error) {
 	address := fmt.Sprintf("%s?provider=%s", root, provider)
 	return a.list(ctx, address)
 }
 
-// List will list all the plans available to the current account (filtered by provider if given).
 func (a *API) list(ctx context.Context, address string) ([]*GetPlanResponse, error) {
 	var response ListPlansResponse
 
