@@ -47,9 +47,11 @@ func (o CreateThroughputMeasurement) String() string {
 }
 
 type Database struct {
-	ID                     *int        `json:"databaseId,omitempty"`
-	Name                   *string     `json:"name,omitempty"`
-	Protocol               *string     `json:"protocol,omitempty"`
+	ID       *int    `json:"databaseId,omitempty"`
+	Name     *string `json:"name,omitempty"`
+	Protocol *string `json:"protocol,omitempty"`
+	// For filtering out active-active entries, this property should not be present in the JSON response
+	ActiveActiveRedis      *bool       `json:"activeActiveRedis,omitempty"`
 	Provider               *string     `json:"provider,omitempty"`
 	Region                 *string     `json:"region,omitempty"`
 	Status                 *string     `json:"status,omitempty"`

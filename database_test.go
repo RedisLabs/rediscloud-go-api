@@ -178,6 +178,9 @@ func TestDatabase_List(t *testing.T) {
 			Region:   redis.String("eu-west-1"),
 		},
 	}, actual)
+
+	assert.False(t, redis.BoolValue(actual[0].ActiveActiveRedis))
+	assert.False(t, redis.BoolValue(actual[1].ActiveActiveRedis))
 }
 
 func TestDatabase_Get(t *testing.T) {
