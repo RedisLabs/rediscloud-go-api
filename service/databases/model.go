@@ -50,6 +50,7 @@ type Database struct {
 	ID                     *int        `json:"databaseId,omitempty"`
 	Name                   *string     `json:"name,omitempty"`
 	Protocol               *string     `json:"protocol,omitempty"`
+	ActiveActiveRedis      *bool       `json:"activeActiveRedis,omitempty"` // For filtering out active-active entries, should not be present
 	Provider               *string     `json:"provider,omitempty"`
 	Region                 *string     `json:"region,omitempty"`
 	Status                 *string     `json:"status,omitempty"`
