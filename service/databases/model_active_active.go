@@ -138,7 +138,7 @@ func (o DatabaseBackupConfig) String() string {
 }
 
 type listActiveActiveDatabaseResponse struct {
-	AccountId    *string                           `json:"accountId,omitempty"`
+	AccountId    *int                              `json:"accountId,omitempty"`
 	Subscription []*listActiveActiveDbSubscription `json:"subscription,omitempty"`
 }
 
