@@ -5,9 +5,9 @@ import (
 
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/redis_rules"
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/roles"
-
 	"github.com/RedisLabs/rediscloud-go-api/service/cloud_accounts"
 	"github.com/RedisLabs/rediscloud-go-api/service/databases"
+	fixedSubscriptions "github.com/RedisLabs/rediscloud-go-api/service/fixed/subscriptions"
 	"github.com/RedisLabs/rediscloud-go-api/service/subscriptions"
 	"github.com/stretchr/testify/assert"
 )
@@ -114,4 +114,11 @@ func TestRoleFixtures(t *testing.T) {
 	assert.Equal(t, "pending", roles.StatusPending)
 	assert.Equal(t, "error", roles.StatusError)
 	assert.Equal(t, "deleting", roles.StatusDeleting)
+}
+
+func TestFixedSubcriptionFixtures(t *testing.T) {
+	assert.Equal(t, "active", fixedSubscriptions.FixedSubscriptionStatusActive)
+	assert.Equal(t, "pending", fixedSubscriptions.FixedSubscriptionStatusPending)
+	assert.Equal(t, "error", fixedSubscriptions.FixedSubscriptionStatusError)
+	assert.Equal(t, "deleting", fixedSubscriptions.FixedSubscriptionStatusDeleting)
 }
