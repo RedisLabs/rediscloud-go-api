@@ -21,7 +21,6 @@ type HttpClient interface {
 
 type TaskWaiter interface {
 	WaitForResourceId(ctx context.Context, id string) (int, error)
-	WaitForResource(ctx context.Context, id string, resource interface{}) error
 	Wait(ctx context.Context, id string) error
 }
 
