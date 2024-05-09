@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/avast/retry-go/v4 v4.6.0
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/tools v0.20.0
+	golang.org/x/tools v0.21.0
 )
 
 require (
