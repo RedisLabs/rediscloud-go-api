@@ -18,6 +18,7 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/service/account"
 	"github.com/RedisLabs/rediscloud-go-api/service/cloud_accounts"
 	"github.com/RedisLabs/rediscloud-go-api/service/databases"
+	fixedDatabases "github.com/RedisLabs/rediscloud-go-api/service/fixed/databases"
 	"github.com/RedisLabs/rediscloud-go-api/service/fixed/plans"
 	fixedSubscriptions "github.com/RedisLabs/rediscloud-go-api/service/fixed/subscriptions"
 	"github.com/RedisLabs/rediscloud-go-api/service/latest_backups"
@@ -39,6 +40,7 @@ type Client struct {
 	// fixed
 	FixedPlans         *plans.API
 	FixedSubscriptions *fixedSubscriptions.API
+	FixedDatabases     *fixedDatabases.API
 	// acl
 	RedisRules *redis_rules.API
 	Roles      *roles.API
@@ -82,6 +84,7 @@ func NewClient(configs ...Option) (*Client, error) {
 		// fixed
 		FixedPlans:         plans.NewAPI(client, config.logger),
 		FixedSubscriptions: fixedSubscriptions.NewAPI(client, t, config.logger),
+		FixedDatabases:     fixedDatabases.NewAPI(client, t, config.logger),
 		// acl
 		RedisRules: redis_rules.NewAPI(client, t, config.logger),
 		Roles:      roles.NewAPI(client, t, config.logger),

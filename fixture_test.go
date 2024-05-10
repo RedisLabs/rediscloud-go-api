@@ -1,6 +1,7 @@
 package rediscloud_api
 
 import (
+	fixedDatabases "github.com/RedisLabs/rediscloud-go-api/service/fixed/databases"
 	"testing"
 
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/redis_rules"
@@ -121,4 +122,6 @@ func TestFixedSubcriptionFixtures(t *testing.T) {
 	assert.Equal(t, "pending", fixedSubscriptions.FixedSubscriptionStatusPending)
 	assert.Equal(t, "error", fixedSubscriptions.FixedSubscriptionStatusError)
 	assert.Equal(t, "deleting", fixedSubscriptions.FixedSubscriptionStatusDeleting)
+
+	assert.Equal(t, []string{"redis", "memcached", "stack"}, fixedDatabases.ProtocolValues())
 }
