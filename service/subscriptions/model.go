@@ -115,7 +115,7 @@ type Subscription struct {
 	PaymentMethodID   *int           `json:"paymentMethodId,omitempty"`
 	MemoryStorage     *string        `json:"memoryStorage,omitempty"`
 	StorageEncryption *bool          `json:"storageEncryption,omitempty"`
-	NumberOfDatabases *int           `json:"numberOfDatabases"`
+	NumberOfDatabases *int           `json:"numberOfDatabases,omitempty"`
 	CloudDetails      []*CloudDetail `json:"cloudDetails,omitempty"`
 }
 
