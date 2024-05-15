@@ -2,14 +2,15 @@ package rediscloud_api
 
 import (
 	"context"
+	"net/http/httptest"
+	"testing"
+	"time"
+
 	"github.com/RedisLabs/rediscloud-go-api/redis"
 	"github.com/RedisLabs/rediscloud-go-api/service/databases"
 	fixedDatabases "github.com/RedisLabs/rediscloud-go-api/service/fixed/databases"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"net/http/httptest"
-	"testing"
-	"time"
 )
 
 func TestFixedDatabase_Create(t *testing.T) {
@@ -385,6 +386,151 @@ func TestFixedDatabase_Get(t *testing.T) {
 
 }
 
-// TODO Update
+func TestFixedDatabase_Update(t *testing.T) {
+	server := httptest.NewServer(
+		testServer(
+			"apiKey",
+			"secret",
+			putRequest(
+				t,
+				"/fixed/subscriptions/112119/databases/51056892",
+				`{
+					"name": "my-test-fixed-database",
+					"respVersion": "resp2",
+					"dataPersistence": "none",
+					"dataEvictionPolicy": "volatile-lru",
+					"replication": false,
+					"enableDefaultUser": true,
+					"alerts": [
+						{
+							"name": "datasets-size",
+							"value": 80
+						}
+					]
+				}`,
+				`{
+					"taskId": "4a9dc555-7c7d-4657-a8c9-5d868d7acdd2",
+					"commandType": "fixedDatabaseUpdateRequest",
+					"status": "received",
+					"description": "Task request received and is being queued for processing.",
+					"timestamp": "2024-05-15T14:47:08.975576016Z",
+					"links": [
+						{
+							"rel": "task",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/tasks/4a9dc555-7c7d-4657-a8c9-5d868d7acdd2"
+						}
+					]
+				}`,
+			),
+			getRequest(
+				t,
+				"/tasks/4a9dc555-7c7d-4657-a8c9-5d868d7acdd2",
+				`{
+					"taskId": "4a9dc555-7c7d-4657-a8c9-5d868d7acdd2",
+					"commandType": "fixedDatabaseUpdateRequest",
+					"status": "processing-completed",
+					"description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+					"timestamp": "2024-05-15T14:47:21.687621578Z",
+					"response": {
+						"resourceId": 51056892,
+						"additionalResourceId": 112119
+					},
+					"links": [
+						{
+							"rel": "resource",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/fixed/subscriptions/112119/databases/51056892"
+						},
+						{
+							"rel": "self",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/tasks/4a9dc555-7c7d-4657-a8c9-5d868d7acdd2"
+						}
+					]
+				}`,
+			),
+		),
+	)
 
-// TODO Delete
+	subject, err := clientFromTestServer(server, "apiKey", "secret")
+	require.NoError(t, err)
+
+	err = subject.FixedDatabases.Update(
+		context.TODO(),
+		112119,
+		51056892,
+		fixedDatabases.UpdateFixedDatabase{
+			Name:               redis.String("my-test-fixed-database"),
+			RespVersion:        redis.String("resp2"),
+			DataPersistence:    redis.String("none"),
+			DataEvictionPolicy: redis.String("volatile-lru"),
+			Replication:        redis.Bool(false),
+			EnableDefaultUser:  redis.Bool(true),
+			Alerts: &[]*databases.Alert{
+				{
+					Name:  redis.String("datasets-size"),
+					Value: redis.Int(80),
+				},
+			},
+		},
+	)
+
+	require.NoError(t, err)
+}
+
+func TestFixedDatabase_Delete(t *testing.T) {
+	server := httptest.NewServer(
+		testServer(
+			"apiKey",
+			"secret",
+			deleteRequest(
+				t,
+				"/fixed/subscriptions/112119/databases/51056892",
+				`{
+					"taskId": "3e26ac3a-231c-486d-b4cf-8519f520a5f4",
+					"commandType": "fixedDatabaseDeleteRequest",
+					"status": "received",
+					"description": "Task request received and is being queued for processing.",
+					"timestamp": "2024-05-15T14:55:04.008723915Z",
+					"links": [
+						{
+							"rel": "task",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/tasks/3e26ac3a-231c-486d-b4cf-8519f520a5f4"
+						}
+					]
+				}`,
+			),
+			getRequest(
+				t,
+				"/tasks/3e26ac3a-231c-486d-b4cf-8519f520a5f4",
+				`{
+					"taskId": "3e26ac3a-231c-486d-b4cf-8519f520a5f4",
+					"commandType": "fixedDatabaseDeleteRequest",
+					"status": "processing-completed",
+					"description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+					"timestamp": "2024-05-15T14:55:06.538386979Z",
+					"response": {
+						"resourceId": 51056892,
+						"additionalResourceId": 112119
+					},
+					"links": [
+						{
+							"rel": "self",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/tasks/3e26ac3a-231c-486d-b4cf-8519f520a5f4"
+						}
+					]
+				}`,
+			),
+		),
+	)
+
+	subject, err := clientFromTestServer(server, "apiKey", "secret")
+	require.NoError(t, err)
+
+	err = subject.FixedDatabases.Delete(context.TODO(), 112119, 51056892)
+	require.NoError(t, err)
+
+}

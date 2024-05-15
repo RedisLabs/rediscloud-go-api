@@ -1,8 +1,9 @@
 package rediscloud_api
 
 import (
-	fixedDatabases "github.com/RedisLabs/rediscloud-go-api/service/fixed/databases"
 	"testing"
+
+	fixedDatabases "github.com/RedisLabs/rediscloud-go-api/service/fixed/databases"
 
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/redis_rules"
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/roles"
