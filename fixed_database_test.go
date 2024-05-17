@@ -181,7 +181,7 @@ func TestFixedDatabase_List(t *testing.T) {
 					]
 				}`,
 			),
-			getRequestWithQueryAndStatus(
+			getRequestWithQuery(
 				t,
 				"/fixed/subscriptions/111930/databases",
 				map[string][]string{
@@ -192,8 +192,20 @@ func TestFixedDatabase_List(t *testing.T) {
 						"100",
 					},
 				},
-				404,
-				"",
+				`{
+					"accountId" : 69369,
+					"subscription" : {
+						"subscriptionId" : 111930,
+						"numberOfDatabases" : 0,
+						"databases" : [ ],
+						"links" : [ ]
+					},
+					"links" : [ {
+						"rel" : "self",
+						"type" : "GET",
+						"href" : "https://api-staging.qa.redislabs.com/v1/fixed/subscriptions/112330/databases?limit=100&offset=100"
+					} ]
+				}`,
 			),
 		),
 	)

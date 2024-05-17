@@ -157,6 +157,12 @@ func (d *ListFixedDatabase) Next() bool {
 			d.setError(err)
 			return false
 		}
+		// This API doesn't give an error when nothing is found
+		// If the next page is empty, we're done listing
+		// This is actually _better_ behaviour, but now it's inconsistent
+		if len(d.page) == 0 {
+			return false
+		}
 	}
 
 	d.updateValue()

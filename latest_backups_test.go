@@ -63,6 +63,63 @@ func TestGetLatestBackup(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestGetFixedLatestBackup(t *testing.T) {
+	server := httptest.NewServer(
+		testServer(
+			"key",
+			"secret",
+			getRequest(
+				t,
+				"/fixed/subscriptions/12/databases/34/backup",
+				`{
+				  "taskId": "ce2cbfea-9b15-4250-a516-f014161a8dd3",
+				  "commandType": "databaseBackupStatusRequest",
+				  "status": "received",
+				  "description": "Task request received and is being queued for processing.",
+				  "timestamp": "2024-04-15T09:52:23.963337Z",
+				  "links": [
+					{
+					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/ce2cbfea-9b15-4250-a516-f014161a8dd3",
+					  "type": "GET",
+					  "rel": "task"
+					}
+				  ]
+				}`,
+			),
+			getRequest(
+				t,
+				"/tasks/ce2cbfea-9b15-4250-a516-f014161a8dd3",
+				`{
+				  "taskId": "ce2cbfea-9b15-4250-a516-f014161a8dd3",
+				  "commandType": "databaseBackupStatusRequest",
+				  "status": "processing-error",
+				  "description": "Task request failed during processing. See error information for failure details.",
+				  "timestamp": "2024-04-15T09:52:26.101936Z",
+				  "response": {
+					"error": {
+					  "type": "DATABASE_BACKUP_DISABLED",
+					  "status": "400 BAD_REQUEST",
+					  "description": "Database backup is disabled"
+					}
+				  },
+				  "links": [
+					{
+					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/ce2cbfea-9b15-4250-a516-f014161a8dd3",
+					  "type": "GET",
+					  "rel": "self"
+					}
+				  ]
+				}`,
+			),
+		))
+
+	subject, err := clientFromTestServer(server, "key", "secret")
+	require.NoError(t, err)
+
+	_, err = subject.LatestBackup.GetFixed(context.TODO(), 12, 34)
+	require.NoError(t, err)
+}
+
 func TestGetAALatestBackup(t *testing.T) {
 	server := httptest.NewServer(
 		testServer(
