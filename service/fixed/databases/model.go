@@ -138,8 +138,10 @@ func (o Security) String() string {
 }
 
 type Backup struct {
-	Enabled *bool   `json:"remoteBackupEnabled,omitempty"`
-	Status  *string `json:"status,omitempty"`
+	Enabled     *bool   `json:"remoteBackupEnabled,omitempty"`
+	Status      *string `json:"status,omitempty"`
+	Interval    *string `json:"interval,omitempty"`
+	Destination *string `json:"destination,omitempty"`
 }
 
 func (o Backup) String() string {
