@@ -40,6 +40,16 @@ func (a *API) Get(ctx context.Context, subscription int, database int) (*LatestI
 	return NewLatestImportStatus(task), nil
 }
 
+func (a *API) GetFixed(ctx context.Context, subscription int, database int) (*LatestImportStatus, error) {
+	message := fmt.Sprintf("get latest import information for database %d in subscription %d", subscription, database)
+	address := fmt.Sprintf("/fixed/subscriptions/%d/databases/%d/import", subscription, database)
+	task, err := a.get(ctx, message, address)
+	if err != nil {
+		return nil, wrap404Error(subscription, database, err)
+	}
+	return NewLatestImportStatus(task), nil
+}
+
 func (a *API) get(ctx context.Context, message string, address string) (*internal.Task, error) {
 	var taskResponse internal.TaskResponse
 	err := a.client.Get(ctx, message, address, &taskResponse)

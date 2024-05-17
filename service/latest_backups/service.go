@@ -40,6 +40,16 @@ func (a *API) Get(ctx context.Context, subscription int, database int) (*LatestB
 	return NewLatestBackupStatus(task), nil
 }
 
+func (a *API) GetFixed(ctx context.Context, subscription int, database int) (*LatestBackupStatus, error) {
+	message := fmt.Sprintf("get latest backup information for database %d in subscription %d", subscription, database)
+	address := fmt.Sprintf("/fixed/subscriptions/%d/databases/%d/backup", subscription, database)
+	task, err := a.get(ctx, message, address)
+	if err != nil {
+		return nil, wrap404Error(subscription, database, err)
+	}
+	return NewLatestBackupStatus(task), nil
+}
+
 func (a *API) GetActiveActive(ctx context.Context, subscription int, database int, region string) (*LatestBackupStatus, error) {
 	message := fmt.Sprintf("get latest backup information for database %d in subscription %d and region %s", subscription, database, region)
 	address := fmt.Sprintf("/subscriptions/%d/databases/%d/backup?regionName=%s", subscription, database, region)
