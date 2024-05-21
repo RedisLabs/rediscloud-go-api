@@ -3,9 +3,8 @@ package latest_imports
 import (
 	"context"
 	"fmt"
-	"net/http"
-
 	"github.com/RedisLabs/rediscloud-go-api/internal"
+	"net/http"
 )
 
 type HttpClient interface {
@@ -13,7 +12,7 @@ type HttpClient interface {
 }
 
 type TaskWaiter interface {
-	WaitForTask(ctx context.Context, id string) (*internal.Task, error)
+	Wait(ctx context.Context, id string) error
 }
 
 type Log interface {
@@ -37,7 +36,7 @@ func (a *API) Get(ctx context.Context, subscription int, database int) (*LatestI
 	if err != nil {
 		return nil, wrap404Error(subscription, database, err)
 	}
-	return NewLatestImportStatus(task), nil
+	return task, nil
 }
 
 func (a *API) GetFixed(ctx context.Context, subscription int, database int) (*LatestImportStatus, error) {
@@ -47,19 +46,34 @@ func (a *API) GetFixed(ctx context.Context, subscription int, database int) (*La
 	if err != nil {
 		return nil, wrap404Error(subscription, database, err)
 	}
-	return NewLatestImportStatus(task), nil
+	return task, nil
 }
 
-func (a *API) get(ctx context.Context, message string, address string) (*internal.Task, error) {
-	var taskResponse internal.TaskResponse
-	err := a.client.Get(ctx, message, address, &taskResponse)
+func (a *API) get(ctx context.Context, message string, address string) (*LatestImportStatus, error) {
+	var task internal.TaskResponse
+	err := a.client.Get(ctx, message, address, &task)
 	if err != nil {
 		return nil, err
 	}
 
-	a.logger.Printf("Waiting for backup status request %d to complete", taskResponse.ID)
+	a.logger.Printf("Waiting for import status request %d to complete", task.ID)
 
-	return a.taskWaiter.WaitForTask(ctx, *taskResponse.ID)
+	err = a.taskWaiter.Wait(ctx, *task.ID)
+
+	a.logger.Printf("Import status request %d completed, possibly with error", task.ID, err)
+
+	var importStatusTask *LatestImportStatus
+	err = a.client.Get(ctx,
+		fmt.Sprintf("retrieve completed import status task %d", task.ID),
+		"/tasks/"+*task.ID,
+		&importStatusTask,
+	)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve completed import status %d: %w", task.ID, err)
+	}
+
+	return importStatusTask, nil
 }
 
 func wrap404Error(subId int, dbId int, err error) error {
