@@ -32,13 +32,22 @@ func (o Response) String() string {
 }
 
 type Resource struct {
-	Status         *string    `json:"status,omitempty"`
-	LastImportTime *time.Time `json:"lastImportTime,omitempty"`
-	FailureReason  *string    `json:"failureReason,omitempty"`
-	// FailureReasonParams // Type unknown
+	Status              *string               `json:"status,omitempty"`
+	LastImportTime      *time.Time            `json:"lastImportTime,omitempty"`
+	FailureReason       *string               `json:"failureReason,omitempty"`
+	FailureReasonParams []*FailureReasonParam `json:"failureReasonParams,omitempty"`
 }
 
 func (o Resource) String() string {
+	return internal.ToString(o)
+}
+
+type FailureReasonParam struct {
+	Key   *string `json:"key,omitempty"`
+	Value *string `json:"value,omitempty"`
+}
+
+func (o FailureReasonParam) String() string {
 	return internal.ToString(o)
 }
 

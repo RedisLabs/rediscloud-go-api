@@ -2,12 +2,13 @@ package rediscloud_api
 
 import (
 	"context"
-	"github.com/RedisLabs/rediscloud-go-api/redis"
-	"github.com/RedisLabs/rediscloud-go-api/service/latest_imports"
-	"github.com/stretchr/testify/assert"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/RedisLabs/rediscloud-go-api/redis"
+	"github.com/RedisLabs/rediscloud-go-api/service/latest_imports"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/stretchr/testify/require"
 )
@@ -306,6 +307,16 @@ func TestGetLatestImport(t *testing.T) {
 				Status:         redis.String("failed"),
 				LastImportTime: redis.Time(time.Date(2024, 5, 21, 10, 36, 26, 0, time.UTC)),
 				FailureReason:  redis.String("file-corrupted"),
+				FailureReasonParams: []*latest_imports.FailureReasonParam{
+					{
+						Key:   redis.String("bytes_configured_bdb_limit"),
+						Value: redis.String("1234"),
+					},
+					{
+						Key:   redis.String("bytes_of_expected_dataset"),
+						Value: redis.String("5678"),
+					},
+				},
 			},
 			Error: nil,
 		},
