@@ -1,9 +1,9 @@
 package latest_backups
 
 import (
-	"encoding/json"
 	"fmt"
 	"regexp"
+	"time"
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 	"github.com/RedisLabs/rediscloud-go-api/redis"
@@ -22,12 +22,22 @@ func (o LatestBackupStatus) String() string {
 }
 
 type Response struct {
-	ID       *int             `json:"resourceId,omitempty"`
-	Resource *json.RawMessage `json:"resource,omitempty"`
-	Error    *Error           `json:"error,omitempty"`
+	ID       *int      `json:"resourceId,omitempty"`
+	Resource *Resource `json:"resource,omitempty"`
+	Error    *Error    `json:"error,omitempty"`
 }
 
 func (o Response) String() string {
+	return internal.ToString(o)
+}
+
+type Resource struct {
+	Status         *string    `json:"status,omitempty"`
+	LastBackupTime *time.Time `json:"lastBackupTime,omitempty"`
+	FailureReason  *string    `json:"failureReason,omitempty"`
+}
+
+func (o Resource) String() string {
 	return internal.ToString(o)
 }
 
@@ -37,8 +47,8 @@ type Error struct {
 	Status      *string `json:"status,omitempty"`
 }
 
-func (o Error) String() string {
-	return internal.ToString(o)
+func (e *Error) String() string {
+	return internal.ToString(e)
 }
 
 func (e *Error) StatusCode() string {
@@ -54,36 +64,6 @@ func (e *Error) Error() string {
 }
 
 var errorStatusCode = regexp.MustCompile("^(\\d*).*$")
-
-func NewLatestBackupStatus(task *internal.Task) *LatestBackupStatus {
-	latestBackupStatus := LatestBackupStatus{
-		CommandType: task.CommandType,
-		Description: task.Description,
-		Status:      task.Status,
-		ID:          task.ID,
-	}
-
-	if task.Response != nil {
-		r := Response{
-			ID:       task.Response.ID,
-			Resource: task.Response.Resource,
-		}
-
-		if task.Response.Error != nil {
-			e := Error{
-				Type:        task.Response.Error.Type,
-				Description: task.Response.Error.Description,
-				Status:      task.Response.Error.Status,
-			}
-
-			r.Error = &e
-		}
-
-		latestBackupStatus.Response = &r
-	}
-
-	return &latestBackupStatus
-}
 
 type NotFound struct {
 	subId int

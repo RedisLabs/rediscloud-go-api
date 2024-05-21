@@ -57,7 +57,7 @@ type Error struct {
 	Status      *string `json:"status,omitempty"`
 }
 
-func (e Error) String() string {
+func (e *Error) String() string {
 	return internal.ToString(e)
 }
 
