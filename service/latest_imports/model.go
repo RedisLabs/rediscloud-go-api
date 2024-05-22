@@ -1,9 +1,9 @@
 package latest_imports
 
 import (
-	"encoding/json"
 	"fmt"
 	"regexp"
+	"time"
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 	"github.com/RedisLabs/rediscloud-go-api/redis"
@@ -22,12 +22,32 @@ func (o LatestImportStatus) String() string {
 }
 
 type Response struct {
-	ID       *int             `json:"resourceId,omitempty"`
-	Resource *json.RawMessage `json:"resource,omitempty"`
-	Error    *Error           `json:"error,omitempty"`
+	ID       *int      `json:"resourceId,omitempty"`
+	Resource *Resource `json:"resource,omitempty"`
+	Error    *Error    `json:"error,omitempty"`
 }
 
 func (o Response) String() string {
+	return internal.ToString(o)
+}
+
+type Resource struct {
+	Status              *string               `json:"status,omitempty"`
+	LastImportTime      *time.Time            `json:"lastImportTime,omitempty"`
+	FailureReason       *string               `json:"failureReason,omitempty"`
+	FailureReasonParams []*FailureReasonParam `json:"failureReasonParams,omitempty"`
+}
+
+func (o Resource) String() string {
+	return internal.ToString(o)
+}
+
+type FailureReasonParam struct {
+	Key   *string `json:"key,omitempty"`
+	Value *string `json:"value,omitempty"`
+}
+
+func (o FailureReasonParam) String() string {
 	return internal.ToString(o)
 }
 
@@ -37,7 +57,7 @@ type Error struct {
 	Status      *string `json:"status,omitempty"`
 }
 
-func (e Error) String() string {
+func (e *Error) String() string {
 	return internal.ToString(e)
 }
 
@@ -54,36 +74,6 @@ func (e *Error) Error() string {
 }
 
 var errorStatusCode = regexp.MustCompile("^(\\d*).*$")
-
-func NewLatestImportStatus(task *internal.Task) *LatestImportStatus {
-	latestImportStatus := LatestImportStatus{
-		CommandType: task.CommandType,
-		Description: task.Description,
-		Status:      task.Status,
-		ID:          task.ID,
-	}
-
-	if task.Response != nil {
-		r := Response{
-			ID:       task.Response.ID,
-			Resource: task.Response.Resource,
-		}
-
-		if task.Response.Error != nil {
-			e := Error{
-				Type:        task.Response.Error.Type,
-				Description: task.Response.Error.Description,
-				Status:      task.Response.Error.Status,
-			}
-
-			r.Error = &e
-		}
-
-		latestImportStatus.Response = &r
-	}
-
-	return &latestImportStatus
-}
 
 type NotFound struct {
 	subId int
