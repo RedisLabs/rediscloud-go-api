@@ -186,9 +186,10 @@ func TestGetAALatestBackup(t *testing.T) {
 		testServer(
 			"key",
 			"secret",
-			getRequest(
+			getRequestWithQuery(
 				t,
-				"/subscriptions/12/databases/34/backup?regionName=eu-west-2",
+				"/subscriptions/12/databases/34/backup",
+				map[string][]string{"regionName": {"eu-west-2"}},
 				`{
 				  "taskId": "ce2cbfea-9b15-4250-a516-f014161a8dd3",
 				  "commandType": "databaseBackupStatusRequest",
