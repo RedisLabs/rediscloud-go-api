@@ -188,6 +188,7 @@ func TestAADatabase_List(t *testing.T) {
 					Security: &databases.Security{
 						EnableDefaultUser:       redis.Bool(true),
 						SSLClientAuthentication: redis.Bool(false),
+						TLSClientAuthentication: redis.Bool(false),
 						SourceIPs:               redis.StringSlice("0.0.0.0/0"),
 						EnableTls:               redis.Bool(false),
 					},
@@ -217,6 +218,7 @@ func TestAADatabase_List(t *testing.T) {
 					Security: &databases.Security{
 						EnableDefaultUser:       redis.Bool(true),
 						SSLClientAuthentication: redis.Bool(false),
+						TLSClientAuthentication: redis.Bool(false),
 						SourceIPs:               redis.StringSlice("0.0.0.0/0"),
 						EnableTls:               redis.Bool(false),
 					},

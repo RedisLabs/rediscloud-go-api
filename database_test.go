@@ -37,7 +37,9 @@ func TestDatabase_Create(t *testing.T) {
   "sourceIp": [
     "10.0.0.1"
   ],
+  "enableTls": true,
   "clientSslCertificate": "something",
+  "clientTlsCertificates": ["something", "else"],
   "password": "fooBar",
   "alerts": [
     {
@@ -101,6 +103,8 @@ func TestDatabase_Create(t *testing.T) {
 		ReplicaOf:              redis.StringSlice("another"),
 		SourceIP:               redis.StringSlice("10.0.0.1"),
 		ClientSSLCertificate:   redis.String("something"),
+		ClientTLSCertificates:  &[]*string{redis.String("something"), redis.String("else")},
+		EnableTls:              redis.Bool(true),
 		Password:               redis.String("fooBar"),
 		Alerts: []*databases.Alert{
 			{
@@ -229,6 +233,8 @@ func TestDatabase_Get(t *testing.T) {
 	"enableDefaultUser": false,
     "password": "test",
     "sslClientAuthentication": false,
+	"tlsClientAuthentication": true,
+    "enableTls": true,
     "sourceIps": [
       "0.0.0.0/0"
     ]
@@ -292,6 +298,8 @@ func TestDatabase_Get(t *testing.T) {
 		Security: &databases.Security{
 			EnableDefaultUser:       redis.Bool(false),
 			SSLClientAuthentication: redis.Bool(false),
+			TLSClientAuthentication: redis.Bool(true),
+			EnableTls:               redis.Bool(true),
 			SourceIPs:               redis.StringSlice("0.0.0.0/0"),
 			Password:                redis.String("test"),
 		},
@@ -336,6 +344,8 @@ func TestDatabase_Update(t *testing.T) {
     "10.0.0.1"
   ],
   "clientSslCertificate": "something",
+  "clientTlsCertificates": ["something", "new"],
+  "enableTls": false,
   "password": "fooBar",
   "alerts": [
     {
@@ -389,12 +399,14 @@ func TestDatabase_Update(t *testing.T) {
 			By:    redis.String("operations-per-second"),
 			Value: redis.Int(1000),
 		},
-		RegexRules:           redis.StringSlice(".*"),
-		ReplicaOf:            redis.StringSlice("another"),
-		PeriodicBackupPath:   redis.String("s3://bucket-name"),
-		SourceIP:             redis.StringSlice("10.0.0.1"),
-		ClientSSLCertificate: redis.String("something"),
-		Password:             redis.String("fooBar"),
+		RegexRules:            redis.StringSlice(".*"),
+		ReplicaOf:             redis.StringSlice("another"),
+		PeriodicBackupPath:    redis.String("s3://bucket-name"),
+		SourceIP:              redis.StringSlice("10.0.0.1"),
+		ClientSSLCertificate:  redis.String("something"),
+		ClientTLSCertificates: &[]*string{redis.String("something"), redis.String("new")},
+		EnableTls:             redis.Bool(false),
+		Password:              redis.String("fooBar"),
 		Alerts: &[]*databases.Alert{
 			{
 				Name:  redis.String("dataset-size"),
