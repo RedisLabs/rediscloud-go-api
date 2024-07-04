@@ -22,15 +22,16 @@ type CreateDatabase struct {
 	AverageItemSizeInBytes              *int                         `json:"averageItemSizeInBytes,omitempty"`
 	ReplicaOf                           []*string                    `json:"replicaOf,omitempty"`
 	// Deprecated: Use RemoteBackup instead
-	PeriodicBackupPath   *string               `json:"periodicBackupPath,omitempty"`
-	SourceIP             []*string             `json:"sourceIp,omitempty"`
-	ClientSSLCertificate *string               `json:"clientSslCertificate,omitempty"`
-	Password             *string               `json:"password,omitempty"`
-	Alerts               []*Alert              `json:"alerts,omitempty"`
-	Modules              []*Module             `json:"modules,omitempty"`
-	EnableTls            *bool                 `json:"enableTls,omitempty"`
-	PortNumber           *int                  `json:"port,omitempty"`
-	RemoteBackup         *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
+	PeriodicBackupPath    *string               `json:"periodicBackupPath,omitempty"`
+	SourceIP              []*string             `json:"sourceIp,omitempty"`
+	ClientSSLCertificate  *string               `json:"clientSslCertificate,omitempty"`
+	ClientTLSCertificates *[]*string            `json:"clientTlsCertificates,omitempty"`
+	Password              *string               `json:"password,omitempty"`
+	Alerts                []*Alert              `json:"alerts,omitempty"`
+	Modules               []*Module             `json:"modules,omitempty"`
+	EnableTls             *bool                 `json:"enableTls,omitempty"`
+	PortNumber            *int                  `json:"port,omitempty"`
+	RemoteBackup          *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
 }
 
 func (o CreateDatabase) String() string {
@@ -107,6 +108,7 @@ func (o RegexRule) String() string {
 type Security struct {
 	EnableDefaultUser       *bool     `json:"enableDefaultUser,omitempty"`
 	SSLClientAuthentication *bool     `json:"sslClientAuthentication,omitempty"`
+	TLSClientAuthentication *bool     `json:"tlsClientAuthentication,omitempty"`
 	SourceIPs               []*string `json:"sourceIps,omitempty"`
 	Password                *string   `json:"password,omitempty"`
 	EnableTls               *bool     `json:"enableTls,omitempty"`
@@ -158,7 +160,9 @@ type UpdateDatabase struct {
 	PeriodicBackupPath                  *string                      `json:"periodicBackupPath,omitempty"`
 	SourceIP                            []*string                    `json:"sourceIp,omitempty"`
 	ClientSSLCertificate                *string                      `json:"clientSslCertificate,omitempty"`
-	Password                            *string                      `json:"password,omitempty"`
+	// Using a pointer to allow empty slices to be serialised/sent
+	ClientTLSCertificates *[]*string `json:"clientTlsCertificates,omitempty"`
+	Password              *string    `json:"password,omitempty"`
 	// It's important to use a pointer here, because the terraform user may want to send an empty list.
 	// In that case, the developer must pass a (pointer to a) non-nil, zero-length slice
 	// If the developer really wants to omit this value, passing a nil slice value would work

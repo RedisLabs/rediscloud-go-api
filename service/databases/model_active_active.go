@@ -91,15 +91,17 @@ func (o LocalThroughput) String() string {
 }
 
 type UpdateActiveActiveDatabase struct {
-	DryRun                              *bool     `json:"dryRun,omitempty"`
-	MemoryLimitInGB                     *float64  `json:"memoryLimitInGb,omitempty"`
-	SupportOSSClusterAPI                *bool     `json:"supportOSSClusterApi,omitempty"`
-	UseExternalEndpointForOSSClusterAPI *bool     `json:"useExternalEndpointForOSSClusterApi,omitempty"`
-	ClientSSLCertificate                *string   `json:"clientSslCertificate,omitempty"`
-	EnableTls                           *bool     `json:"enableTls,omitempty"`
-	GlobalDataPersistence               *string   `json:"globalDataPersistence,omitempty"`
-	GlobalPassword                      *string   `json:"globalPassword,omitempty"`
-	GlobalSourceIP                      []*string `json:"globalSourceIp,omitempty"`
+	DryRun                              *bool    `json:"dryRun,omitempty"`
+	MemoryLimitInGB                     *float64 `json:"memoryLimitInGb,omitempty"`
+	SupportOSSClusterAPI                *bool    `json:"supportOSSClusterApi,omitempty"`
+	UseExternalEndpointForOSSClusterAPI *bool    `json:"useExternalEndpointForOSSClusterApi,omitempty"`
+	ClientSSLCertificate                *string  `json:"clientSslCertificate,omitempty"`
+	// Using a pointer to allow empty slices to be serialised/sent
+	ClientTLSCertificates *[]*string `json:"clientTlsCertificates,omitempty"`
+	EnableTls             *bool      `json:"enableTls,omitempty"`
+	GlobalDataPersistence *string    `json:"globalDataPersistence,omitempty"`
+	GlobalPassword        *string    `json:"globalPassword,omitempty"`
+	GlobalSourceIP        []*string  `json:"globalSourceIp,omitempty"`
 	// Using a pointer to allow empty slices to be serialised/sent
 	GlobalAlerts       *[]*Alert                `json:"globalAlerts,omitempty"`
 	Regions            []*LocalRegionProperties `json:"regions,omitempty"`
