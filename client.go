@@ -3,7 +3,6 @@ package rediscloud_api
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/RedisLabs/rediscloud-go-api/service/fixed/plans/plan_subscriptions"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -21,7 +20,9 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/service/databases"
 	fixedDatabases "github.com/RedisLabs/rediscloud-go-api/service/fixed/databases"
 	"github.com/RedisLabs/rediscloud-go-api/service/fixed/plans"
+	"github.com/RedisLabs/rediscloud-go-api/service/fixed/plans/plan_subscriptions"
 	fixedSubscriptions "github.com/RedisLabs/rediscloud-go-api/service/fixed/subscriptions"
+
 	"github.com/RedisLabs/rediscloud-go-api/service/latest_backups"
 	"github.com/RedisLabs/rediscloud-go-api/service/latest_imports"
 	"github.com/RedisLabs/rediscloud-go-api/service/pricing"
