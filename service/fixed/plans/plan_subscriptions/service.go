@@ -1,7 +1,8 @@
-package subscriptions
+package plan_subscriptions
 
 import (
 	"context"
+	"fmt"
 	"github.com/RedisLabs/rediscloud-go-api/service/fixed/plans"
 	"net/url"
 )
@@ -26,11 +27,11 @@ func NewAPI(client HttpClient, logger Log) *API {
 	return &API{client: client, logger: logger}
 }
 
-// List will list all the plans available to the current account
-func (a *API) List(ctx context.Context, subscriptionId string) ([]*plans.GetPlanResponse, error) {
+// List will list all subscriptions with a specific plan
+func (a *API) List(ctx context.Context, id int) ([]*plans.GetPlanResponse, error) {
 	var response plans.ListPlansResponse
 
-	err := a.client.Get(ctx, "list plans for subscription plans", root, &response)
+	err := a.client.Get(ctx, "list plans for subscription plans", fmt.Sprintf("%s/%d", root, id), &response)
 	if err != nil {
 		return nil, err
 	}
