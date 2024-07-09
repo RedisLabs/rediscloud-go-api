@@ -69,6 +69,7 @@ const responseBody = `
         "connections-limit"
       ],
       "customerSupport": "Standard",
+      "subscriptionId": 201010,
       "links": []
     }
   ],
@@ -152,6 +153,7 @@ func Test_Plans_Subscriptions_List(t *testing.T) {
 				"latency",
 				"connections-limit"),
 			CustomerSupport: redis.String("Standard"),
+			SubscriptionID:  redis.Int(201010),
 		},
 	}
 	assert.Equal(t, expectedResponse, actualResponse)
