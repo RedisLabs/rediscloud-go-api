@@ -35,6 +35,7 @@ type GetPlanResponse struct {
 	SupportClustering             *bool     `json:"supportClustering,omitempty"`
 	SupportedAlerts               []*string `json:"supportedAlerts,omitempty"`
 	CustomerSupport               *string   `json:"customerSupport,omitempty"`
+	SubscriptionID                *int      `json:"subscriptionId,omitempty"`
 }
 
 func (o GetPlanResponse) String() string {
