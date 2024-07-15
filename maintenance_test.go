@@ -84,7 +84,6 @@ func TestGetMaintenanceManual(t *testing.T) {
 	}, actual)
 }
 
-// TODO Replace with a working response!
 func TestUpdateMaintenanceAutomatic(t *testing.T) {
 	server := httptest.NewServer(
 		testServer(
@@ -96,38 +95,39 @@ func TestUpdateMaintenanceAutomatic(t *testing.T) {
 				  "mode": "automatic"
 				}`,
 				`{
-				  "taskId": "1f19cc39-5346-4629-8dc7-f0dc9ad63720",
-				  "commandType": "subscriptionMaintenanceWindowsUpdateRequest",
-				  "status": "received",
-				  "description": "Task request received and is being queued for processing.",
-				  "timestamp": "2024-07-08T09:13:21.84935915Z",
-				  "links": [
-					{
-					  "rel": "task",
-					  "type": "GET",
-					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/1f19cc39-5346-4629-8dc7-f0dc9ad63720"
-					}
-				  ]
+				  "taskId" : "7e7b57f4-70f3-47f3-b5a4-0b3c270a9117",
+				  "commandType" : "subscriptionMaintenanceWindowsUpdateRequest",
+				  "status" : "received",
+				  "description" : "Task request received and is being queued for processing.",
+				  "timestamp" : "2024-07-15T13:25:39.304430279Z",
+				  "links" : [ {
+					"href" : "https://api-staging.qa.redislabs.com/v1/tasks/7e7b57f4-70f3-47f3-b5a4-0b3c270a9117",
+					"rel" : "task",
+					"type" : "GET"
+				  } ]
 				}`,
 			),
 			getRequest(
 				t,
-				"/tasks/1f19cc39-5346-4629-8dc7-f0dc9ad63720",
+				"/tasks/7e7b57f4-70f3-47f3-b5a4-0b3c270a9117",
 				`{
-				  "taskId": "1f19cc39-5346-4629-8dc7-f0dc9ad63720",
-				  "commandType": "subscriptionMaintenanceWindowsUpdateRequest",
-				  "status": "processing-completed",
-				  "description": "Task request failed during processing. See error information for failure details.",
-				  "timestamp": "2024-07-08T09:13:22.748959662Z",
-				  "response": {
+				  "taskId" : "7e7b57f4-70f3-47f3-b5a4-0b3c270a9117",
+				  "commandType" : "subscriptionMaintenanceWindowsUpdateRequest",
+				  "status" : "processing-completed",
+				  "description" : "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+				  "timestamp" : "2024-07-15T13:25:41.067889681Z",
+				  "response" : {
+					"resourceId" : 113972
 				  },
-				  "links": [
-					{
-					  "rel": "self",
-					  "type": "GET",
-					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/1f19cc39-5346-4629-8dc7-f0dc9ad63720"
-					}
-				  ]
+				  "links" : [ {
+					"href" : "https://api-staging.qa.redislabs.com/v1/subscriptions/113972",
+					"rel" : "resource",
+					"type" : "GET"
+				  }, {
+					"href" : "https://api-staging.qa.redislabs.com/v1/tasks/7e7b57f4-70f3-47f3-b5a4-0b3c270a9117",
+					"rel" : "self",
+					"type" : "GET"
+				  } ]
 				}`,
 			),
 		),
@@ -147,7 +147,6 @@ func TestUpdateMaintenanceAutomatic(t *testing.T) {
 	require.NoError(t, err)
 }
 
-// TODO Replace with a working response!
 func TestUpdateMaintenanceManual(t *testing.T) {
 	server := httptest.NewServer(
 		testServer(
@@ -169,38 +168,39 @@ func TestUpdateMaintenanceManual(t *testing.T) {
 				  ]
 				}`,
 				`{
-				  "taskId": "1f19cc39-5346-4629-8dc7-f0dc9ad63720",
-				  "commandType": "subscriptionMaintenanceWindowsUpdateRequest",
-				  "status": "received",
-				  "description": "Task request received and is being queued for processing.",
-				  "timestamp": "2024-07-08T09:13:21.84935915Z",
-				  "links": [
-					{
-					  "rel": "task",
-					  "type": "GET",
-					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/1f19cc39-5346-4629-8dc7-f0dc9ad63720"
-					}
-				  ]
+				  "taskId" : "b6e0b40f-be10-4dce-8481-f4c4812855bc",
+				  "commandType" : "subscriptionMaintenanceWindowsUpdateRequest",
+				  "status" : "received",
+				  "description" : "Task request received and is being queued for processing.",
+				  "timestamp" : "2024-07-15T13:22:29.483556324Z",
+				  "links" : [ {
+					"href" : "https://api-staging.qa.redislabs.com/v1/tasks/b6e0b40f-be10-4dce-8481-f4c4812855bc",
+					"rel" : "task",
+					"type" : "GET"
+				  } ]
 				}`,
 			),
 			getRequest(
 				t,
-				"/tasks/1f19cc39-5346-4629-8dc7-f0dc9ad63720",
+				"/tasks/b6e0b40f-be10-4dce-8481-f4c4812855bc",
 				`{
-				  "taskId": "1f19cc39-5346-4629-8dc7-f0dc9ad63720",
-				  "commandType": "subscriptionMaintenanceWindowsUpdateRequest",
-				  "status": "processing-completed",
-				  "description": "Task request failed during processing. See error information for failure details.",
-				  "timestamp": "2024-07-08T09:13:22.748959662Z",
-				  "response": {
+				  "taskId" : "b6e0b40f-be10-4dce-8481-f4c4812855bc",
+				  "commandType" : "subscriptionMaintenanceWindowsUpdateRequest",
+				  "status" : "processing-completed",
+				  "description" : "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+				  "timestamp" : "2024-07-15T13:22:32.934703954Z",
+				  "response" : {
+					"resourceId" : 113972
 				  },
-				  "links": [
-					{
-					  "rel": "self",
-					  "type": "GET",
-					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/1f19cc39-5346-4629-8dc7-f0dc9ad63720"
-					}
-				  ]
+				  "links" : [ {
+					"href" : "https://api-staging.qa.redislabs.com/v1/subscriptions/113972",
+					"rel" : "resource",
+					"type" : "GET"
+				  }, {
+					"href" : "https://api-staging.qa.redislabs.com/v1/tasks/b6e0b40f-be10-4dce-8481-f4c4812855bc",
+					"rel" : "self",
+					"type" : "GET"
+				  } ]
 				}`,
 			),
 		),
