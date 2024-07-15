@@ -3,7 +3,6 @@ package rediscloud_api
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/RedisLabs/rediscloud-go-api/service/transit_gateway/attachments"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -29,6 +28,7 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/service/pricing"
 	"github.com/RedisLabs/rediscloud-go-api/service/regions"
 	"github.com/RedisLabs/rediscloud-go-api/service/subscriptions"
+	"github.com/RedisLabs/rediscloud-go-api/service/transit_gateway/attachments"
 )
 
 type Client struct {

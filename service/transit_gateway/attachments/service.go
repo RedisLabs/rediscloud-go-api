@@ -3,8 +3,9 @@ package attachments
 import (
 	"context"
 	"fmt"
-	"github.com/RedisLabs/rediscloud-go-api/internal"
 	"net/http"
+
+	"github.com/RedisLabs/rediscloud-go-api/internal"
 )
 
 type HttpClient interface {
