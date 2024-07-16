@@ -18,41 +18,48 @@ func TestGetAttachments(t *testing.T) {
 			"secret",
 			getRequest(
 				t,
-				"/subscriptions/113779/transitGateways",
+				"/subscriptions/114019/transitGateways",
 				`{
-				  "taskId": "268e9fa1-81de-4946-88a0-cd6c5c1c8dd2",
+				  "taskId": "502fc31f-fd44-4cb0-a429-07882309a971",
 				  "commandType": "tgwGetRequest",
 				  "status": "received",
 				  "description": "Task request received and is being queued for processing.",
-				  "timestamp": "2024-07-11T10:06:30.413894868Z",
+				  "timestamp": "2024-07-16T09:26:40.929904847Z",
 				  "links": [
 					{
+					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/502fc31f-fd44-4cb0-a429-07882309a971",
 					  "rel": "task",
-					  "type": "GET",
-					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/0477a7dc-008a-4b6e-a1dc-fb47722e2919"
+					  "type": "GET"
 					}
 				  ]
-				}
-				`,
+				}`,
 			),
 			getRequest(
 				t,
-				"/tasks/268e9fa1-81de-4946-88a0-cd6c5c1c8dd2",
+				"/tasks/502fc31f-fd44-4cb0-a429-07882309a971",
 				`{
-				  "taskId": "268e9fa1-81de-4946-88a0-cd6c5c1c8dd2",
+				  "taskId": "502fc31f-fd44-4cb0-a429-07882309a971",
 				  "commandType": "tgwGetRequest",
 				  "status": "processing-completed",
 				  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
-				  "timestamp": "2024-07-15T14:42:07.772817377Z",
+				  "timestamp": "2024-07-16T09:26:49.847808891Z",
 				  "response": {
-					"resourceId": 113977,
+					"resourceId": 114019,
 					"resource": {
-					  "tgws": []
+					  "tgws": [
+						{
+						  "id": 36,
+						  "awsTgwUid": "tgw-0b92afdae97faaef8",
+						  "status": "available",
+						  "awsAccountId": "620187402834",
+						  "cidrs": []
+						}
+					  ]
 					}
 				  },
 				  "links": [
 					{
-					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/268e9fa1-81de-4946-88a0-cd6c5c1c8dd2",
+					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/502fc31f-fd44-4cb0-a429-07882309a971",
 					  "rel": "self",
 					  "type": "GET"
 					}
@@ -61,22 +68,30 @@ func TestGetAttachments(t *testing.T) {
 			),
 			getRequest(
 				t,
-				"/tasks/268e9fa1-81de-4946-88a0-cd6c5c1c8dd2",
+				"/tasks/502fc31f-fd44-4cb0-a429-07882309a971",
 				`{
-				  "taskId": "268e9fa1-81de-4946-88a0-cd6c5c1c8dd2",
+				  "taskId": "502fc31f-fd44-4cb0-a429-07882309a971",
 				  "commandType": "tgwGetRequest",
 				  "status": "processing-completed",
 				  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
-				  "timestamp": "2024-07-15T14:42:07.772817377Z",
+				  "timestamp": "2024-07-16T09:26:49.847808891Z",
 				  "response": {
-					"resourceId": 113977,
+					"resourceId": 114019,
 					"resource": {
-					  "tgws": []
+					  "tgws": [
+						{
+						  "id": 36,
+						  "awsTgwUid": "tgw-0b92afdae97faaef8",
+						  "status": "available",
+						  "awsAccountId": "620187402834",
+						  "cidrs": []
+						}
+					  ]
 					}
 				  },
 				  "links": [
 					{
-					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/268e9fa1-81de-4946-88a0-cd6c5c1c8dd2",
+					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/502fc31f-fd44-4cb0-a429-07882309a971",
 					  "rel": "self",
 					  "type": "GET"
 					}
@@ -88,31 +103,26 @@ func TestGetAttachments(t *testing.T) {
 	subject, err := clientFromTestServer(server, "key", "secret")
 	require.NoError(t, err)
 
-	actual, err := subject.TransitGatewayAttachments.Get(context.TODO(), 113779)
+	actual, err := subject.TransitGatewayAttachments.Get(context.TODO(), 114019)
 	require.NoError(t, err)
 
 	assert.Equal(t, &attachments.GetAttachmentsTask{
 		CommandType: redis.String("tgwGetRequest"),
 		Description: redis.String("Request processing completed successfully and its resources are now being provisioned / de-provisioned."),
 		Status:      redis.String("processing-completed"),
-		ID:          redis.String("ce2cbfea-9b15-4250-a516-f014161a8dd3"),
+		ID:          redis.String("502fc31f-fd44-4cb0-a429-07882309a971"),
 		Response: &attachments.Response{
-			ResourceId: redis.Int(1), // TODO What will this identify?
+			ResourceId: redis.Int(114019),
 			Resource: &attachments.Resource{
 				TransitGatewayAttachment: []*attachments.TransitGatewayAttachment{
 					{
-						Id:               redis.String("1"), // TODO What will this identify?
-						AwsTgwUid:        nil,               // TODO Whose identifier is this?
-						AttachmentUid:    nil,               // TODO Use this as the resource id in terraform!
-						Status:           redis.String("ready"),
+						Id:               redis.Int(36),
+						AwsTgwUid:        redis.String("tgw-0b92afdae97faaef8"),
+						AttachmentUid:    nil,
+						Status:           redis.String("available"),
 						AttachmentStatus: nil,
-						AwsAccountId:     nil,
-						Cidrs: []*attachments.Cidr{
-							{
-								CidrAddress: redis.String("10.0.0.0/24"),
-								Status:      redis.String("ready"),
-							},
-						},
+						AwsAccountId:     redis.String("620187402834"),
+						Cidrs:            []*attachments.Cidr{},
 					},
 				},
 			},
@@ -120,7 +130,7 @@ func TestGetAttachments(t *testing.T) {
 	}, actual)
 }
 
-// TODO
+// TODO GetAA
 //func TestGetActiveActiveAttachments(t *testing.T) {
 //	server := httptest.NewServer(
 //		testServer(

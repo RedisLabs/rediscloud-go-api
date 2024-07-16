@@ -20,7 +20,7 @@ type Resource struct {
 }
 
 type TransitGatewayAttachment struct {
-	Id               *string `json:"id,omitempty"`
+	Id               *int    `json:"id,omitempty"`
 	AwsTgwUid        *string `json:"awsTgwUid,omitempty"`
 	AttachmentUid    *string `json:"attachmentUid,omitempty"`
 	Status           *string `json:"status,omitempty"`
