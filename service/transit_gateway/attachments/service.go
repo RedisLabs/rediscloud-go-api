@@ -151,7 +151,6 @@ func (a *API) create(ctx context.Context, message string, address string) (int, 
 
 	a.logger.Printf("Waiting for task %s to finish creating the TGw attachment", task)
 
-	// TODO Assuming the ID at task.Response.ID is what we want?
 	id, err := a.taskWaiter.WaitForResourceId(ctx, *task.ID)
 	if err != nil {
 		return 0, fmt.Errorf("failed when creating TGw attachment %d: %w", id, err)
@@ -162,8 +161,8 @@ func (a *API) create(ctx context.Context, message string, address string) (int, 
 
 func (a *API) update(ctx context.Context, message string, address string, cidrs []*string) error {
 	var task internal.TaskResponse
-	// TODO Assuming this request body ([]*string) is acceptable and parsed correctly
-	err := a.client.Put(ctx, message, address, cidrs, &task)
+	request := updateCidrs{&cidrs}
+	err := a.client.Put(ctx, message, address, request, &task)
 	if err != nil {
 		return err
 	}

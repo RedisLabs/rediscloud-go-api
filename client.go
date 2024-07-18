@@ -39,8 +39,8 @@ type Client struct {
 	Regions                   *regions.API
 	LatestBackup              *latest_backups.API
 	LatestImport              *latest_imports.API
-	Pricing                   *pricing.API
 	Maintenance               *maintenance.API
+	Pricing                   *pricing.API
 	TransitGatewayAttachments *attachments.API
 	// fixed
 	FixedPlans             *plans.API
@@ -86,9 +86,9 @@ func NewClient(configs ...Option) (*Client, error) {
 		Regions:                   regions.NewAPI(client, t, config.logger),
 		LatestBackup:              latest_backups.NewAPI(client, t, config.logger),
 		LatestImport:              latest_imports.NewAPI(client, t, config.logger),
+		Maintenance:               maintenance.NewAPI(client, t, config.logger),
 		Pricing:                   pricing.NewAPI(client),
 		TransitGatewayAttachments: attachments.NewAPI(client, t, config.logger),
-		Maintenance:               maintenance.NewAPI(client, t, config.logger),
 		// fixed
 		FixedPlans:             plans.NewAPI(client, config.logger),
 		FixedPlanSubscriptions: plan_subscriptions.NewAPI(client, config.logger),

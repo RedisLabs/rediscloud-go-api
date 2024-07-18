@@ -34,6 +34,10 @@ type Cidr struct {
 	Status      *string `json:"status,omitempty"`
 }
 
+type updateCidrs struct {
+	Cidrs *[]*string `json:"cidrs,omitempty"`
+}
+
 type NotFound struct {
 	subId int
 }
