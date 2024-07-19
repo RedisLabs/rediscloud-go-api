@@ -28,18 +28,20 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/service/pricing"
 	"github.com/RedisLabs/rediscloud-go-api/service/regions"
 	"github.com/RedisLabs/rediscloud-go-api/service/subscriptions"
+	"github.com/RedisLabs/rediscloud-go-api/service/transit_gateway/attachments"
 )
 
 type Client struct {
-	Account      *account.API
-	CloudAccount *cloud_accounts.API
-	Database     *databases.API
-	Subscription *subscriptions.API
-	Regions      *regions.API
-	LatestBackup *latest_backups.API
-	LatestImport *latest_imports.API
-	Pricing      *pricing.API
-	Maintenance  *maintenance.API
+	Account                   *account.API
+	CloudAccount              *cloud_accounts.API
+	Database                  *databases.API
+	Subscription              *subscriptions.API
+	Regions                   *regions.API
+	LatestBackup              *latest_backups.API
+	LatestImport              *latest_imports.API
+	Maintenance               *maintenance.API
+	Pricing                   *pricing.API
+	TransitGatewayAttachments *attachments.API
 	// fixed
 	FixedPlans             *plans.API
 	FixedSubscriptions     *fixedSubscriptions.API
@@ -77,15 +79,16 @@ func NewClient(configs ...Option) (*Client, error) {
 	t := internal.NewAPI(client, config.logger)
 
 	return &Client{
-		Account:      account.NewAPI(client),
-		CloudAccount: cloud_accounts.NewAPI(client, t, config.logger),
-		Database:     databases.NewAPI(client, t, config.logger),
-		Subscription: subscriptions.NewAPI(client, t, config.logger),
-		Regions:      regions.NewAPI(client, t, config.logger),
-		LatestBackup: latest_backups.NewAPI(client, t, config.logger),
-		LatestImport: latest_imports.NewAPI(client, t, config.logger),
-		Pricing:      pricing.NewAPI(client),
-		Maintenance:  maintenance.NewAPI(client, t, config.logger),
+		Account:                   account.NewAPI(client),
+		CloudAccount:              cloud_accounts.NewAPI(client, t, config.logger),
+		Database:                  databases.NewAPI(client, t, config.logger),
+		Subscription:              subscriptions.NewAPI(client, t, config.logger),
+		Regions:                   regions.NewAPI(client, t, config.logger),
+		LatestBackup:              latest_backups.NewAPI(client, t, config.logger),
+		LatestImport:              latest_imports.NewAPI(client, t, config.logger),
+		Maintenance:               maintenance.NewAPI(client, t, config.logger),
+		Pricing:                   pricing.NewAPI(client),
+		TransitGatewayAttachments: attachments.NewAPI(client, t, config.logger),
 		// fixed
 		FixedPlans:             plans.NewAPI(client, config.logger),
 		FixedPlanSubscriptions: plan_subscriptions.NewAPI(client, config.logger),
