@@ -97,6 +97,23 @@ func (a *API) Update(ctx context.Context, id int, redisRule CreateRedisRuleReque
 	return nil
 }
 
+func (a *API) UpdateRule(ctx context.Context, id int, redisRule UpdateRedisRuleRequest) error {
+	var task internal.TaskResponse
+	err := a.client.Put(ctx, fmt.Sprintf("update redisRule %d", id), fmt.Sprintf("/acl/redisRules/%d", id), redisRule, &task)
+	if err != nil {
+		return wrap404Error(id, err)
+	}
+
+	a.logger.Printf("Waiting for task %s to finish updating the redisRule", task)
+
+	err = a.taskWaiter.Wait(ctx, *task.ID)
+	if err != nil {
+		return fmt.Errorf("failed when updating redisRule %d: %w", id, err)
+	}
+
+	return nil
+}
+
 // Delete will destroy an existing redisRule.
 func (a *API) Delete(ctx context.Context, id int) error {
 	var task internal.TaskResponse
