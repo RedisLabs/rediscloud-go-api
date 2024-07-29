@@ -391,6 +391,95 @@ func TestUpdateRedisRule(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestUpdateRedisRuleOnly(t *testing.T) {
+	server := httptest.NewServer(
+		testServer(
+			"key",
+			"secret",
+			putRequest(
+				t,
+				"/acl/redisRules/20000",
+				`{"redisRule": "+@let-me-update-resources"}`,
+				`{
+				  "taskId": "9a4178d9-0c84-4a7c-b02a-b0a559757df9",
+				  "commandType": "aclRedisRuleUpdateRequest",
+				  "status": "received",
+				  "description": "Task request received and is being queued for processing.",
+				  "timestamp": "2023-06-21T09:21:18.521282Z",
+				  "links": [
+					{
+					  "rel": "task",
+					  "href": "https://api-cloudapi.qa.redislabs.com/v1/tasks/e3946019-994e-49f6-83bb-26694b3c241f",
+					  "title": "getTaskStatusUpdates",
+					  "type": "GET"
+					}
+				  ]
+				}`,
+			),
+			// Task doesn't exist just yet
+			getRequestWithStatus(t, "/tasks/9a4178d9-0c84-4a7c-b02a-b0a559757df9", 404, ""),
+			// Task exists, has just started
+			getRequest(t, "/tasks/9a4178d9-0c84-4a7c-b02a-b0a559757df9", `{
+			  "taskId": "9a4178d9-0c84-4a7c-b02a-b0a559757df9",
+			  "commandType": "aclRedisRuleUpdateRequest",
+			  "status": "initialized",
+			  "timestamp": "2023-06-21T09:22:18.521282Z",
+			  "response": {},
+			  "_links": {
+				"self": {
+				  "rel": "task",
+				  "href": "https://api-cloudapi.qa.redislabs.com/v1/tasks/9a4178d9-0c84-4a7c-b02a-b0a559757df9",
+				  "title": "getTaskStatusUpdates",
+				  "type": "GET"
+				}
+			  }
+			}`),
+			// Task exists, is in progress
+			getRequest(t, "/tasks/9a4178d9-0c84-4a7c-b02a-b0a559757df9", `{
+			  "taskId": "9a4178d9-0c84-4a7c-b02a-b0a559757df9",
+			  "commandType": "aclRedisRuleUpdateRequest",
+			  "status": "processing-in-progress",
+			  "timestamp": "2023-06-21T09:23:18.521282Z",
+			  "response": {},
+			  "_links": {
+				"self": {
+				  "rel": "task",
+				  "href": "https://api-cloudapi.qa.redislabs.com/v1/tasks/9a4178d9-0c84-4a7c-b02a-b0a559757df9",
+				  "title": "getTaskStatusUpdates",
+				  "type": "GET"
+				}
+			  }
+			}`),
+			// Task complete
+			getRequest(t, "/tasks/9a4178d9-0c84-4a7c-b02a-b0a559757df9", `{
+			  "taskId": "9a4178d9-0c84-4a7c-b02a-b0a559757df9",
+			  "commandType": "aclRedisRuleUpdateRequest",
+			  "status": "processing-completed",
+			  "timestamp": "2023-06-21T09:24:18.521282Z",
+			  "response": {
+				"resourceId": 20000
+			  },
+			  "_links": {
+				"self": {
+				  "rel": "task",
+				  "href": "https://api-cloudapi.qa.redislabs.com/v1/tasks/9a4178d9-0c84-4a7c-b02a-b0a559757df9",
+				  "title": "getTaskStatusUpdates",
+				  "type": "GET"
+				}
+			  }
+			}`),
+		),
+	)
+
+	subject, err := clientFromTestServer(server, "key", "secret")
+	require.NoError(t, err)
+
+	err = subject.RedisRules.UpdateRule(context.TODO(), 20000, redis_rules.UpdateRedisRuleRequest{
+		RedisRule: redis.String("+@let-me-update-resources"),
+	})
+	require.NoError(t, err)
+}
+
 func TestDeleteNonExistentRedisRule(t *testing.T) {
 	server := httptest.NewServer(
 		testServer(

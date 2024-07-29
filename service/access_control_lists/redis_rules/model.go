@@ -36,6 +36,14 @@ func (o CreateRedisRuleRequest) String() string {
 	return internal.ToString(o)
 }
 
+type UpdateRedisRuleRequest struct {
+	RedisRule *string `json:"redisRule,omitempty"`
+}
+
+func (o UpdateRedisRuleRequest) String() string {
+	return internal.ToString(o)
+}
+
 const (
 	// StatusActive is the active value of the `Status` field in `RedisRule`
 	StatusActive = "active"
