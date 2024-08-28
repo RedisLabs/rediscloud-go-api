@@ -28,6 +28,7 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/service/pricing"
 	"github.com/RedisLabs/rediscloud-go-api/service/regions"
 	"github.com/RedisLabs/rediscloud-go-api/service/subscriptions"
+	"github.com/RedisLabs/rediscloud-go-api/service/tags"
 	"github.com/RedisLabs/rediscloud-go-api/service/transit_gateway/attachments"
 )
 
@@ -42,6 +43,7 @@ type Client struct {
 	Maintenance               *maintenance.API
 	Pricing                   *pricing.API
 	TransitGatewayAttachments *attachments.API
+	Tags                      *tags.API
 	// fixed
 	FixedPlans             *plans.API
 	FixedSubscriptions     *fixedSubscriptions.API
@@ -89,6 +91,7 @@ func NewClient(configs ...Option) (*Client, error) {
 		Maintenance:               maintenance.NewAPI(client, t, config.logger),
 		Pricing:                   pricing.NewAPI(client),
 		TransitGatewayAttachments: attachments.NewAPI(client, t, config.logger),
+		Tags:                      tags.NewAPI(client),
 		// fixed
 		FixedPlans:             plans.NewAPI(client, config.logger),
 		FixedPlanSubscriptions: plan_subscriptions.NewAPI(client, config.logger),

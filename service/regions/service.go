@@ -17,7 +17,6 @@ type Log interface {
 type HttpClient interface {
 	Get(ctx context.Context, name, path string, responseBody interface{}) error
 	Post(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
-	Put(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 	DeleteWithQuery(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 }
 
