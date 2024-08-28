@@ -33,7 +33,7 @@ func (a *API) Get(ctx context.Context, subscription int, database int) (*AllTags
 
 func (a *API) GetFixed(ctx context.Context, subscription int, database int) (*AllTags, error) {
 	message := fmt.Sprintf("get tags for fixed database %d in subscription %d", subscription, database)
-	address := fmt.Sprintf("fixed/subscriptions/%d/databases/%d/tags", subscription, database)
+	address := fmt.Sprintf("/fixed/subscriptions/%d/databases/%d/tags", subscription, database)
 	tags, err := a.get(ctx, message, address)
 	if err != nil {
 		return nil, wrap404Error(subscription, database, err)
@@ -53,7 +53,7 @@ func (a *API) Put(ctx context.Context, subscription int, database int, tags AllT
 
 func (a *API) PutFixed(ctx context.Context, subscription int, database int, tags AllTags) error {
 	message := fmt.Sprintf("update tags for fixed database %d in subscription %d", subscription, database)
-	address := fmt.Sprintf("fixed/subscriptions/%d/databases/%d/tags", subscription, database)
+	address := fmt.Sprintf("/fixed/subscriptions/%d/databases/%d/tags", subscription, database)
 	err := a.put(ctx, message, address, tags)
 	if err != nil {
 		return wrap404Error(subscription, database, err)
