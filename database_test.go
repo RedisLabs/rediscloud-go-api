@@ -489,7 +489,7 @@ func TestDatabase_Update_Deprecated(t *testing.T) {
 	err = subject.Database.Update(context.TODO(), 42, 18, databases.UpdateDatabase{
 		DryRun:                              redis.Bool(false),
 		Name:                                redis.String("example"),
-		DatasetSizeInGB:                     redis.Float64(1),
+		MemoryLimitInGB:                     redis.Float64(1),
 		SupportOSSClusterAPI:                redis.Bool(false),
 		RespVersion:                         redis.String("resp3"),
 		UseExternalEndpointForOSSClusterAPI: redis.Bool(false),
