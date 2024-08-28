@@ -12,6 +12,7 @@ type CreateFixedDatabase struct {
 	Name                                *string                `json:"name,omitempty"`
 	Protocol                            *string                `json:"protocol,omitempty"`
 	MemoryLimitInGB                     *float64               `json:"memoryLimitInGb,omitempty"`
+	DatasetSizeInGB                     *float64               `json:"datasetSizeInGb,omitempty"`
 	SupportOSSClusterAPI                *bool                  `json:"supportOSSClusterApi,omitempty"`
 	RespVersion                         *string                `json:"respVersion,omitempty"`
 	UseExternalEndpointForOSSClusterAPI *bool                  `json:"useExternalEndpointForOSSClusterApi,omitempty"`
@@ -33,6 +34,7 @@ type CreateFixedDatabase struct {
 type UpdateFixedDatabase struct {
 	Name                                *string                `json:"name,omitempty"`
 	MemoryLimitInGB                     *float64               `json:"memoryLimitInGb,omitempty"`
+	DatasetSizeInGB                     *float64               `json:"datasetSizeInGb,omitempty"`
 	SupportOSSClusterAPI                *bool                  `json:"supportOSSClusterApi,omitempty"`
 	RespVersion                         *string                `json:"respVersion,omitempty"`
 	UseExternalEndpointForOSSClusterAPI *bool                  `json:"useExternalEndpointForOSSClusterApi,omitempty"`
@@ -64,6 +66,7 @@ type FixedDatabase struct {
 	PlanMemoryLimit                     *float64   `json:"planMemoryLimit,omitempty"`
 	MemoryLimitMeasurementUnit          *string    `json:"memoryLimitMeasurementUnit,omitempty"`
 	MemoryLimitInGb                     *float64   `json:"memoryLimitInGb,omitempty"`
+	DatasetSizeInGB                     *float64   `json:"datasetSizeInGb,omitempty"`
 	MemoryUsedInMb                      *float64   `json:"memoryUsedInMb,omitempty"`
 	NetworkMonthlyUsageInByte           *float64   `json:"networkMonthlyUsageInByte,omitempty"`
 	MemoryStorage                       *string    `json:"memoryStorage,omitempty"`

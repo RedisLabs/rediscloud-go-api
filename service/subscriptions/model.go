@@ -56,6 +56,7 @@ type CreateDatabase struct {
 	Name                       *string                  `json:"name,omitempty"`
 	Protocol                   *string                  `json:"protocol,omitempty"`
 	MemoryLimitInGB            *float64                 `json:"memoryLimitInGb,omitempty"`
+	DatasetSizeInGB            *float64                 `json:"datasetSizeInGb,omitempty"`
 	SupportOSSClusterAPI       *bool                    `json:"supportOSSClusterApi,omitempty"`
 	DataPersistence            *string                  `json:"dataPersistence,omitempty"`
 	Replication                *bool                    `json:"replication,omitempty"`

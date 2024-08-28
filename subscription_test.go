@@ -36,7 +36,7 @@ func TestSubscription_Create(t *testing.T) {
     {
       "name": "example",
       "protocol": "redis",
-      "memoryLimitInGb": 1,
+      "datasetSizeInGb": 1,
       "supportOSSClusterApi": true,
       "dataPersistence": "none",
       "replication": false,
@@ -125,7 +125,7 @@ func TestSubscription_Create(t *testing.T) {
 			{
 				Name:                 redis.String("example"),
 				Protocol:             redis.String("redis"),
-				MemoryLimitInGB:      redis.Float64(1),
+				DatasetSizeInGB:      redis.Float64(1),
 				SupportOSSClusterAPI: redis.Bool(true),
 				DataPersistence:      redis.String("none"),
 				Replication:          redis.Bool(false),

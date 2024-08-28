@@ -34,6 +34,7 @@ type CrdbDatabase struct {
 	PublicEndpoint           *string   `json:"publicEndpoint,omitempty"`
 	PrivateEndpoint          *string   `json:"privateEndpoint,omitempty"`
 	MemoryLimitInGB          *float64  `json:"memoryLimitInGb,omitempty"`
+	DatasetSizeInGB          *float64  `json:"datasetSizeInGb,omitempty"`
 	MemoryUsedInMB           *float64  `json:"memoryUsedInMb,omitempty"`
 	ReadOperationsPerSecond  *int      `json:"readOperationsPerSecond,omitempty"`
 	WriteOperationsPerSecond *int      `json:"writeOperationsPerSecond,omitempty"`
@@ -63,6 +64,7 @@ type CreateActiveActiveDatabase struct {
 	Name                                *string            `json:"name,omitempty"`
 	Protocol                            *string            `json:"protocol,omitempty"`
 	MemoryLimitInGB                     *float64           `json:"memoryLimitInGb,omitempty"`
+	DatasetSizeInGB                     *float64           `json:"datasetSizeInGb,omitempty"`
 	SupportOSSClusterAPI                *bool              `json:"supportOSSClusterApi,omitempty"`
 	RespVersion                         *string            `json:"respVersion,omitempty"`
 	UseExternalEndpointForOSSClusterAPI *bool              `json:"useExternalEndpointForOSSClusterApi,omitempty"`
@@ -93,6 +95,7 @@ func (o LocalThroughput) String() string {
 type UpdateActiveActiveDatabase struct {
 	DryRun                              *bool    `json:"dryRun,omitempty"`
 	MemoryLimitInGB                     *float64 `json:"memoryLimitInGb,omitempty"`
+	DatasetSizeInGB                     *float64 `json:"datasetSizeInGb,omitempty"`
 	SupportOSSClusterAPI                *bool    `json:"supportOSSClusterApi,omitempty"`
 	UseExternalEndpointForOSSClusterAPI *bool    `json:"useExternalEndpointForOSSClusterApi,omitempty"`
 	ClientSSLCertificate                *string  `json:"clientSslCertificate,omitempty"`
