@@ -12,6 +12,7 @@ type CreateDatabase struct {
 	Name                                *string                      `json:"name,omitempty"`
 	Protocol                            *string                      `json:"protocol,omitempty"`
 	MemoryLimitInGB                     *float64                     `json:"memoryLimitInGb,omitempty"`
+	DatasetSizeInGB                     *float64                     `json:"datasetSizeInGb,omitempty"`
 	SupportOSSClusterAPI                *bool                        `json:"supportOSSClusterApi,omitempty"`
 	RespVersion                         *string                      `json:"respVersion,omitempty"`
 	UseExternalEndpointForOSSClusterAPI *bool                        `json:"useExternalEndpointForOSSClusterApi,omitempty"`
@@ -57,6 +58,7 @@ type Database struct {
 	Region                 *string     `json:"region,omitempty"`
 	Status                 *string     `json:"status,omitempty"`
 	MemoryLimitInGB        *float64    `json:"memoryLimitInGb,omitempty"`
+	DatasetSizeInGB        *float64    `json:"datasetSizeInGb,omitempty"`
 	MemoryUsedInMB         *float64    `json:"memoryUsedInMb,omitempty"`
 	SupportOSSClusterAPI   *bool       `json:"supportOSSClusterApi,omitempty"`
 	RespVersion            *string     `json:"respVersion,omitempty"`
@@ -148,6 +150,7 @@ type UpdateDatabase struct {
 	DryRun                              *bool                        `json:"dryRun,omitempty"`
 	Name                                *string                      `json:"name,omitempty"`
 	MemoryLimitInGB                     *float64                     `json:"memoryLimitInGb,omitempty"`
+	DatasetSizeInGB                     *float64                     `json:"datasetSizeInGb,omitempty"`
 	SupportOSSClusterAPI                *bool                        `json:"supportOSSClusterApi,omitempty"`
 	RespVersion                         *string                      `json:"respVersion,omitempty"`
 	UseExternalEndpointForOSSClusterAPI *bool                        `json:"useExternalEndpointForOSSClusterApi,omitempty"`

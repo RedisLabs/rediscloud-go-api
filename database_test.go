@@ -19,7 +19,7 @@ func TestDatabase_Create(t *testing.T) {
   "dryRun": false,
   "name": "Redis-database-example",
   "protocol": "redis",
-  "memoryLimitInGb": 1,
+  "datasetSizeInGb": 1,
   "supportOSSClusterApi": false,
   "respVersion": "resp3",
   "useExternalEndpointForOSSClusterApi": false,
@@ -88,7 +88,7 @@ func TestDatabase_Create(t *testing.T) {
 		DryRun:                              redis.Bool(false),
 		Name:                                redis.String("Redis-database-example"),
 		Protocol:                            redis.String("redis"),
-		MemoryLimitInGB:                     redis.Float64(1),
+		DatasetSizeInGB:                     redis.Float64(1),
 		SupportOSSClusterAPI:                redis.Bool(false),
 		RespVersion:                         redis.String("resp3"),
 		UseExternalEndpointForOSSClusterAPI: redis.Bool(false),
@@ -197,6 +197,7 @@ func TestDatabase_Get(t *testing.T) {
   "redisVersionCompliance": "6.0.5",
   "status": "active",
   "memoryLimitInGb": 7,
+  "datasetSizeInGb": 7,
   "memoryUsedInMb": 5,
   "memoryStorage": "ram",
   "supportOSSClusterApi": true,
@@ -263,6 +264,7 @@ func TestDatabase_Get(t *testing.T) {
 		Region:               redis.String("eu-west-1"),
 		Status:               redis.String("active"),
 		MemoryLimitInGB:      redis.Float64(7),
+		DatasetSizeInGB:      redis.Float64(7),
 		MemoryUsedInMB:       redis.Float64(5),
 		SupportOSSClusterAPI: redis.Bool(true),
 		RespVersion:          redis.String("resp2"),
@@ -321,6 +323,105 @@ func TestDatabase_Get_wraps404Error(t *testing.T) {
 }
 
 func TestDatabase_Update(t *testing.T) {
+	s := httptest.NewServer(testServer("key", "secret", putRequest(t, "/subscriptions/42/databases/18", `{
+  "dryRun": false,
+  "name": "example",
+  "datasetSizeInGb": 1,
+  "supportOSSClusterApi": false,
+  "respVersion": "resp3",
+  "useExternalEndpointForOSSClusterApi": false,
+  "dataEvictionPolicy": "allkeys-lru",
+  "replication": true,
+  "throughputMeasurement": {
+    "by": "operations-per-second",
+    "value": 1000
+  },
+  "regexRules": [".*"],
+  "dataPersistence": "none",
+  "replicaOf": [
+    "another"
+  ],
+  "periodicBackupPath": "s3://bucket-name",
+  "sourceIp": [
+    "10.0.0.1"
+  ],
+  "clientSslCertificate": "something",
+  "clientTlsCertificates": ["something", "new"],
+  "enableTls": false,
+  "password": "fooBar",
+  "alerts": [
+    {
+      "name": "dataset-size",
+      "value": 80
+    }
+  ],
+  "enableDefaultUser": false
+}`, `{
+  "taskId": "task",
+  "commandType": "databaseUpdateRequest",
+  "status": "received",
+  "description": "Task request received and is being queued for processing.",
+  "timestamp": "2020-11-02T09:05:34.3Z",
+  "_links": {
+    "task": {
+      "href": "https://example.org",
+      "title": "getTaskStatusUpdates",
+      "type": "GET"
+    }
+  }
+}`), getRequest(t, "/tasks/task", `{
+  "taskId": "task",
+  "commandType": "databaseUpdateRequest",
+  "status": "processing-completed",
+  "timestamp": "2020-10-28T09:58:16.798Z",
+  "response": {
+  },
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`)))
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	err = subject.Database.Update(context.TODO(), 42, 18, databases.UpdateDatabase{
+		DryRun:                              redis.Bool(false),
+		Name:                                redis.String("example"),
+		DatasetSizeInGB:                     redis.Float64(1),
+		SupportOSSClusterAPI:                redis.Bool(false),
+		RespVersion:                         redis.String("resp3"),
+		UseExternalEndpointForOSSClusterAPI: redis.Bool(false),
+		DataPersistence:                     redis.String("none"),
+		DataEvictionPolicy:                  redis.String("allkeys-lru"),
+		Replication:                         redis.Bool(true),
+		ThroughputMeasurement: &databases.UpdateThroughputMeasurement{
+			By:    redis.String("operations-per-second"),
+			Value: redis.Int(1000),
+		},
+		RegexRules:            redis.StringSlice(".*"),
+		ReplicaOf:             redis.StringSlice("another"),
+		PeriodicBackupPath:    redis.String("s3://bucket-name"),
+		SourceIP:              redis.StringSlice("10.0.0.1"),
+		ClientSSLCertificate:  redis.String("something"),
+		ClientTLSCertificates: &[]*string{redis.String("something"), redis.String("new")},
+		EnableTls:             redis.Bool(false),
+		Password:              redis.String("fooBar"),
+		Alerts: &[]*databases.Alert{
+			{
+				Name:  redis.String("dataset-size"),
+				Value: redis.Int(80),
+			},
+		},
+		EnableDefaultUser: redis.Bool(false),
+	})
+	require.NoError(t, err)
+}
+
+// Test backwards compatibility with memoryLimitInGb attribute (replaced by datasetSizeInGb)
+func TestDatabase_Update_Deprecated(t *testing.T) {
 	s := httptest.NewServer(testServer("key", "secret", putRequest(t, "/subscriptions/42/databases/18", `{
   "dryRun": false,
   "name": "example",
@@ -388,7 +489,7 @@ func TestDatabase_Update(t *testing.T) {
 	err = subject.Database.Update(context.TODO(), 42, 18, databases.UpdateDatabase{
 		DryRun:                              redis.Bool(false),
 		Name:                                redis.String("example"),
-		MemoryLimitInGB:                     redis.Float64(1),
+		DatasetSizeInGB:                     redis.Float64(1),
 		SupportOSSClusterAPI:                redis.Bool(false),
 		RespVersion:                         redis.String("resp3"),
 		UseExternalEndpointForOSSClusterAPI: redis.Bool(false),
