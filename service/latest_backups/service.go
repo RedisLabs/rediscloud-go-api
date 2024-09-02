@@ -15,7 +15,7 @@ type HttpClient interface {
 }
 
 type TaskWaiter interface {
-	Wait(ctx context.Context, id string) error
+	WaitForTask(ctx context.Context, id string) (*internal.Task, error)
 }
 
 type Log interface {
@@ -68,23 +68,16 @@ func (a *API) GetActiveActive(ctx context.Context, subscription int, database in
 
 	a.logger.Printf("Waiting for backup status request %d to complete", task.ID)
 
-	err = a.taskWaiter.Wait(ctx, *task.ID)
-
-	a.logger.Printf("Backup status request %d completed, possibly with error", task.ID, err)
-
-	var backupStatusTask *LatestBackupStatus
-	err = a.client.Get(ctx,
-		fmt.Sprintf("retrieve completed backup status task %d", task.ID),
-		"/tasks/"+*task.ID,
-		&backupStatusTask,
-	)
-
+	finishedTask, err := a.taskWaiter.WaitForTask(ctx, *task.ID)
 	if err != nil {
 		return nil, wrap404ErrorActiveActive(subscription, database, region,
 			fmt.Errorf("failed to retrieve completed backup status %d: %w", task.ID, err))
 	}
 
-	return backupStatusTask, nil
+	a.logger.Printf("Backup status request %d completed, possibly with error", task.ID, err)
+
+	lbs := fromInternal(*finishedTask)
+	return &lbs, nil
 }
 
 func (a *API) get(ctx context.Context, message string, address string) (*LatestBackupStatus, error) {
@@ -96,22 +89,12 @@ func (a *API) get(ctx context.Context, message string, address string) (*LatestB
 
 	a.logger.Printf("Waiting for backup status request %d to complete", task.ID)
 
-	err = a.taskWaiter.Wait(ctx, *task.ID)
+	finishedTask, err := a.taskWaiter.WaitForTask(ctx, *task.ID)
 
 	a.logger.Printf("Backup status request %d completed, possibly with error", task.ID, err)
 
-	var backupStatusTask *LatestBackupStatus
-	err = a.client.Get(ctx,
-		fmt.Sprintf("retrieve completed backup status task %d", task.ID),
-		"/tasks/"+*task.ID,
-		&backupStatusTask,
-	)
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve completed backup status %d: %w", task.ID, err)
-	}
-
-	return backupStatusTask, nil
+	lbs := fromInternal(*finishedTask)
+	return &lbs, nil
 }
 
 func wrap404Error(subId int, dbId int, err error) error {
