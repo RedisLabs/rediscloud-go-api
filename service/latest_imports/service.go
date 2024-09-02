@@ -13,7 +13,7 @@ type HttpClient interface {
 }
 
 type TaskWaiter interface {
-	Wait(ctx context.Context, id string) error
+	WaitForTask(ctx context.Context, id string) (*internal.Task, error)
 }
 
 type Log interface {
@@ -59,22 +59,12 @@ func (a *API) get(ctx context.Context, message string, address string) (*LatestI
 
 	a.logger.Printf("Waiting for import status request %d to complete", task.ID)
 
-	err = a.taskWaiter.Wait(ctx, *task.ID)
+	finishedTask, err := a.taskWaiter.WaitForTask(ctx, *task.ID)
 
 	a.logger.Printf("Import status request %d completed, possibly with error", task.ID, err)
 
-	var importStatusTask *LatestImportStatus
-	err = a.client.Get(ctx,
-		fmt.Sprintf("retrieve completed import status task %d", task.ID),
-		"/tasks/"+*task.ID,
-		&importStatusTask,
-	)
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve completed import status %d: %w", task.ID, err)
-	}
-
-	return importStatusTask, nil
+	lis := fromInternal(*finishedTask)
+	return &lis, nil
 }
 
 func wrap404Error(subId int, dbId int, err error) error {
