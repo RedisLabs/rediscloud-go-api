@@ -2,6 +2,8 @@ package latest_imports
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -13,7 +15,7 @@ type HttpClient interface {
 }
 
 type TaskWaiter interface {
-	Wait(ctx context.Context, id string) error
+	WaitForTask(ctx context.Context, id string) (*internal.Task, error)
 }
 
 type Log interface {
@@ -59,22 +61,26 @@ func (a *API) get(ctx context.Context, message string, address string) (*LatestI
 
 	a.logger.Printf("Waiting for import status request %d to complete", task.ID)
 
-	err = a.taskWaiter.Wait(ctx, *task.ID)
+	taskResp, err := a.taskWaiter.WaitForTask(ctx, *task.ID)
+	if err != nil {
+		var iErr *internal.Error
+		if errors.As(err, &iErr) && taskResp != nil {
+			importStatusTask, err := createLatestImportStatusFromTask(taskResp)
+			if err != nil {
+				return nil, err
+			}
+			return importStatusTask, nil
+		}
+		return nil, fmt.Errorf("failed to retrieve completed backup status %d: %w", task.ID, err)
+	}
 
-	a.logger.Printf("Import status request %d completed, possibly with error", task.ID, err)
-
-	var importStatusTask *LatestImportStatus
-	err = a.client.Get(ctx,
-		fmt.Sprintf("retrieve completed import status task %d", task.ID),
-		"/tasks/"+*task.ID,
-		&importStatusTask,
-	)
+	a.logger.Printf("Import status request %d completed, possibly with error: %v", task.ID, err)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve completed import status %d: %w", task.ID, err)
 	}
 
-	return importStatusTask, nil
+	return createLatestImportStatusFromTask(taskResp)
 }
 
 func wrap404Error(subId int, dbId int, err error) error {
@@ -82,4 +88,35 @@ func wrap404Error(subId int, dbId int, err error) error {
 		return &NotFound{subId: subId, dbId: dbId}
 	}
 	return err
+}
+
+func createLatestImportStatusFromTask(task *internal.Task) (*LatestImportStatus, error) {
+	latestImportStatus := &LatestImportStatus{}
+	if task != nil {
+		latestImportStatus.CommandType = task.CommandType
+		latestImportStatus.Description = task.Description
+		latestImportStatus.Status = task.Status
+		latestImportStatus.ID = task.ID
+		if task.Response != nil {
+			latestImportStatus.Response = &Response{
+				ID: task.Response.ID,
+			}
+			if task.Response.Error != nil {
+				latestImportStatus.Response.Error = &Error{
+					Type:        task.Response.Error.Type,
+					Description: task.Response.Error.Description,
+					Status:      task.Response.Error.Status,
+				}
+			}
+
+			if task.Response.Resource != nil {
+				latestImportStatus.Response.Resource = &Resource{}
+				err := json.Unmarshal(*task.Response.Resource, latestImportStatus.Response.Resource)
+				if err != nil {
+					return nil, fmt.Errorf("failed to unmarshal task response: %w", err)
+				}
+			}
+		}
+	}
+	return latestImportStatus, nil
 }

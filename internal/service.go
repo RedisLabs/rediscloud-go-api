@@ -115,56 +115,14 @@ func (a *api) waitForTaskToComplete(ctx context.Context, id string) (*Task, erro
 			a.logger.Println(err)
 		}))
 	if err != nil {
-		return nil, err
+		return task, err
 	}
 
 	return task, nil
 }
 
 func (a *api) WaitForTask(ctx context.Context, id string) (*Task, error) {
-	var task *Task
-	notFoundCount := 0
-	err := retry.Do(
-		func() error {
-			var err error
-			task, err = a.get(ctx, id)
-			if err != nil {
-				// An error is a terminal state (any repeated pre-task 404s will have been exhausted by this point)
-				return nil
-			}
-
-			status := redis.StringValue(task.Status)
-
-			if _, ok := processingStates[status]; !ok {
-				// The task is no longer processing for whatever reason
-				return nil
-			}
-
-			return fmt.Errorf("task %s not processed yet: %s", id, status)
-		},
-		retry.Attempts(math.MaxUint16),
-		retry.Delay(1*time.Second),
-		retry.MaxDelay(30*time.Second),
-		retry.RetryIf(func(err error) bool {
-			if !retry.IsRecoverable(err) {
-				return false
-			}
-			if _, ok := err.(*taskNotFoundError); ok {
-				notFoundCount++
-				if notFoundCount > max404Errors {
-					return false
-				}
-			}
-			return true
-		}),
-		retry.LastErrorOnly(true), retry.Context(ctx), retry.OnRetry(func(_ uint, err error) {
-			a.logger.Println(err)
-		}))
-	if err != nil {
-		return nil, err
-	}
-
-	return task, nil
+	return a.waitForTaskToComplete(ctx, id)
 }
 
 func (a *api) get(ctx context.Context, id string) (*Task, error) {

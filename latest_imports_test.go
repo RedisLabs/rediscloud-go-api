@@ -61,38 +61,27 @@ func TestGetLatestImportTooEarly(t *testing.T) {
 				  ]
 				}`,
 			),
-			getRequest(
-				t,
-				"/tasks/1dfd6084-21df-40c6-829c-e9b4790e207e",
-				`{
-				  "taskId": "1dfd6084-21df-40c6-829c-e9b4790e207e",
-				  "commandType": "databaseImportStatusRequest",
-				  "status": "processing-error",
-				  "description": "Task request failed during processing. See error information for failure details.",
-				  "timestamp": "2024-04-15T10:19:07.331898Z",
-				  "response": {
-					"error": {
-					  "type": "SUBSCRIPTION_NOT_ACTIVE",
-					  "status": "403 FORBIDDEN",
-					  "description": "Cannot preform any actions for subscription that is not in an active state"
-					}
-				  },
-				  "links": [
-					{
-					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/1dfd6084-21df-40c6-829c-e9b4790e207e",
-					  "type": "GET",
-					  "rel": "self"
-					}
-				  ]
-				}`,
-			),
 		))
 
 	subject, err := clientFromTestServer(server, "key", "secret")
 	require.NoError(t, err)
 
-	_, err = subject.LatestImport.Get(context.TODO(), 12, 34)
+	actual, err := subject.LatestImport.Get(context.TODO(), 12, 34)
 	require.NoError(t, err)
+
+	assert.Equal(t, &latest_imports.LatestImportStatus{
+		CommandType: redis.String("databaseImportStatusRequest"),
+		Description: redis.String("Task request failed during processing. See error information for failure details."),
+		Status:      redis.String("processing-error"),
+		ID:          redis.String("1dfd6084-21df-40c6-829c-e9b4790e207e"),
+		Response: &latest_imports.Response{
+			Error: &latest_imports.Error{
+				Type:        redis.String("SUBSCRIPTION_NOT_ACTIVE"),
+				Description: redis.String("Cannot preform any actions for subscription that is not in an active state"),
+				Status:      redis.String("403 FORBIDDEN"),
+			},
+		},
+	}, actual)
 }
 
 func TestGetFixedLatestImport(t *testing.T) {
@@ -114,31 +103,6 @@ func TestGetFixedLatestImport(t *testing.T) {
 					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/e9232e43-3781-4263-a38e-f4d150e03475",
 					  "type": "GET",
 					  "rel": "task"
-					}
-				  ]
-				}`,
-			),
-			getRequest(
-				t,
-				"/tasks/e9232e43-3781-4263-a38e-f4d150e03475",
-				`{
-				  "taskId": "e9232e43-3781-4263-a38e-f4d150e03475",
-				  "commandType": "databaseImportStatusRequest",
-				  "status": "processing-completed",
-				  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
-				  "timestamp": "2024-04-15T10:44:35.225468Z",
-				  "response": {
-					"resourceId": 51051302,
-					"additionalResourceId": 110777,
-					"resource": {
-                      "status": "importing"
-                	}
-				  },
-				  "links": [
-					{
-					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/e9232e43-3781-4263-a38e-f4d150e03475",
-					  "type": "GET",
-					  "rel": "self"
 					}
 				  ]
 				}`,
@@ -210,43 +174,6 @@ func TestGetLatestImport(t *testing.T) {
 					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/e9232e43-3781-4263-a38e-f4d150e03475",
 					  "type": "GET",
 					  "rel": "task"
-					}
-				  ]
-				}`,
-			),
-			getRequest(
-				t,
-				"/tasks/e9232e43-3781-4263-a38e-f4d150e03475",
-				`{
-				  "taskId": "e9232e43-3781-4263-a38e-f4d150e03475",
-				  "commandType": "databaseImportStatusRequest",
-				  "status": "processing-completed",
-				  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
-				  "timestamp": "2024-04-15T10:44:35.225468Z",
-				  "response": {
-					"resourceId": 51051302,
-					"additionalResourceId": 110777,
-					"resource": {
-					  "failureReason": "file-corrupted",
-					  "failureReasonParams": [
-						{
-						  "key": "bytes_configured_bdb_limit",
-						  "value": "1234"
-						},
-						{
-						  "key": "bytes_of_expected_dataset",
-						  "value": "5678"
-						}
-					  ],
-					  "lastImportTime": "2024-05-21T10:36:26Z",
-                      "status": "failed"
-					}
-				  },
-				  "links": [
-					{
-					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/e9232e43-3781-4263-a38e-f4d150e03475",
-					  "type": "GET",
-					  "rel": "self"
 					}
 				  ]
 				}`,

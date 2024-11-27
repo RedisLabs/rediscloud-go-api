@@ -36,8 +36,8 @@ type Error struct {
 	Status      *string `json:"status,omitempty"`
 }
 
-func (o Error) String() string {
-	return ToString(o)
+func (e Error) String() string {
+	return ToString(e)
 }
 
 func (e *Error) StatusCode() string {
