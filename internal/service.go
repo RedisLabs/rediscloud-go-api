@@ -12,10 +12,6 @@ import (
 	"github.com/avast/retry-go/v4"
 )
 
-type Log interface {
-	Println(v ...interface{})
-}
-
 type Api interface {
 	// WaitForResourceId will poll the Task, waiting for the Task to finish processing, where it will then return.
 	// An error will be returned if the Task couldn't be retrieved or the Task was not processed successfully.

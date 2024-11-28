@@ -73,7 +73,7 @@ func NewClient(configs ...Option) (*Client, error) {
 		Transport: config.roundTripper(),
 	}
 
-	client, err := internal.NewHttpClient(httpClient, config.baseUrl)
+	client, err := internal.NewHttpClient(httpClient, config.baseUrl, config.logger)
 	if err != nil {
 		return nil, err
 	}
