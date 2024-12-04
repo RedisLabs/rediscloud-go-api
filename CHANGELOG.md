@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.21.0
+
+### Added
+
+* Handling API rate limits to wait or retry calls depending on the current window or remaining limits.   
+
+### Fixed
+
+* Removed extra API call when retrieving latest backup and import Statuses.
+
 ## 0.8.0
 
 ### Added
