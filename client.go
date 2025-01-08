@@ -13,6 +13,7 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/redis_rules"
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/roles"
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/users"
+	"github.com/RedisLabs/rediscloud-go-api/service/psc"
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 	"github.com/RedisLabs/rediscloud-go-api/service/account"
@@ -43,6 +44,7 @@ type Client struct {
 	Maintenance               *maintenance.API
 	Pricing                   *pricing.API
 	TransitGatewayAttachments *attachments.API
+	PrivateServiceConnect     *psc.API
 	Tags                      *tags.API
 	// fixed
 	FixedPlans             *plans.API
@@ -91,6 +93,7 @@ func NewClient(configs ...Option) (*Client, error) {
 		Maintenance:               maintenance.NewAPI(client, t, config.logger),
 		Pricing:                   pricing.NewAPI(client),
 		TransitGatewayAttachments: attachments.NewAPI(client, t, config.logger),
+		PrivateServiceConnect:     psc.NewAPI(client, t, config.logger),
 		Tags:                      tags.NewAPI(client),
 		// fixed
 		FixedPlans:             plans.NewAPI(client, config.logger),
