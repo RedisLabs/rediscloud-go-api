@@ -142,6 +142,16 @@ func deleteRequest(t *testing.T, path string, body string) endpointRequest {
 	}
 }
 
+func deleteRequestWithStatus(t *testing.T, path string, status int, body string) endpointRequest {
+	return endpointRequest{
+		method: http.MethodDelete,
+		path:   path,
+		body:   body,
+		status: status,
+		t:      t,
+	}
+}
+
 func postRequest(t *testing.T, path string, request string, body string) endpointRequest {
 	return endpointRequest{
 		method:      http.MethodPost,
