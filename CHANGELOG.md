@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.22.0
+
+### Added
+
+* Add endpoints to the new Private Service Connect API for Pro and Active-Active subscriptions.
+
 ## 0.21.0
 
 ### Added
