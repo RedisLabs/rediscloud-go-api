@@ -170,10 +170,11 @@ type UpdateDatabase struct {
 	// It's important to use a pointer here, because the terraform user may want to send an empty list.
 	// In that case, the developer must pass a (pointer to a) non-nil, zero-length slice
 	// If the developer really wants to omit this value, passing a nil slice value would work
-	Alerts            *[]*Alert             `json:"alerts,omitempty"`
-	EnableTls         *bool                 `json:"enableTls,omitempty"`
-	RemoteBackup      *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
-	EnableDefaultUser *bool                 `json:"enableDefaultUser,omitempty"`
+	Alerts                 *[]*Alert             `json:"alerts,omitempty"`
+	EnableTls              *bool                 `json:"enableTls,omitempty"`
+	RemoteBackup           *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
+	EnableDefaultUser      *bool                 `json:"enableDefaultUser,omitempty"`
+	QueryPerformanceFactor *string               `json:"queryPerformanceFactor,omitempty"`
 }
 
 func (o UpdateDatabase) String() string {

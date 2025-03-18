@@ -357,7 +357,8 @@ func TestDatabase_Update(t *testing.T) {
       "value": 80
     }
   ],
-  "enableDefaultUser": false
+  "enableDefaultUser": false,
+  "queryPerformanceFactor": "2x"
 }`, `{
   "taskId": "task",
   "commandType": "databaseUpdateRequest",
@@ -417,7 +418,8 @@ func TestDatabase_Update(t *testing.T) {
 				Value: redis.Int(80),
 			},
 		},
-		EnableDefaultUser: redis.Bool(false),
+		EnableDefaultUser:      redis.Bool(false),
+		QueryPerformanceFactor: redis.String("2x"),
 	})
 	require.NoError(t, err)
 }
