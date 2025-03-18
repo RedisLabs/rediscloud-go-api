@@ -48,6 +48,12 @@ func (o CreateThroughputMeasurement) String() string {
 	return internal.ToString(o)
 }
 
+type CreateLocalThroughputMeasurement struct {
+	Region                   *string `json:"region,omitempty"`
+	WriteOperationsPerSecond *int    `json:"writeOperationsPerSecond,omitempty"`
+	ReadOperationsPerSecond  *int    `json:"readOperationsPerSecond,omitempty"`
+}
+
 type Database struct {
 	ID       *int    `json:"databaseId,omitempty"`
 	Name     *string `json:"name,omitempty"`
