@@ -25,6 +25,7 @@ func TestDatabase_Create(t *testing.T) {
   "useExternalEndpointForOSSClusterApi": false,
   "dataPersistence": "none",
   "dataEvictionPolicy": "allkeys-lru",
+  "queryPerformanceFactor": "6x",
   "replication": true,
   "throughputMeasurement": {
     "by": "operations-per-second",
@@ -94,6 +95,7 @@ func TestDatabase_Create(t *testing.T) {
 		UseExternalEndpointForOSSClusterAPI: redis.Bool(false),
 		DataPersistence:                     redis.String("none"),
 		DataEvictionPolicy:                  redis.String("allkeys-lru"),
+		QueryPerformanceFactor:              redis.String("6x"),
 		Replication:                         redis.Bool(true),
 		ThroughputMeasurement: &databases.CreateThroughputMeasurement{
 			By:    redis.String("operations-per-second"),
