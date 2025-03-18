@@ -76,7 +76,7 @@ type CreateActiveActiveDatabase struct {
 	GlobalModules                       []*Module          `json:"modules,omitempty"`
 	LocalThroughputMeasurement          []*LocalThroughput `json:"localThroughputMeasurement,omitempty"`
 	PortNumber                          *int               `json:"port,omitempty"`
-	QueryPerformanceFactor              *string            `json:"string,omitempty"`
+	QueryPerformanceFactor              *string            `json:"queryPerformanceFactor,omitempty"`
 }
 
 func (o CreateActiveActiveDatabase) String() string {
@@ -94,21 +94,23 @@ func (o LocalThroughput) String() string {
 }
 
 type UpdateActiveActiveDatabase struct {
-	DryRun                              *bool                    `json:"dryRun,omitempty"`
-	MemoryLimitInGB                     *float64                 `json:"memoryLimitInGb,omitempty"`
-	DatasetSizeInGB                     *float64                 `json:"datasetSizeInGb,omitempty"`
-	SupportOSSClusterAPI                *bool                    `json:"supportOSSClusterApi,omitempty"`
-	UseExternalEndpointForOSSClusterAPI *bool                    `json:"useExternalEndpointForOSSClusterApi,omitempty"`
-	ClientSSLCertificate                *string                  `json:"clientSslCertificate,omitempty"`
-	ClientTLSCertificates               *[]*string               `json:"clientTlsCertificates,omitempty"` // Using a pointer to allow empty slices to be serialised/sent
-	EnableTls                           *bool                    `json:"enableTls,omitempty"`
-	GlobalDataPersistence               *string                  `json:"globalDataPersistence,omitempty"`
-	GlobalPassword                      *string                  `json:"globalPassword,omitempty"`
-	GlobalSourceIP                      []*string                `json:"globalSourceIp,omitempty"`
-	GlobalAlerts                        *[]*Alert                `json:"globalAlerts,omitempty"` // Using a pointer to allow empty slices to be serialised/sent
-	Regions                             []*LocalRegionProperties `json:"regions,omitempty"`
-	DataEvictionPolicy                  *string                  `json:"dataEvictionPolicy,omitempty"`
-	QueryPerformanceFactor              *string                  `json:"queryPerformanceFactor"`
+	DryRun                              *bool    `json:"dryRun,omitempty"`
+	MemoryLimitInGB                     *float64 `json:"memoryLimitInGb,omitempty"`
+	DatasetSizeInGB                     *float64 `json:"datasetSizeInGb,omitempty"`
+	SupportOSSClusterAPI                *bool    `json:"supportOSSClusterApi,omitempty"`
+	UseExternalEndpointForOSSClusterAPI *bool    `json:"useExternalEndpointForOSSClusterApi,omitempty"`
+	ClientSSLCertificate                *string  `json:"clientSslCertificate,omitempty"`
+	// Using a pointer to allow empty slices to be serialised/sent
+	ClientTLSCertificates *[]*string `json:"clientTlsCertificates,omitempty"`
+	EnableTls             *bool      `json:"enableTls,omitempty"`
+	GlobalDataPersistence *string    `json:"globalDataPersistence,omitempty"`
+	GlobalPassword        *string    `json:"globalPassword,omitempty"`
+	GlobalSourceIP        []*string  `json:"globalSourceIp,omitempty"`
+	// Using a pointer to allow empty slices to be serialised/sent
+	GlobalAlerts           *[]*Alert                `json:"globalAlerts,omitempty"`
+	Regions                []*LocalRegionProperties `json:"regions,omitempty"`
+	DataEvictionPolicy     *string                  `json:"dataEvictionPolicy,omitempty"`
+	QueryPerformanceFactor *string                  `json:"queryPerformanceFactor,omitempty"`
 }
 
 func (o UpdateActiveActiveDatabase) String() string {

@@ -44,7 +44,8 @@ func TestSubscription_Create(t *testing.T) {
         "by": "operations-per-second",
         "value": 10000
       },
-      "quantity": 1
+      "quantity": 1,
+      "queryPerformanceFactor": "4x"
     }
   ],
   "redisVersion": "latest"
@@ -133,7 +134,8 @@ func TestSubscription_Create(t *testing.T) {
 					By:    redis.String("operations-per-second"),
 					Value: redis.Int(10000),
 				},
-				Quantity: redis.Int(1),
+				Quantity:               redis.Int(1),
+				QueryPerformanceFactor: redis.String("4x"),
 			},
 		},
 		RedisVersion: redis.String("latest"),

@@ -65,6 +65,7 @@ type CreateDatabase struct {
 	Modules                    []*CreateModules         `json:"modules,omitempty"`
 	Quantity                   *int                     `json:"quantity,omitempty"`
 	AverageItemSizeInBytes     *int                     `json:"averageItemSizeInBytes,omitempty"`
+	QueryPerformanceFactor     *string                  `json:"queryPerformanceFactor,omitempty"`
 }
 
 func (o CreateDatabase) String() string {

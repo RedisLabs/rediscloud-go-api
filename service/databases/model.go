@@ -23,16 +23,17 @@ type CreateDatabase struct {
 	AverageItemSizeInBytes              *int                         `json:"averageItemSizeInBytes,omitempty"`
 	ReplicaOf                           []*string                    `json:"replicaOf,omitempty"`
 	// Deprecated: Use RemoteBackup instead
-	PeriodicBackupPath    *string               `json:"periodicBackupPath,omitempty"`
-	SourceIP              []*string             `json:"sourceIp,omitempty"`
-	ClientSSLCertificate  *string               `json:"clientSslCertificate,omitempty"`
-	ClientTLSCertificates *[]*string            `json:"clientTlsCertificates,omitempty"`
-	Password              *string               `json:"password,omitempty"`
-	Alerts                []*Alert              `json:"alerts,omitempty"`
-	Modules               []*Module             `json:"modules,omitempty"`
-	EnableTls             *bool                 `json:"enableTls,omitempty"`
-	PortNumber            *int                  `json:"port,omitempty"`
-	RemoteBackup          *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
+	PeriodicBackupPath     *string               `json:"periodicBackupPath,omitempty"`
+	SourceIP               []*string             `json:"sourceIp,omitempty"`
+	ClientSSLCertificate   *string               `json:"clientSslCertificate,omitempty"`
+	ClientTLSCertificates  *[]*string            `json:"clientTlsCertificates,omitempty"`
+	Password               *string               `json:"password,omitempty"`
+	Alerts                 []*Alert              `json:"alerts,omitempty"`
+	Modules                []*Module             `json:"modules,omitempty"`
+	EnableTls              *bool                 `json:"enableTls,omitempty"`
+	PortNumber             *int                  `json:"port,omitempty"`
+	RemoteBackup           *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
+	QueryPerformanceFactor *string               `json:"queryPerformanceFactor,omitempty"`
 }
 
 func (o CreateDatabase) String() string {
@@ -46,12 +47,6 @@ type CreateThroughputMeasurement struct {
 
 func (o CreateThroughputMeasurement) String() string {
 	return internal.ToString(o)
-}
-
-type CreateLocalThroughputMeasurement struct {
-	Region                   *string `json:"region,omitempty"`
-	WriteOperationsPerSecond *int    `json:"writeOperationsPerSecond,omitempty"`
-	ReadOperationsPerSecond  *int    `json:"readOperationsPerSecond,omitempty"`
 }
 
 type Database struct {
