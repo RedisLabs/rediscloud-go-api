@@ -79,6 +79,7 @@ type Database struct {
 	PublicEndpoint         *string     `json:"publicEndpoint,omitempty"`
 	RedisVersionCompliance *string     `json:"redisVersionCompliance,omitempty"`
 	Backup                 *Backup     `json:"backup,omitempty"`
+	QueryPerformanceFactor *string     `json:"queryPerformanceFactor,omitempty"`
 }
 
 func (o Database) String() string {
