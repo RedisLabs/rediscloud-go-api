@@ -42,6 +42,7 @@ type CrdbDatabase struct {
 	Alerts                   []*Alert  `json:"alerts,omitempty"`
 	Security                 *Security `json:"security,omitempty"`
 	Backup                   *Backup   `json:"backup,omitempty"`
+	QueryPerformanceFactor   *string   `json:"queryPerformanceFactor,omitempty"`
 }
 
 func (o CrdbDatabase) String() string {

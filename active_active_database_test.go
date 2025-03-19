@@ -48,6 +48,7 @@ func TestAADatabase_List(t *testing.T) {
 											"readOperationsPerSecond": 1000,
 											"writeOperationsPerSecond": 1000,
 											"dataPersistence": "none",
+											"queryPerformanceFactor": "Standard",
 											"alerts": [
 												{
 													"id": "51054122-2",
@@ -85,6 +86,7 @@ func TestAADatabase_List(t *testing.T) {
 											"readOperationsPerSecond": 1000,
 											"writeOperationsPerSecond": 1000,
 											"dataPersistence": "none",
+											"queryPerformanceFactor": "Standard",
 											"alerts": [
 												{
 													"id": "51054121-2",
@@ -186,6 +188,7 @@ func TestAADatabase_List(t *testing.T) {
 					ReadOperationsPerSecond:  redis.Int(1000),
 					WriteOperationsPerSecond: redis.Int(1000),
 					DataPersistence:          redis.String("none"),
+					QueryPerformanceFactor:   redis.String("Standard"),
 					Alerts: []*databases.Alert{
 						{
 							Name:  redis.String("dataset-size"),
@@ -217,6 +220,7 @@ func TestAADatabase_List(t *testing.T) {
 					ReadOperationsPerSecond:  redis.Int(1000),
 					WriteOperationsPerSecond: redis.Int(1000),
 					DataPersistence:          redis.String("none"),
+					QueryPerformanceFactor:   redis.String("Standard"),
 					Alerts: []*databases.Alert{
 						{
 							Name:  redis.String("dataset-size"),
