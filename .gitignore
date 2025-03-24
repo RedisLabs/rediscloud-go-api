@@ -271,3 +271,4 @@ $RECYCLE.BIN/
 
 bin/
 vendor
+.envrc
