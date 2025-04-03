@@ -25,6 +25,7 @@ func TestDatabase_Create(t *testing.T) {
   "useExternalEndpointForOSSClusterApi": false,
   "dataPersistence": "none",
   "dataEvictionPolicy": "allkeys-lru",
+  "queryPerformanceFactor": "6x",
   "replication": true,
   "throughputMeasurement": {
     "by": "operations-per-second",
@@ -94,6 +95,7 @@ func TestDatabase_Create(t *testing.T) {
 		UseExternalEndpointForOSSClusterAPI: redis.Bool(false),
 		DataPersistence:                     redis.String("none"),
 		DataEvictionPolicy:                  redis.String("allkeys-lru"),
+		QueryPerformanceFactor:              redis.String("6x"),
 		Replication:                         redis.Bool(true),
 		ThroughputMeasurement: &databases.CreateThroughputMeasurement{
 			By:    redis.String("operations-per-second"),
@@ -135,14 +137,16 @@ func TestDatabase_List(t *testing.T) {
           "name": "first-example",
           "protocol": "redis",
           "provider": "AWS",
-          "region": "eu-west-1"
+          "region": "eu-west-1",
+		  "queryPerformanceFactor": "Standard"
         },
         {
           "databaseId": 43,
           "name": "second-example",
           "protocol": "redis",
           "provider": "AWS",
-          "region": "eu-west-1"
+          "region": "eu-west-1",
+		  "queryPerformanceFactor": "Standard"
         }
       ]
     }
@@ -168,18 +172,20 @@ func TestDatabase_List(t *testing.T) {
 
 	assert.Equal(t, []*databases.Database{
 		{
-			ID:       redis.Int(42),
-			Name:     redis.String("first-example"),
-			Protocol: redis.String("redis"),
-			Provider: redis.String("AWS"),
-			Region:   redis.String("eu-west-1"),
+			ID:                     redis.Int(42),
+			Name:                   redis.String("first-example"),
+			Protocol:               redis.String("redis"),
+			Provider:               redis.String("AWS"),
+			Region:                 redis.String("eu-west-1"),
+			QueryPerformanceFactor: redis.String("Standard"),
 		},
 		{
-			ID:       redis.Int(43),
-			Name:     redis.String("second-example"),
-			Protocol: redis.String("redis"),
-			Provider: redis.String("AWS"),
-			Region:   redis.String("eu-west-1"),
+			ID:                     redis.Int(43),
+			Name:                   redis.String("second-example"),
+			Protocol:               redis.String("redis"),
+			Provider:               redis.String("AWS"),
+			Region:                 redis.String("eu-west-1"),
+			QueryPerformanceFactor: redis.String("Standard"),
 		},
 	}, actual)
 
@@ -209,6 +215,7 @@ func TestDatabase_Get(t *testing.T) {
     "by": "operations-per-second",
     "value": 10000
   },
+  "QueryPerformanceFactor": "Standard",
   "activatedOn": "2020-11-03T09:03:30Z",
   "lastModified": "2020-11-03T09:03:30Z",
   "publicEndpoint": "example.com:16668",
@@ -284,6 +291,7 @@ func TestDatabase_Get(t *testing.T) {
 			By:    redis.String("operations-per-second"),
 			Value: redis.Int(10_000),
 		},
+		QueryPerformanceFactor: redis.String("Standard"),
 		Clustering: &databases.Clustering{
 			NumberOfShards: redis.Int(1),
 			RegexRules: []*databases.RegexRule{
@@ -355,7 +363,8 @@ func TestDatabase_Update(t *testing.T) {
       "value": 80
     }
   ],
-  "enableDefaultUser": false
+  "enableDefaultUser": false,
+  "queryPerformanceFactor": "2x"
 }`, `{
   "taskId": "task",
   "commandType": "databaseUpdateRequest",
@@ -415,7 +424,8 @@ func TestDatabase_Update(t *testing.T) {
 				Value: redis.Int(80),
 			},
 		},
-		EnableDefaultUser: redis.Bool(false),
+		EnableDefaultUser:      redis.Bool(false),
+		QueryPerformanceFactor: redis.String("2x"),
 	})
 	require.NoError(t, err)
 }

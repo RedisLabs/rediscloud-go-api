@@ -42,6 +42,7 @@ type CrdbDatabase struct {
 	Alerts                   []*Alert  `json:"alerts,omitempty"`
 	Security                 *Security `json:"security,omitempty"`
 	Backup                   *Backup   `json:"backup,omitempty"`
+	QueryPerformanceFactor   *string   `json:"queryPerformanceFactor,omitempty"`
 }
 
 func (o CrdbDatabase) String() string {
@@ -76,6 +77,7 @@ type CreateActiveActiveDatabase struct {
 	GlobalModules                       []*Module          `json:"modules,omitempty"`
 	LocalThroughputMeasurement          []*LocalThroughput `json:"localThroughputMeasurement,omitempty"`
 	PortNumber                          *int               `json:"port,omitempty"`
+	QueryPerformanceFactor              *string            `json:"queryPerformanceFactor,omitempty"`
 }
 
 func (o CreateActiveActiveDatabase) String() string {
@@ -106,9 +108,10 @@ type UpdateActiveActiveDatabase struct {
 	GlobalPassword        *string    `json:"globalPassword,omitempty"`
 	GlobalSourceIP        []*string  `json:"globalSourceIp,omitempty"`
 	// Using a pointer to allow empty slices to be serialised/sent
-	GlobalAlerts       *[]*Alert                `json:"globalAlerts,omitempty"`
-	Regions            []*LocalRegionProperties `json:"regions,omitempty"`
-	DataEvictionPolicy *string                  `json:"dataEvictionPolicy,omitempty"`
+	GlobalAlerts           *[]*Alert                `json:"globalAlerts,omitempty"`
+	Regions                []*LocalRegionProperties `json:"regions,omitempty"`
+	DataEvictionPolicy     *string                  `json:"dataEvictionPolicy,omitempty"`
+	QueryPerformanceFactor *string                  `json:"queryPerformanceFactor,omitempty"`
 }
 
 func (o UpdateActiveActiveDatabase) String() string {

@@ -13,15 +13,7 @@ import (
 )
 
 func TestAADatabase_List(t *testing.T) {
-	s := httptest.NewServer(
-		testServer(
-			"apiKey",
-			"secret",
-			getRequestWithQuery(
-				t,
-				"/subscriptions/111478/databases",
-				map[string][]string{"limit": {"100"}, "offset": {"0"}},
-				`{
+	body := `{
 					"accountId": 69369,
 					"subscription": [
 						{
@@ -56,6 +48,7 @@ func TestAADatabase_List(t *testing.T) {
 											"readOperationsPerSecond": 1000,
 											"writeOperationsPerSecond": 1000,
 											"dataPersistence": "none",
+											"queryPerformanceFactor": "Standard",
 											"alerts": [
 												{
 													"id": "51054122-2",
@@ -93,6 +86,7 @@ func TestAADatabase_List(t *testing.T) {
 											"readOperationsPerSecond": 1000,
 											"writeOperationsPerSecond": 1000,
 											"dataPersistence": "none",
+											"queryPerformanceFactor": "Standard",
 											"alerts": [
 												{
 													"id": "51054121-2",
@@ -131,7 +125,19 @@ func TestAADatabase_List(t *testing.T) {
 							"href": "https://api-staging.qa.redislabs.com/v1/subscriptions/111478/databases?offset=0&limit=100"
 						}
 					]
-				}`,
+				}`
+
+	query := map[string][]string{"limit": {"100"}, "offset": {"0"}}
+
+	s := httptest.NewServer(
+		testServer(
+			"apiKey",
+			"secret",
+			getRequestWithQuery(
+				t,
+				"/subscriptions/111478/databases",
+				query,
+				body,
 			),
 			getRequestWithQueryAndStatus(
 				t,
@@ -182,6 +188,7 @@ func TestAADatabase_List(t *testing.T) {
 					ReadOperationsPerSecond:  redis.Int(1000),
 					WriteOperationsPerSecond: redis.Int(1000),
 					DataPersistence:          redis.String("none"),
+					QueryPerformanceFactor:   redis.String("Standard"),
 					Alerts: []*databases.Alert{
 						{
 							Name:  redis.String("dataset-size"),
@@ -213,6 +220,7 @@ func TestAADatabase_List(t *testing.T) {
 					ReadOperationsPerSecond:  redis.Int(1000),
 					WriteOperationsPerSecond: redis.Int(1000),
 					DataPersistence:          redis.String("none"),
+					QueryPerformanceFactor:   redis.String("Standard"),
 					Alerts: []*databases.Alert{
 						{
 							Name:  redis.String("dataset-size"),
