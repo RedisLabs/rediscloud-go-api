@@ -278,6 +278,10 @@ type listSubscriptionResponse struct {
 	Subscriptions []*Subscription `json:"subscriptions"`
 }
 
+type listRegionsResponse struct {
+	Regions []*Region `json:"subscriptions"`
+}
+
 type NotFound struct {
 	ID int
 }
