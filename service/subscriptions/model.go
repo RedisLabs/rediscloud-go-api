@@ -278,7 +278,7 @@ type listSubscriptionResponse struct {
 	Subscriptions []*Subscription `json:"subscriptions"`
 }
 
-type listRegionsResponse struct {
+type listSubscriptionRegionsResponse struct {
 	Regions []*Region `json:"subscriptions"`
 }
 
