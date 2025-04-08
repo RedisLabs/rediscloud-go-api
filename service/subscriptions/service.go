@@ -238,15 +238,17 @@ func (a *API) DeleteActiveActiveVPCPeering(ctx context.Context, subscription int
 	return a.taskWaiter.Wait(ctx, *task.ID)
 }
 
-func (a *API) ListActiveActiveRegions(ctx context.Context, subscription int) ([]*Region, error) {
-	var response listRegionsResponse
-	err := a.client.Get(ctx, "list regions", fmt.Sprintf("/subscriptions/%d/regions/", subscription), &response)
+func (a *API) ListActiveActiveRegions(ctx context.Context, subscription int) error {
+	var task internal.TaskResponse
+	err := a.client.Get(ctx, "list regions", fmt.Sprintf("/subscriptions/%d/regions/", subscription), &task)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return response.Regions, nil
+	a.logger.Printf("Waiting for subscription %d region details to be retrieved", subscription)
+
+	return a.taskWaiter.Wait(ctx, *task.ID)
 }
 
 func wrap404Error(id int, err error) error {
