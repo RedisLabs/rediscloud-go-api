@@ -3,6 +3,7 @@ package subscriptions
 import (
 	"context"
 	"fmt"
+	"github.com/RedisLabs/rediscloud-go-api/service/regions"
 	"net/http"
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
@@ -238,7 +239,7 @@ func (a *API) DeleteActiveActiveVPCPeering(ctx context.Context, subscription int
 	return a.taskWaiter.Wait(ctx, *task.ID)
 }
 
-func (a *API) ListActiveActiveRegions(ctx context.Context, subscription int) ([]*Region, error) {
+func (a *API) ListActiveActiveRegions(ctx context.Context, subscription int) ([]*regions.Region, error) {
 	var response listSubscriptionRegionsResponse
 	err := a.client.Get(ctx, "list regions", fmt.Sprintf("/subscriptions/%d/regions", subscription), &response)
 
