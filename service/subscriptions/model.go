@@ -2,7 +2,6 @@ package subscriptions
 
 import (
 	"fmt"
-	"github.com/RedisLabs/rediscloud-go-api/service/regions"
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 )
@@ -280,8 +279,8 @@ type listSubscriptionResponse struct {
 }
 
 type listSubscriptionRegionsResponse struct {
-	SubscriptionId *int              `json:"subscriptionId,omitempty"`
-	Regions        []*regions.Region `json:"regions"`
+	SubscriptionId *int                  `json:"subscriptionId,omitempty"`
+	Regions        []*ActiveActiveRegion `json:"regions"`
 }
 
 // have to redeclare these here (copied from regions model) to avoid an import cycle
