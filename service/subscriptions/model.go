@@ -284,6 +284,23 @@ type listSubscriptionRegionsResponse struct {
 	Regions        []*regions.Region `json:"regions"`
 }
 
+// have to redeclare these here (copied from regions model) to avoid an import cycle
+type ActiveActiveRegion struct {
+	RegionId       *int                    `json:"regionId,omitempty"`
+	Region         *string                 `json:"region,omitempty"`
+	RecreateRegion *bool                   `json:"-"`
+	DeploymentCIDR *string                 `json:"deploymentCIDR,omitempty"`
+	VpcId          *string                 `json:"vpcId,omitempty"`
+	Databases      []*ActiveActiveDatabase `json:"databases,omitempty"`
+}
+
+type ActiveActiveDatabase struct {
+	DatabaseId               *int    `json:"databaseId,omitempty"`
+	DatabaseName             *string `json:"DatabaseName,omitempty"`
+	ReadOperationsPerSecond  *int    `json:"readOperationsPerSecond,omitempty"`
+	WriteOperationsPerSecond *int    `json:"writeOperationsPerSecond,omitempty"`
+}
+
 type NotFound struct {
 	ID int
 }
