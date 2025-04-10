@@ -287,7 +287,6 @@ type listSubscriptionRegionsResponse struct {
 type ActiveActiveRegion struct {
 	RegionId       *int                    `json:"regionId,omitempty"`
 	Region         *string                 `json:"region,omitempty"`
-	RecreateRegion *bool                   `json:"-"`
 	DeploymentCIDR *string                 `json:"deploymentCIDR,omitempty"`
 	VpcId          *string                 `json:"vpcId,omitempty"`
 	Databases      []*ActiveActiveDatabase `json:"databases,omitempty"`
