@@ -278,23 +278,37 @@ type listSubscriptionResponse struct {
 	Subscriptions []*Subscription `json:"subscriptions"`
 }
 
-type listSubscriptionRegionsResponse struct {
+type ListSubscriptionRegionsResponse struct {
 	SubscriptionId *int                  `json:"subscriptionId,omitempty"`
 	Regions        []*ActiveActiveRegion `json:"regions"`
 }
 
 // have to redeclare these here (copied from regions model) to avoid an import cycle
 type ActiveActiveRegion struct {
-	RegionId       *int                    `json:"regionId,omitempty"`
-	Region         *string                 `json:"region,omitempty"`
-	DeploymentCIDR *string                 `json:"deploymentCIDR,omitempty"`
-	VpcId          *string                 `json:"vpcId,omitempty"`
-	Databases      []*ActiveActiveDatabase `json:"databases,omitempty"`
+	RegionId       *int                   `json:"regionId,omitempty"`
+	Region         *string                `json:"region,omitempty"`
+	DeploymentCIDR *string                `json:"deploymentCIDR,omitempty"`
+	VpcId          *string                `json:"vpcId,omitempty"`
+	Databases      []ActiveActiveDatabase `json:"databases,omitempty"`
 }
+
+//       "regionId": 1,
+//      "region": "us-east-1",
+//      "deploymentCidr": "192.168.0.0/24",
+//      "vpcId": "vpc-0e946cd5c0c580383",
+//      "databases": [
+//        {
+//          "databaseId": 3645,
+//          "databaseName": "database-name",
+//          "readOperationsPerSecond": 1000,
+//          "writeOperationsPerSecond": 1000,
+//          "respVersion": "resp3",
+//          "links": []
+//        }
 
 type ActiveActiveDatabase struct {
 	DatabaseId               *int    `json:"databaseId,omitempty"`
-	DatabaseName             *string `json:"DatabaseName,omitempty"`
+	DatabaseName             *string `json:"databaseName,omitempty"`
 	ReadOperationsPerSecond  *int    `json:"readOperationsPerSecond,omitempty"`
 	WriteOperationsPerSecond *int    `json:"writeOperationsPerSecond,omitempty"`
 }

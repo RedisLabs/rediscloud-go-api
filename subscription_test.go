@@ -792,3 +792,95 @@ func TestSubscription_DeleteVPCPeering(t *testing.T) {
 	err = subject.Subscription.DeleteVPCPeering(context.TODO(), 2, 20)
 	require.NoError(t, err)
 }
+
+func TestSubscription_ListActiveActiveRegions(t *testing.T) {
+	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/subscriptions/1986/regions",
+		`
+	{
+	  "subscriptionId": 1986,
+	  "regions": [
+		{
+		  "regionId": 12,
+		  "region": "us-east-1",
+		  "deploymentCidr": "192.169.0.0/24",
+		  "vpcId": "vpc-0e828cd5c0c580389",
+		  "databases": [
+			{
+			  "databaseId": 645,
+			  "databaseName": "database-name",
+			  "readOperationsPerSecond": 1000,
+			  "writeOperationsPerSecond": 1000,
+			  "respVersion": "resp3",
+			  "links": []
+			}
+		  ],
+		  "links": []
+		},
+		{
+		  "regionId": 19,
+		  "region": "us-east-2",
+		  "deploymentCidr": "11.0.1.0/24",
+		  "vpcId": "vpc-0aecab539b31057a5",
+		  "databases": [
+			{
+			  "databaseId": 645,
+			  "databaseName": "database-name",
+			  "readOperationsPerSecond": 1000,
+			  "writeOperationsPerSecond": 1000,
+			  "respVersion": "resp3",
+			  "links": []
+			}
+		  ],
+		  "links": []
+		}
+	  ],
+	  "links": [
+		{
+		  "href": "https://api-staging.qa.redislabs.com/v1/subscriptions/118802/regions",
+		  "type": "GET",
+		  "rel": "self"
+		}
+	  ]
+	}
+	`)))
+
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Subscription.ListActiveActiveRegions(context.TODO(), 1986)
+	require.NoError(t, err)
+
+	var expected = listRegionsExpected()
+	assert.Equal(t, expected, actual)
+
+}
+
+func listRegionsExpected() []*subscriptions.ActiveActiveRegion {
+
+	// Initialize databases
+	database := subscriptions.ActiveActiveDatabase{
+		DatabaseId:               redis.Int(645),
+		DatabaseName:             redis.String("database-name"),
+		ReadOperationsPerSecond:  redis.Int(1000),
+		WriteOperationsPerSecond: redis.Int(1000),
+	}
+
+	// Initialize regions
+	region1Struct := &subscriptions.ActiveActiveRegion{
+		RegionId:       redis.Int(12),
+		Region:         redis.String("us-east-1"),
+		DeploymentCIDR: redis.String("192.169.0.0/24"),
+		VpcId:          redis.String("vpc-0e828cd5c0c580389"),
+		Databases:      []subscriptions.ActiveActiveDatabase{database},
+	}
+
+	region2Struct := &subscriptions.ActiveActiveRegion{
+		RegionId:       redis.Int(19),
+		Region:         redis.String("us-east-2"),
+		DeploymentCIDR: redis.String("11.0.1.0/24"),
+		VpcId:          redis.String("vpc-0aecab539b31057a5"),
+		Databases:      []subscriptions.ActiveActiveDatabase{database},
+	}
+
+	return []*subscriptions.ActiveActiveRegion{region1Struct, region2Struct}
+}
