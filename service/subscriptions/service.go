@@ -238,6 +238,17 @@ func (a *API) DeleteActiveActiveVPCPeering(ctx context.Context, subscription int
 	return a.taskWaiter.Wait(ctx, *task.ID)
 }
 
+func (a *API) ListActiveActiveRegions(ctx context.Context, subscription int) ([]*ActiveActiveRegion, error) {
+	var response ListSubscriptionRegionsResponse
+	err := a.client.Get(ctx, "list regions", fmt.Sprintf("/subscriptions/%d/regions", subscription), &response)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return response.Regions, nil
+}
+
 func wrap404Error(id int, err error) error {
 	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
 		return &NotFound{ID: id}
