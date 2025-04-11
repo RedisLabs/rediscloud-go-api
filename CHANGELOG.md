@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.24.0
+
+* Add endpoint for Active Active regions.
+
+## 0.23.0
+
+* Add Query Performance Factor property to subscription and database models
+
 ## 0.22.0
 
 ### Added
