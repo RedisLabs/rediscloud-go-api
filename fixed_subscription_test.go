@@ -101,6 +101,95 @@ func TestFixedSubscription_Create(t *testing.T) {
 	assert.Equal(t, 111614, actual)
 }
 
+func TestFixedSubscription_Create_Marketplace(t *testing.T) {
+	server := httptest.NewServer(
+		testServer(
+			"apiKey", "secret",
+			postRequest(
+				t,
+				"/fixed/subscriptions",
+				`{
+					"name": "My test fixed subscription with marketplace payments",
+					"planId": 34811,
+					"paymentMethod": "marketplace"
+				}`,
+				`{
+					"taskId": "2a6c6c5b-a16a-4f19-a803-17c1013a5888",
+					"commandType": "fixedSubscriptionCreateRequest",
+					"status": "received",
+					"description": "Task request received and is being queued for processing.",
+					"timestamp": "2024-05-09T09:36:16.122289471Z",
+					"links": [
+						{
+							"rel": "task",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/tasks/2a6c6c5b-a16a-4f19-a803-17c1013a5888"
+						}
+					]
+				}`,
+			),
+			getRequest(
+				t,
+				"/tasks/2a6c6c5b-a16a-4f19-a803-17c1013a5888",
+				`{
+					"taskId": "2a6c6c5b-a16a-4f19-a803-17c1013a5888",
+					"commandType": "fixedSubscriptionCreateRequest",
+					"status": "initialized",
+					"timestamp": "2020-10-28T09:58:16.798Z",
+					"response": {},
+					"_links": {
+						"self": {
+							"href": "https://example.com",
+							"type": "GET"
+						}
+					}
+				}`,
+			),
+			getRequest(
+				t,
+				"/tasks/2a6c6c5b-a16a-4f19-a803-17c1013a5888",
+				`{
+					"taskId": "2a6c6c5b-a16a-4f19-a803-17c1013a5888",
+					"commandType": "fixedSubscriptionCreateRequest",
+					"status": "processing-completed",
+					"description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+					"timestamp": "2024-05-09T09:36:35.177603409Z",
+					"response": {
+						"resourceId": 111191
+					},
+					"links": [
+						{
+							"rel": "resource",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/fixed/subscriptions/111191"
+						},
+						{
+							"rel": "self",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/tasks/2a6c6c5b-a16a-4f19-a803-17c1013a5888"
+						}
+					]
+				}`,
+			),
+		),
+	)
+
+	subject, err := clientFromTestServer(server, "apiKey", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.FixedSubscriptions.Create(
+		context.TODO(),
+		fixedSubscriptions.FixedSubscription{
+			Name:          redis.String("My test fixed subscription with marketplace payments"),
+			PlanId:        redis.Int(34811),
+			PaymentMethod: redis.String("marketplace"),
+		},
+	)
+
+	require.NoError(t, err)
+	assert.Equal(t, 111191, actual)
+}
+
 func TestFixedSubscription_List(t *testing.T) {
 	server := httptest.NewServer(
 		testServer(
