@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+
+## 0.25.0
+
+* Added payment method to the fixed subscription API. This should allow payments via the marketplace as well as credit cards.
+
 ## 0.24.0
 
 * Add endpoint for Active Active regions.
