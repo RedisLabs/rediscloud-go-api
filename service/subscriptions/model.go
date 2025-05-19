@@ -278,16 +278,16 @@ type listSubscriptionResponse struct {
 	Subscriptions []*Subscription `json:"subscriptions"`
 }
 
-type ListSubscriptionRegionsResponse struct {
+type ListAASubscriptionRegionsResponse struct {
 	SubscriptionId *int                  `json:"subscriptionId,omitempty"`
 	Regions        []*ActiveActiveRegion `json:"regions"`
 }
 
 // have to redeclare these here (copied from regions model) to avoid an import cycle
 type ActiveActiveRegion struct {
-	RegionId       *int                   `json:"regionId,omitempty"`
+	//RegionId       *int `json:"regionId,omitempty"` // not populated by the API
 	Region         *string                `json:"region,omitempty"`
-	DeploymentCIDR *string                `json:"deploymentCIDR,omitempty"`
+	DeploymentCIDR *string                `json:"deploymentCidr,omitempty"`
 	VpcId          *string                `json:"vpcId,omitempty"`
 	Databases      []ActiveActiveDatabase `json:"databases,omitempty"`
 }
