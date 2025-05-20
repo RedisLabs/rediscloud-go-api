@@ -800,7 +800,6 @@ func TestSubscription_ListActiveActiveRegions(t *testing.T) {
 	  "subscriptionId": 1986,
 	  "regions": [
 		{
-		  "regionId": 12,
 		  "region": "us-east-1",
 		  "deploymentCidr": "192.169.0.0/24",
 		  "vpcId": "vpc-0e828cd5c0c580389",
@@ -817,7 +816,6 @@ func TestSubscription_ListActiveActiveRegions(t *testing.T) {
 		  "links": []
 		},
 		{
-		  "regionId": 19,
 		  "region": "us-east-2",
 		  "deploymentCidr": "11.0.1.0/24",
 		  "vpcId": "vpc-0aecab539b31057a5",
@@ -867,7 +865,6 @@ func listRegionsExpected() []*subscriptions.ActiveActiveRegion {
 
 	// Initialize regions
 	region1Struct := &subscriptions.ActiveActiveRegion{
-		RegionId:       redis.Int(12),
 		Region:         redis.String("us-east-1"),
 		DeploymentCIDR: redis.String("192.169.0.0/24"),
 		VpcId:          redis.String("vpc-0e828cd5c0c580389"),
@@ -875,7 +872,6 @@ func listRegionsExpected() []*subscriptions.ActiveActiveRegion {
 	}
 
 	region2Struct := &subscriptions.ActiveActiveRegion{
-		RegionId:       redis.Int(19),
 		Region:         redis.String("us-east-2"),
 		DeploymentCIDR: redis.String("11.0.1.0/24"),
 		VpcId:          redis.String("vpc-0aecab539b31057a5"),

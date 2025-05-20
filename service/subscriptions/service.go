@@ -239,7 +239,7 @@ func (a *API) DeleteActiveActiveVPCPeering(ctx context.Context, subscription int
 }
 
 func (a *API) ListActiveActiveRegions(ctx context.Context, subscription int) ([]*ActiveActiveRegion, error) {
-	var response ListSubscriptionRegionsResponse
+	var response ListAASubscriptionRegionsResponse
 	err := a.client.Get(ctx, "list regions", fmt.Sprintf("/subscriptions/%d/regions", subscription), &response)
 
 	if err != nil {
