@@ -152,7 +152,6 @@ func TestSubscription_List(t *testing.T) {
       "id": 1,
       "name": "sdk",
       "status": "active",
-      "paymentMethodType": "credit-card",
       "paymentMethodId": 2,
       "memoryStorage": "ram",
       "storageEncryption": false,

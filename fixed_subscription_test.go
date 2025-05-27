@@ -111,7 +111,7 @@ func TestFixedSubscription_Create_Marketplace(t *testing.T) {
 				`{
 					"name": "My test fixed subscription with marketplace payments",
 					"planId": 34811,
-					"paymentMethod": "marketplace"
+					"paymentMethodType": "marketplace"
 				}`,
 				`{
 					"taskId": "2a6c6c5b-a16a-4f19-a803-17c1013a5888",
@@ -281,6 +281,7 @@ func TestFixedSubscription_List(t *testing.T) {
 			Status:          redis.String("active"),
 			PlanId:          redis.Int(34858),
 			PaymentMethodID: redis.Int(30949),
+			PaymentMethod:   redis.String("credit-card"),
 			CreationDate:    redis.Time(time.Date(2024, 5, 9, 9, 36, 18, 0, time.UTC)),
 		},
 		{
@@ -289,6 +290,7 @@ func TestFixedSubscription_List(t *testing.T) {
 			Status:          redis.String("active"),
 			PlanId:          redis.Int(34858),
 			PaymentMethodID: redis.Int(30949),
+			PaymentMethod:   redis.String("credit-card"),
 			CreationDate:    redis.Time(time.Date(2024, 5, 9, 10, 49, 52, 0, time.UTC)),
 		},
 	}, actual)
@@ -350,6 +352,7 @@ func TestFixedSubscription_Get(t *testing.T) {
 		Name:            redis.String("My test fixed subscription"),
 		Status:          redis.String("active"),
 		PlanId:          redis.Int(34858),
+		PaymentMethod:   redis.String("credit-card"),
 		PaymentMethodID: redis.Int(30949),
 		CreationDate:    redis.Time(time.Date(2024, 5, 9, 9, 36, 18, 0, time.UTC)),
 	}, actual)
