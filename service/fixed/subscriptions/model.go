@@ -12,7 +12,7 @@ type FixedSubscription struct {
 	Name            *string    `json:"name,omitempty"`
 	Status          *string    `json:"status,omitempty"` // Omit for Create and Update
 	PlanId          *int       `json:"planId,omitempty"`
-	PaymentMethod   *string    `json:"paymentMethod,omitempty"`
+	PaymentMethod   *string    `json:"paymentMethodType,omitempty"`
 	PaymentMethodID *int       `json:"paymentMethodId,omitempty"`
 	CreationDate    *time.Time `json:"creationDate,omitempty"` // Omit for Create and Update
 }
