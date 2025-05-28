@@ -90,7 +90,7 @@ func TestFixedSubscription_Create(t *testing.T) {
 
 	actual, err := subject.FixedSubscriptions.Create(
 		context.TODO(),
-		fixedSubscriptions.FixedSubscription{
+		fixedSubscriptions.FixedSubscriptionRequest{
 			Name:            redis.String("My test fixed subscription"),
 			PlanId:          redis.Int(34858),
 			PaymentMethodID: redis.Int(30949),
@@ -111,7 +111,7 @@ func TestFixedSubscription_Create_Marketplace(t *testing.T) {
 				`{
 					"name": "My test fixed subscription with marketplace payments",
 					"planId": 34811,
-					"paymentMethodType": "marketplace"
+					"paymentMethod": "marketplace"
 				}`,
 				`{
 					"taskId": "2a6c6c5b-a16a-4f19-a803-17c1013a5888",
@@ -179,7 +179,7 @@ func TestFixedSubscription_Create_Marketplace(t *testing.T) {
 
 	actual, err := subject.FixedSubscriptions.Create(
 		context.TODO(),
-		fixedSubscriptions.FixedSubscription{
+		fixedSubscriptions.FixedSubscriptionRequest{
 			Name:          redis.String("My test fixed subscription with marketplace payments"),
 			PlanId:        redis.Int(34811),
 			PaymentMethod: redis.String("marketplace"),
@@ -274,7 +274,7 @@ func TestFixedSubscription_List(t *testing.T) {
 	actual, err := subject.FixedSubscriptions.List(context.TODO())
 	require.NoError(t, err)
 
-	assert.ElementsMatch(t, []*fixedSubscriptions.FixedSubscription{
+	assert.ElementsMatch(t, []*fixedSubscriptions.FixedSubscriptionResponse{
 		{
 			ID:              redis.Int(111614),
 			Name:            redis.String("My test fixed subscription"),
@@ -347,7 +347,7 @@ func TestFixedSubscription_Get(t *testing.T) {
 	actual, err := subject.FixedSubscriptions.Get(context.TODO(), 111614)
 	require.NoError(t, err)
 
-	assert.Equal(t, &fixedSubscriptions.FixedSubscription{
+	assert.Equal(t, &fixedSubscriptions.FixedSubscriptionResponse{
 		ID:              redis.Int(111614),
 		Name:            redis.String("My test fixed subscription"),
 		Status:          redis.String("active"),
@@ -442,7 +442,7 @@ func TestFixedSubscription_Update(t *testing.T) {
 	err = subject.FixedSubscriptions.Update(
 		context.TODO(),
 		111614,
-		fixedSubscriptions.FixedSubscription{
+		fixedSubscriptions.FixedSubscriptionRequest{
 			Name:   redis.String("My renamed fixed subscription"),
 			PlanId: redis.Int(34853),
 		},

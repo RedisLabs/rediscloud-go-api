@@ -7,22 +7,35 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/internal"
 )
 
-type FixedSubscription struct {
-	ID              *int       `json:"id,omitempty"` // Omit for Create and Update
+// Represents request information to create/update a fixed subscription
+type FixedSubscriptionRequest struct {
+	Name            *string `json:"name,omitempty"`
+	PlanId          *int    `json:"planId,omitempty"`
+	PaymentMethod   *string `json:"paymentMethod,omitempty"`
+	PaymentMethodID *int    `json:"paymentMethodId,omitempty"`
+}
+
+// Represents subscription info response from the get/list endpoints
+type FixedSubscriptionResponse struct {
+	ID              *int       `json:"id,omitempty"`
 	Name            *string    `json:"name,omitempty"`
-	Status          *string    `json:"status,omitempty"` // Omit for Create and Update
+	Status          *string    `json:"status,omitempty"`
 	PlanId          *int       `json:"planId,omitempty"`
 	PaymentMethod   *string    `json:"paymentMethodType,omitempty"`
 	PaymentMethodID *int       `json:"paymentMethodId,omitempty"`
-	CreationDate    *time.Time `json:"creationDate,omitempty"` // Omit for Create and Update
+	CreationDate    *time.Time `json:"creationDate,omitempty"`
 }
 
-func (o FixedSubscription) String() string {
+func (o FixedSubscriptionRequest) String() string {
+	return internal.ToString(o)
+}
+
+func (o FixedSubscriptionResponse) String() string {
 	return internal.ToString(o)
 }
 
 type listFixedSubscriptionResponse struct {
-	FixedSubscriptions []*FixedSubscription `json:"subscriptions"`
+	FixedSubscriptions []*FixedSubscriptionResponse `json:"subscriptions"`
 }
 
 type NotFound struct {
