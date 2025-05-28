@@ -35,7 +35,7 @@ func NewAPI(client HttpClient, taskWaiter TaskWaiter, logger Log) *API {
 }
 
 // Create will create a new subscription.
-func (a *API) Create(ctx context.Context, subscription FixedSubscription) (int, error) {
+func (a *API) Create(ctx context.Context, subscription FixedSubscriptionRequest) (int, error) {
 	var task internal.TaskResponse
 	err := a.client.Post(ctx, "create fixed subscription", "/fixed/subscriptions", subscription, &task)
 	if err != nil {
@@ -53,7 +53,7 @@ func (a *API) Create(ctx context.Context, subscription FixedSubscription) (int, 
 }
 
 // List will list all of the current account's fixed subscriptions.
-func (a *API) List(ctx context.Context) ([]*FixedSubscription, error) {
+func (a *API) List(ctx context.Context) ([]*FixedSubscriptionResponse, error) {
 	var response listFixedSubscriptionResponse
 	err := a.client.Get(ctx, "list fixed subscriptions", "/fixed/subscriptions", &response)
 	if err != nil {
@@ -64,8 +64,8 @@ func (a *API) List(ctx context.Context) ([]*FixedSubscription, error) {
 }
 
 // Get will retrieve an existing fixed subscription.
-func (a *API) Get(ctx context.Context, id int) (*FixedSubscription, error) {
-	var response FixedSubscription
+func (a *API) Get(ctx context.Context, id int) (*FixedSubscriptionResponse, error) {
+	var response FixedSubscriptionResponse
 	err := a.client.Get(ctx, fmt.Sprintf("retrieve fixed subscription %d", id), fmt.Sprintf("/fixed/subscriptions/%d", id), &response)
 	if err != nil {
 		return nil, wrap404Error(id, err)
@@ -75,7 +75,7 @@ func (a *API) Get(ctx context.Context, id int) (*FixedSubscription, error) {
 }
 
 // Update will make changes to an existing fixed subscription.
-func (a *API) Update(ctx context.Context, id int, subscription FixedSubscription) error {
+func (a *API) Update(ctx context.Context, id int, subscription FixedSubscriptionRequest) error {
 	var task internal.TaskResponse
 	err := a.client.Put(ctx, fmt.Sprintf("update fixed subscription %d", id), fmt.Sprintf("/fixed/subscriptions/%d", id), subscription, &task)
 	if err != nil {
