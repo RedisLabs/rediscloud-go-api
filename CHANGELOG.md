@@ -4,21 +4,31 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
 ## 0.27.0
 
+### Updated
+
 * Splitting Fixed Subscription structs into response and request structs, as JSON fields differ between the two uses.
 
 ## 0.26.0
+
+### Fixed
 
 * Fixes to the AA regions endpoint: removing the unfilled RegionId field and correcting the JSON for the DeploymentCidr field.
 
 ## 0.25.0
 
+### Added
+
 * Added payment method to the fixed subscription API. This should allow payments via the marketplace as well as credit cards.
 
 ## 0.24.0
 
+### Added
+* 
 * Add endpoint for Active Active regions.
 
 ## 0.23.0
+
+### Added
 
 * Add Query Performance Factor property to subscription and database models
 
