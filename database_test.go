@@ -543,3 +543,19 @@ func TestDatabase_Import(t *testing.T) {
 	})
 	require.NoError(t, err)
 }
+
+func TestDatabase_Certificate(t *testing.T) {
+	s := httptest.NewServer(testServer("key", "secret", getRequest(t, "/subscriptions/42/databases/18/certificate",
+		`{ "publicCertificatePEMString": "public-cert" }`)))
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	certificate, err := subject.Database.GetCertificate(context.TODO(), 42, 18)
+	require.NoError(t, err)
+
+	assert.Equal(t, &databases.DatabaseCertificate{
+		PublicCertificatePEMString: "public-cert",
+	}, certificate)
+
+}
