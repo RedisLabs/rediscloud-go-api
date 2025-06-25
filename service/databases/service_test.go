@@ -85,6 +85,39 @@ func TestListDatabase_recordsError(t *testing.T) {
 	assert.Nil(t, subject.Value())
 }
 
+func TestGetCertificate_success(t *testing.T) {
+	client := &mockHttpClient{}
+	api := NewAPI(client, nil, nil)
+
+	expected := &DatabaseCertificate{
+		PublicCertificatePEMString: "test-certificate",
+	}
+
+	client.On("Get", context.TODO(), "get TLS certificate for database 123 in subscription 456", "/subscriptions/456/databases/123/certificate", mock.AnythingOfType("*databases.DatabaseCertificate")).
+		Run(func(args mock.Arguments) {
+			cert := args.Get(3).(*DatabaseCertificate)
+			cert.PublicCertificatePEMString = "test-certificate"
+		}).Return(nil)
+
+	result, err := api.GetCertificate(context.TODO(), 456, 123)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, result)
+}
+
+func TestGetCertificate_error(t *testing.T) {
+	client := &mockHttpClient{}
+	api := NewAPI(client, nil, nil)
+
+	expected := fmt.Errorf("test error")
+	client.On("Get", context.TODO(), "get TLS certificate for database 123 in subscription 456", "/subscriptions/456/databases/123/certificate", mock.AnythingOfType("*databases.DatabaseCertificate")).
+		Return(expected)
+
+	result, err := api.GetCertificate(context.TODO(), 456, 123)
+	assert.Error(t, err)
+	assert.Equal(t, expected, err)
+	assert.Nil(t, result)
+}
+
 type mockHttpClient struct {
 	mock.Mock
 }

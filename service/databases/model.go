@@ -200,6 +200,15 @@ func (o Import) String() string {
 	return internal.ToString(o)
 }
 
+// DatabaseCertificate represents the TLS certificate information for a database
+type DatabaseCertificate struct {
+	PublicCertificatePEMString string `json:"publicCertificatePEMString"`
+}
+
+func (o DatabaseCertificate) String() string {
+	return internal.ToString(o)
+}
+
 type listDatabaseResponse struct {
 	Subscription []*listDbSubscription `json:"subscription,omitempty"`
 }

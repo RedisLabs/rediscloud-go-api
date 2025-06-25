@@ -56,7 +56,7 @@ func (a *API) Create(ctx context.Context, subscription int, db CreateDatabase) (
 	return id, nil
 }
 
-// List will return a ListDatabase that is capable of paging through all of the databases associated with a
+// List will return a ListDatabase that is capable of paging through all the databases associated with a
 // subscription.
 func (a *API) List(ctx context.Context, subscription int) *ListDatabase {
 	return newListDatabase(ctx, a.client, subscription, 100)
@@ -123,6 +123,24 @@ func (a *API) Import(ctx context.Context, subscription int, database int, reques
 	a.logger.Printf("Waiting for import into database %d for subscription %d to finish", database, subscription)
 
 	return a.taskWaiter.Wait(ctx, *task.ID)
+}
+
+// GetCertificate retrieves the TLS certificate for the specified database within a subscription.
+func (a *API) GetCertificate(ctx context.Context, subscription int, database int) (*DatabaseCertificate, error) {
+	var certificate DatabaseCertificate
+	getCertificateUrl := "/subscriptions/%d/databases/%d/certificate"
+
+	path := fmt.Sprintf(getCertificateUrl, subscription, database)
+	err := a.client.Get(
+		ctx,
+		fmt.Sprintf("get TLS certificate for database %d in subscription %d", database, subscription),
+		path,
+		&certificate,
+	)
+	if err != nil {
+		return nil, wrap404Error(subscription, database, err)
+	}
+	return &certificate, nil
 }
 
 type ListDatabase struct {
