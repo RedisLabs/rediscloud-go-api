@@ -109,7 +109,7 @@ func TestGetCertificate_error(t *testing.T) {
 	api := NewAPI(client, nil, nil)
 
 	expected := fmt.Errorf("test error")
-	client.On("Get", context.TODO(), "get TLS certificate for database 123 in subscription 456", "/subscriptions/456/databases/123/certificates", mock.AnythingOfType("*databases.DatabaseCertificate")).
+	client.On("Get", context.TODO(), "get TLS certificate for database 123 in subscription 456", "/subscriptions/456/databases/123/certificate", mock.AnythingOfType("*databases.DatabaseCertificate")).
 		Return(expected)
 
 	result, err := api.GetCertificate(context.TODO(), 456, 123)
