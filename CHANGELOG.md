@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.28.0
+
+### Added
+
+* Adding an endpoint to get a TLS certificate for a database.
+
 ## 0.27.0
 
 ### Updated
