@@ -252,6 +252,8 @@ const (
 	StatusActiveChangeDraft = "active-change-draft"
 	// StatusActiveChangePending is the Active change pending value of the `Status` field in `Database`
 	StatusActiveChangePending = "active-change-pending"
+	// StatusDynamicEndpointsCreationPending is the Dynamic endpoints creation pending value of the `Status` field in `Database`
+	StatusDynamicEndpointsCreationPending = "dynamic-endpoints-creation-pending"
 
 	// StatusProxyPolicyChangePending and StatusProxyPolicyChangeDraft
 	//The below two Proxy Policy states are caused by a change to the 'support_oss_cluster_api' attribute
