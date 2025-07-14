@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.30.0
+
+### Added
+
+* Adding in support for `persistentStorageEncryptionType`, to support CMEK, across pro and active active subscription creation
+
 ## 0.29.0
 
 ### Added

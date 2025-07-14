@@ -7,15 +7,16 @@ import (
 )
 
 type CreateSubscription struct {
-	Name            *string                `json:"name,omitempty"`
-	DeploymentType  *string                `json:"deploymentType,omitempty"`
-	DryRun          *bool                  `json:"dryRun,omitempty"`
-	PaymentMethodID *int                   `json:"paymentMethodId,omitempty"`
-	PaymentMethod   *string                `json:"paymentMethod,omitempty"`
-	MemoryStorage   *string                `json:"memoryStorage,omitempty"`
-	CloudProviders  []*CreateCloudProvider `json:"cloudProviders,omitempty"`
-	Databases       []*CreateDatabase      `json:"databases,omitempty"`
-	RedisVersion    *string                `json:"redisVersion,omitempty"`
+	Name                            *string                `json:"name,omitempty"`
+	DryRun                          *bool                  `json:"dryRun,omitempty"`
+	DeploymentType                  *string                `json:"deploymentType,omitempty"`
+	PaymentMethod                   *string                `json:"paymentMethod,omitempty"`
+	PaymentMethodID                 *int                   `json:"paymentMethodId,omitempty"`
+	MemoryStorage                   *string                `json:"memoryStorage,omitempty"`
+	PersistentStorageEncryptionType *string                `json:"persistentStorageEncryptionType,omitempty"`
+	CloudProviders                  []*CreateCloudProvider `json:"cloudProviders,omitempty"`
+	Databases                       []*CreateDatabase      `json:"databases,omitempty"`
+	RedisVersion                    *string                `json:"redisVersion,omitempty"`
 }
 
 func (o CreateSubscription) String() string {
