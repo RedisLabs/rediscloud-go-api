@@ -8,15 +8,15 @@ import (
 
 type CreateSubscription struct {
 	Name                            *string                `json:"name,omitempty"`
-	DryRun                          *bool                  `json:"dryRun,omitempty"`
 	DeploymentType                  *string                `json:"deploymentType,omitempty"`
-	PaymentMethod                   *string                `json:"paymentMethod,omitempty"`
+	DryRun                          *bool                  `json:"dryRun,omitempty"`
 	PaymentMethodID                 *int                   `json:"paymentMethodId,omitempty"`
+	PaymentMethod                   *string                `json:"paymentMethod,omitempty"`
 	MemoryStorage                   *string                `json:"memoryStorage,omitempty"`
-	PersistentStorageEncryptionType *string                `json:"persistentStorageEncryptionType,omitempty"`
 	CloudProviders                  []*CreateCloudProvider `json:"cloudProviders,omitempty"`
 	Databases                       []*CreateDatabase      `json:"databases,omitempty"`
 	RedisVersion                    *string                `json:"redisVersion,omitempty"`
+	PersistentStorageEncryptionType *string                `json:"persistentStorageEncryptionType,omitempty"`
 }
 
 func (o CreateSubscription) String() string {
@@ -117,6 +117,7 @@ type Subscription struct {
 	PaymentMethod     *string        `json:"paymentMethodType,omitempty"`
 	PaymentMethodID   *int           `json:"paymentMethodId,omitempty"`
 	MemoryStorage     *string        `json:"memoryStorage,omitempty"`
+	StorageEncryption *bool          `json:"storageEncryption,omitempty"`
 	NumberOfDatabases *int           `json:"numberOfDatabases,omitempty"`
 	CloudDetails      []*CloudDetail `json:"cloudDetails,omitempty"`
 }
