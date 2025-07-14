@@ -144,6 +144,140 @@ func TestSubscription_Create(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+// tests CMK flow
+func TestSubscription_CreateCMK(t *testing.T) {
+	expected := 1235
+	s := httptest.NewServer(testServer("key", "secret", postRequest(t, "/subscriptions", `{
+  "name": "Test subscription",
+  "dryRun": false,
+  "paymentMethodId": 2,
+  "paymentMethod": "credit-card",
+  "memoryStorage": "ram",
+  "persistentStorageEncryptionType": "cloud-provider-managed-key",
+  "cloudProviders": [
+    {
+      "provider": "AWS",
+      "cloudAccountId": 1,
+      "regions": [
+        {
+          "region": "eu-west-1"
+        }
+      ]
+    }
+  ],
+  "databases": [
+    {
+      "name": "example",
+      "protocol": "redis",
+      "datasetSizeInGb": 1,
+      "supportOSSClusterApi": true,
+      "dataPersistence": "none",
+      "replication": false,
+      "throughputMeasurement": {
+        "by": "operations-per-second",
+        "value": 10000
+      },
+      "quantity": 1,
+      "queryPerformanceFactor": "4x"
+    }
+  ],
+  "redisVersion": "latest"
+}`, `{
+  "taskId": "task-id",
+  "commandType": "subscriptionCreateRequest",
+  "status": "received",
+  "description": "Task request received and is being queued for processing.",
+  "timestamp": "2020-11-02T09:05:34.3Z",
+  "_links": {
+    "task": {
+      "href": "https://example.org",
+      "title": "getTaskStatusUpdates",
+      "type": "GET"
+    }
+  }
+}`), getRequestWithStatus(t, "/tasks/task-id", 404, ""), getRequest(t, "/tasks/task-id", `{
+  "taskId": "task-id",
+  "commandType": "subscriptionCreateRequest",
+  "status": "initialized",
+  "timestamp": "2020-10-28T09:58:16.798Z",
+  "response": {},
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`), getRequest(t, "/tasks/task-id", `{
+  "taskId": "task-id",
+  "commandType": "subscriptionCreateRequest",
+  "status": "processing-in-progress",
+  "timestamp": "2020-10-28T09:58:16.798Z",
+  "response": {},
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`), getRequest(t, "/tasks/task-id", fmt.Sprintf(`{
+  "taskId": "task-id",
+  "commandType": "subscriptionCreateRequest",
+  "status": "processing-completed",
+  "timestamp": "2020-10-28T09:58:16.798Z",
+  "response": {
+    "resourceId": %d
+  },
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`, expected))))
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Subscription.Create(context.TODO(), subscriptions.CreateSubscription{
+		Name:                            redis.String("Test subscription"),
+		DryRun:                          redis.Bool(false),
+		PaymentMethodID:                 redis.Int(2),
+		PaymentMethod:                   redis.String("credit-card"),
+		MemoryStorage:                   redis.String("ram"),
+		PersistentStorageEncryptionType: redis.String("cloud-provider-managed-key"),
+		CloudProviders: []*subscriptions.CreateCloudProvider{
+			{
+				Provider:       redis.String("AWS"),
+				CloudAccountID: redis.Int(1),
+				Regions: []*subscriptions.CreateRegion{
+					{
+						Region: redis.String("eu-west-1"),
+					},
+				},
+			},
+		},
+		Databases: []*subscriptions.CreateDatabase{
+			{
+				Name:                 redis.String("example"),
+				Protocol:             redis.String("redis"),
+				DatasetSizeInGB:      redis.Float64(1),
+				SupportOSSClusterAPI: redis.Bool(true),
+				DataPersistence:      redis.String("none"),
+				Replication:          redis.Bool(false),
+				ThroughputMeasurement: &subscriptions.CreateThroughput{
+					By:    redis.String("operations-per-second"),
+					Value: redis.Int(10000),
+				},
+				Quantity:               redis.Int(1),
+				QueryPerformanceFactor: redis.String("4x"),
+			},
+		},
+		RedisVersion: redis.String("latest"),
+	})
+	require.NoError(t, err)
+	assert.Equal(t, expected, actual)
+}
+
 func TestSubscription_List(t *testing.T) {
 	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/subscriptions", `{
   "accountId": 53012,
