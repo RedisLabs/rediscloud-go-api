@@ -312,6 +312,8 @@ const (
 	SubscriptionStatusActive = "active"
 	// SubscriptionStatusPending is the pending value of the `Status` field in `Subscription`
 	SubscriptionStatusPending = "pending"
+	// SubscriptionStatusEncryptionKeyPending is the encryption key pending value of the `Status` field in `Subscription`
+	SubscriptionStatusEncryptionKeyPending = "encryption_key_pending"
 	// SubscriptionStatusError is the error value of the `Status` field in `Subscription`
 	SubscriptionStatusError = "error"
 	// SubscriptionStatusDeleting is the deleting value of the `Status` field in `Subscription`
