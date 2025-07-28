@@ -407,7 +407,6 @@ func TestDatabase_Update(t *testing.T) {
 		DatasetSizeInGB:                     redis.Float64(1),
 		SupportOSSClusterAPI:                redis.Bool(false),
 		RespVersion:                         redis.String("resp3"),
-		RedisVersion:                        redis.String("7.2"),
 		UseExternalEndpointForOSSClusterAPI: redis.Bool(false),
 		DataPersistence:                     redis.String("none"),
 		DataEvictionPolicy:                  redis.String("allkeys-lru"),
