@@ -341,7 +341,6 @@ func TestDatabase_Update(t *testing.T) {
   "datasetSizeInGb": 1,
   "supportOSSClusterApi": false,
   "respVersion": "resp3",
-  "redisVersion": "7.2",
   "useExternalEndpointForOSSClusterApi": false,
   "dataEvictionPolicy": "allkeys-lru",
   "replication": true,
