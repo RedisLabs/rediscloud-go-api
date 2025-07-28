@@ -109,6 +109,20 @@ func (o UpdateSubscription) String() string {
 	return internal.ToString(o)
 }
 
+type UpdateSubscriptionCMKs struct {
+	DeletionGracePeriod *string               `json:"deletionGracePeriod,omitempty"`
+	CustomerManagedKeys *[]CustomerManagedKey `json:"customerManagedKeys,omitempty"`
+}
+
+type CustomerManagedKey struct {
+	ResourceName *string `json:"resourceName,omitempty"`
+	Region       *string `json:"region,omitempty"`
+}
+
+func (o UpdateSubscriptionCMKs) String() string {
+	return internal.ToString(o)
+}
+
 type Subscription struct {
 	ID                *int           `json:"id,omitempty"`
 	Name              *string        `json:"name,omitempty"`
