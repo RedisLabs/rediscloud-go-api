@@ -15,6 +15,7 @@ type CreateDatabase struct {
 	DatasetSizeInGB                     *float64                     `json:"datasetSizeInGb,omitempty"`
 	SupportOSSClusterAPI                *bool                        `json:"supportOSSClusterApi,omitempty"`
 	RespVersion                         *string                      `json:"respVersion,omitempty"`
+	RedisVersion                        *string                      `json:"redisVersion,omitempty"`
 	UseExternalEndpointForOSSClusterAPI *bool                        `json:"useExternalEndpointForOSSClusterApi,omitempty"`
 	DataPersistence                     *string                      `json:"dataPersistence,omitempty"`
 	DataEvictionPolicy                  *string                      `json:"dataEvictionPolicy,omitempty"`
@@ -63,6 +64,7 @@ type Database struct {
 	MemoryUsedInMB         *float64    `json:"memoryUsedInMb,omitempty"`
 	SupportOSSClusterAPI   *bool       `json:"supportOSSClusterApi,omitempty"`
 	RespVersion            *string     `json:"respVersion,omitempty"`
+	RedisVersion           *string     `json:"redisVersion,omitempty"`
 	DataPersistence        *string     `json:"dataPersistence,omitempty"`
 	Replication            *bool       `json:"replication,omitempty"`
 	DataEvictionPolicy     *string     `json:"dataEvictionPolicy,omitempty"`
@@ -155,6 +157,7 @@ type UpdateDatabase struct {
 	DatasetSizeInGB                     *float64                     `json:"datasetSizeInGb,omitempty"`
 	SupportOSSClusterAPI                *bool                        `json:"supportOSSClusterApi,omitempty"`
 	RespVersion                         *string                      `json:"respVersion,omitempty"`
+	RedisVersion                        *string                      `json:"redisVersion,omitempty"`
 	UseExternalEndpointForOSSClusterAPI *bool                        `json:"useExternalEndpointForOSSClusterApi,omitempty"`
 	DataEvictionPolicy                  *string                      `json:"dataEvictionPolicy,omitempty"`
 	Replication                         *bool                        `json:"replication,omitempty"`
