@@ -157,7 +157,6 @@ type UpdateDatabase struct {
 	DatasetSizeInGB                     *float64                     `json:"datasetSizeInGb,omitempty"`
 	SupportOSSClusterAPI                *bool                        `json:"supportOSSClusterApi,omitempty"`
 	RespVersion                         *string                      `json:"respVersion,omitempty"`
-	RedisVersion                        *string                      `json:"redisVersion,omitempty"`
 	UseExternalEndpointForOSSClusterAPI *bool                        `json:"useExternalEndpointForOSSClusterApi,omitempty"`
 	DataEvictionPolicy                  *string                      `json:"dataEvictionPolicy,omitempty"`
 	Replication                         *bool                        `json:"replication,omitempty"`
