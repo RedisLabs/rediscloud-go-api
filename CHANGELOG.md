@@ -7,6 +7,7 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 * Adding an API call and endpoint for updating customer-managed encryption keys (CMKs) to an existing subscription.
+* Adding a new status to support the `encryption_key_pending` status of a subscription.
 
 ## 0.30.0
 
