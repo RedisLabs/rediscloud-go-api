@@ -124,16 +124,23 @@ func (o UpdateSubscriptionCMKs) String() string {
 }
 
 type Subscription struct {
-	ID                *int           `json:"id,omitempty"`
-	Name              *string        `json:"name,omitempty"`
-	Status            *string        `json:"status,omitempty"`
-	DeploymentType    *string        `json:"deploymentType,omitempty"`
-	PaymentMethod     *string        `json:"paymentMethodType,omitempty"`
-	PaymentMethodID   *int           `json:"paymentMethodId,omitempty"`
-	MemoryStorage     *string        `json:"memoryStorage,omitempty"`
-	StorageEncryption *bool          `json:"storageEncryption,omitempty"`
-	NumberOfDatabases *int           `json:"numberOfDatabases,omitempty"`
-	CloudDetails      []*CloudDetail `json:"cloudDetails,omitempty"`
+	ID                              *int                             `json:"id,omitempty"`
+	Name                            *string                          `json:"name,omitempty"`
+	Status                          *string                          `json:"status,omitempty"`
+	DeploymentType                  *string                          `json:"deploymentType,omitempty"`
+	PaymentMethod                   *string                          `json:"paymentMethodType,omitempty"`
+	PaymentMethodID                 *int                             `json:"paymentMethodId,omitempty"`
+	MemoryStorage                   *string                          `json:"memoryStorage,omitempty"`
+	StorageEncryption               *bool                            `json:"storageEncryption,omitempty"`
+	NumberOfDatabases               *int                             `json:"numberOfDatabases,omitempty"`
+	CloudDetails                    []*CloudDetail                   `json:"cloudDetails,omitempty"`
+	CustomerManagedKeyAccessDetails *CustomerManagedKeyAccessDetails `json:"customerManagedKeyAccessDetails,omitempty"`
+}
+
+type CustomerManagedKeyAccessDetails struct {
+	RedisServiceAccount     *string   `json:"redisServiceAccount,omitempty"`
+	GooglePredefinedRoles   []*string `json:"googlePredefinedRoles,omitempty"`
+	GoogleCustomPermissions []*string `json:"googleCustomPermissions,omitempty"`
 }
 
 func (o Subscription) String() string {
