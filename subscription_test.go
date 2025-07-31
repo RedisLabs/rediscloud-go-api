@@ -650,6 +650,7 @@ func TestSubscription_Update_CMKs(t *testing.T) {
 		},
 	})
 
+	require.NoError(t, err)
 }
 
 func TestSubscription_Delete(t *testing.T) {

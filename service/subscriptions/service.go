@@ -101,7 +101,7 @@ func (a *API) UpdateCMKs(ctx context.Context, id int, subscriptionCMKs UpdateSub
 		return wrap404Error(id, err)
 	}
 
-	a.logger.Printf("Waiting for task %s to finish updating the subscription", task)
+	a.logger.Printf("Waiting for task %s to finish updating subscription %d", task, id)
 
 	err = a.taskWaiter.Wait(ctx, *task.ID)
 	if err != nil {
