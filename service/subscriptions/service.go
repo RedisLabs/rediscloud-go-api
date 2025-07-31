@@ -93,6 +93,24 @@ func (a *API) Update(ctx context.Context, id int, subscription UpdateSubscriptio
 	return nil
 }
 
+// Update will make changes to an existing subscription's CMKs.
+func (a *API) UpdateCMKs(ctx context.Context, id int, subscriptionCMKs UpdateSubscriptionCMKs) error {
+	var task internal.TaskResponse
+	err := a.client.Put(ctx, fmt.Sprintf("update subscription %d", id), fmt.Sprintf("/subscriptions/%d", id), subscriptionCMKs, &task)
+	if err != nil {
+		return wrap404Error(id, err)
+	}
+
+	a.logger.Printf("Waiting for task %s to finish updating subscription %d", task, id)
+
+	err = a.taskWaiter.Wait(ctx, *task.ID)
+	if err != nil {
+		return fmt.Errorf("failed when updating subscription %d: %w", id, err)
+	}
+
+	return nil
+}
+
 // Delete will destroy an existing subscription. All existing databases within the subscription should already be
 // deleted, otherwise this function will fail.
 func (a *API) Delete(ctx context.Context, id int) error {

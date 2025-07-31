@@ -2,11 +2,18 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.31.0
+
+### Added
+
+* Adding an API call and endpoint for updating customer-managed encryption keys (CMKs) to an existing subscription.
+* Adding a new status to support the `encryption_key_pending` status of a subscription.
+
 ## 0.30.0
 
 ### Added
 
-* Adding in support for `persistentStorageEncryptionType`, to support CMEK, across pro and active active subscription creation
+* Adding in support for `persistentStorageEncryptionType`, to support customer-managed encryption keys (CMKs) across pro and active-active subscription creation
 
 ## 0.29.0
 

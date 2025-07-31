@@ -109,17 +109,38 @@ func (o UpdateSubscription) String() string {
 	return internal.ToString(o)
 }
 
+type UpdateSubscriptionCMKs struct {
+	DeletionGracePeriod *string               `json:"deletionGracePeriod,omitempty"`
+	CustomerManagedKeys *[]CustomerManagedKey `json:"customerManagedKeys,omitempty"`
+}
+
+type CustomerManagedKey struct {
+	ResourceName *string `json:"resourceName,omitempty"`
+	Region       *string `json:"region,omitempty"`
+}
+
+func (o UpdateSubscriptionCMKs) String() string {
+	return internal.ToString(o)
+}
+
 type Subscription struct {
-	ID                *int           `json:"id,omitempty"`
-	Name              *string        `json:"name,omitempty"`
-	Status            *string        `json:"status,omitempty"`
-	DeploymentType    *string        `json:"deploymentType,omitempty"`
-	PaymentMethod     *string        `json:"paymentMethodType,omitempty"`
-	PaymentMethodID   *int           `json:"paymentMethodId,omitempty"`
-	MemoryStorage     *string        `json:"memoryStorage,omitempty"`
-	StorageEncryption *bool          `json:"storageEncryption,omitempty"`
-	NumberOfDatabases *int           `json:"numberOfDatabases,omitempty"`
-	CloudDetails      []*CloudDetail `json:"cloudDetails,omitempty"`
+	ID                              *int                             `json:"id,omitempty"`
+	Name                            *string                          `json:"name,omitempty"`
+	Status                          *string                          `json:"status,omitempty"`
+	DeploymentType                  *string                          `json:"deploymentType,omitempty"`
+	PaymentMethod                   *string                          `json:"paymentMethodType,omitempty"`
+	PaymentMethodID                 *int                             `json:"paymentMethodId,omitempty"`
+	MemoryStorage                   *string                          `json:"memoryStorage,omitempty"`
+	StorageEncryption               *bool                            `json:"storageEncryption,omitempty"`
+	NumberOfDatabases               *int                             `json:"numberOfDatabases,omitempty"`
+	CloudDetails                    []*CloudDetail                   `json:"cloudDetails,omitempty"`
+	CustomerManagedKeyAccessDetails *CustomerManagedKeyAccessDetails `json:"customerManagedKeyAccessDetails,omitempty"`
+}
+
+type CustomerManagedKeyAccessDetails struct {
+	RedisServiceAccount     *string   `json:"redisServiceAccount,omitempty"`
+	GooglePredefinedRoles   []*string `json:"googlePredefinedRoles,omitempty"`
+	GoogleCustomPermissions []*string `json:"googleCustomPermissions,omitempty"`
 }
 
 func (o Subscription) String() string {
@@ -312,6 +333,8 @@ const (
 	SubscriptionStatusActive = "active"
 	// SubscriptionStatusPending is the pending value of the `Status` field in `Subscription`
 	SubscriptionStatusPending = "pending"
+	// SubscriptionStatusEncryptionKeyPending is the encryption key pending value of the `Status` field in `Subscription`
+	SubscriptionStatusEncryptionKeyPending = "encryption_key_pending"
 	// SubscriptionStatusError is the error value of the `Status` field in `Subscription`
 	SubscriptionStatusError = "error"
 	// SubscriptionStatusDeleting is the deleting value of the `Status` field in `Subscription`

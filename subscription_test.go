@@ -592,6 +592,67 @@ func TestSubscription_Update(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestSubscription_Update_CMKs(t *testing.T) {
+
+	const request = `
+	{
+	  "deletionGracePeriod": "test",
+	  "customerManagedKeys": [
+		{
+			"resourceName": "test_cmk",
+			"region": "us-east-1"
+		}
+		]
+	}
+`
+
+	const body = `{
+		  "taskId": "task",
+		  "commandType": "subscriptionUpdateRequest",
+		  "status": "received",
+		  "description": "Task request received and is being queued for processing.",
+		  "timestamp": "2020-11-02T09:05:34.3Z",
+		  "_links": {
+			"task": {
+			  "href": "https://example.org",
+			  "title": "getTaskStatusUpdates",
+			  "type": "GET"
+			}
+		  }
+		}`
+
+	s := httptest.NewServer(testServer("key", "secret", putRequest(t, "/subscriptions/1234", request, body), getRequest(t, "/tasks/task", `{
+  "taskId": "e02b40d6-1395-4861-a3b9-ecf829d835fd",
+  "commandType": "subscriptionUpdateRequest",
+  "status": "processing-completed",
+  "timestamp": "2020-10-28T09:58:16.798Z",
+  "response": {
+  },
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`)))
+	defer s.Close()
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	err = subject.Subscription.UpdateCMKs(context.TODO(), 1234, subscriptions.UpdateSubscriptionCMKs{
+		DeletionGracePeriod: redis.String("test"),
+		CustomerManagedKeys: &[]subscriptions.CustomerManagedKey{
+			{
+				ResourceName: redis.String("test_cmk"),
+				Region:       redis.String("us-east-1"),
+			},
+		},
+	})
+
+	require.NoError(t, err)
+}
+
 func TestSubscription_Delete(t *testing.T) {
 	s := httptest.NewServer(testServer("apiKey", "secret", deleteRequest(t, "/subscriptions/12356", `{
   "taskId": "task",
