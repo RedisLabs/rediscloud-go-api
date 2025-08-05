@@ -26,6 +26,7 @@ func TestDatabase_Create(t *testing.T) {
   "dataPersistence": "none",
   "dataEvictionPolicy": "allkeys-lru",
   "queryPerformanceFactor": "6x",
+  "redisVersion": "6.0.5",
   "replication": true,
   "throughputMeasurement": {
     "by": "operations-per-second",
@@ -96,6 +97,7 @@ func TestDatabase_Create(t *testing.T) {
 		DataPersistence:                     redis.String("none"),
 		DataEvictionPolicy:                  redis.String("allkeys-lru"),
 		QueryPerformanceFactor:              redis.String("6x"),
+		RedisVersion:                        redis.String("6.0.5"),
 		Replication:                         redis.Bool(true),
 		ThroughputMeasurement: &databases.CreateThroughputMeasurement{
 			By:    redis.String("operations-per-second"),
@@ -139,6 +141,7 @@ func TestDatabase_List(t *testing.T) {
           "provider": "AWS",
           "region": "eu-west-1",
 		  "queryPerformanceFactor": "Standard"
+			
         },
         {
           "databaseId": 43,
