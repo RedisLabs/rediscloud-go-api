@@ -47,8 +47,7 @@ func TestSubscription_Create(t *testing.T) {
       "quantity": 1,
       "queryPerformanceFactor": "4x"
     }
-  ],
-  "redisVersion": "latest"
+  ]
 }`, `{
   "taskId": "task-id",
   "commandType": "subscriptionCreateRequest",
@@ -138,7 +137,6 @@ func TestSubscription_Create(t *testing.T) {
 				QueryPerformanceFactor: redis.String("4x"),
 			},
 		},
-		RedisVersion: redis.String("latest"),
 	})
 	require.NoError(t, err)
 	assert.Equal(t, expected, actual)
@@ -180,8 +178,7 @@ func TestSubscription_CreateCMK(t *testing.T) {
       "quantity": 1,
       "queryPerformanceFactor": "4x"
     }
-  ],
-  "redisVersion": "latest"
+  ]
 }`, `{
   "taskId": "task-id",
   "commandType": "subscriptionCreateRequest",
@@ -272,7 +269,6 @@ func TestSubscription_CreateCMK(t *testing.T) {
 				QueryPerformanceFactor: redis.String("4x"),
 			},
 		},
-		RedisVersion: redis.String("latest"),
 	})
 	require.NoError(t, err)
 	assert.Equal(t, expected, actual)

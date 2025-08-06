@@ -15,7 +15,6 @@ type CreateSubscription struct {
 	MemoryStorage                   *string                `json:"memoryStorage,omitempty"`
 	CloudProviders                  []*CreateCloudProvider `json:"cloudProviders,omitempty"`
 	Databases                       []*CreateDatabase      `json:"databases,omitempty"`
-	RedisVersion                    *string                `json:"redisVersion,omitempty"`
 	PersistentStorageEncryptionType *string                `json:"persistentStorageEncryptionType,omitempty"`
 }
 
