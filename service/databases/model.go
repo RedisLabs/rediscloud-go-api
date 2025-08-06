@@ -34,6 +34,7 @@ type CreateDatabase struct {
 	PortNumber             *int                  `json:"port,omitempty"`
 	RemoteBackup           *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
 	QueryPerformanceFactor *string               `json:"queryPerformanceFactor,omitempty"`
+	RedisVersion           *string               `json:"redisVersion,omitempty"`
 }
 
 func (o CreateDatabase) String() string {
@@ -80,6 +81,7 @@ type Database struct {
 	RedisVersionCompliance *string     `json:"redisVersionCompliance,omitempty"`
 	Backup                 *Backup     `json:"backup,omitempty"`
 	QueryPerformanceFactor *string     `json:"queryPerformanceFactor,omitempty"`
+	RedisVersion           *string     `json:"redisVersion,omitempty"`
 }
 
 func (o Database) String() string {

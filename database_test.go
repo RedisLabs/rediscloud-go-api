@@ -26,6 +26,7 @@ func TestDatabase_Create(t *testing.T) {
   "dataPersistence": "none",
   "dataEvictionPolicy": "allkeys-lru",
   "queryPerformanceFactor": "6x",
+  "redisVersion": "6.0.5",
   "replication": true,
   "throughputMeasurement": {
     "by": "operations-per-second",
@@ -96,6 +97,7 @@ func TestDatabase_Create(t *testing.T) {
 		DataPersistence:                     redis.String("none"),
 		DataEvictionPolicy:                  redis.String("allkeys-lru"),
 		QueryPerformanceFactor:              redis.String("6x"),
+		RedisVersion:                        redis.String("6.0.5"),
 		Replication:                         redis.Bool(true),
 		ThroughputMeasurement: &databases.CreateThroughputMeasurement{
 			By:    redis.String("operations-per-second"),
@@ -138,7 +140,8 @@ func TestDatabase_List(t *testing.T) {
           "protocol": "redis",
           "provider": "AWS",
           "region": "eu-west-1",
-		  "queryPerformanceFactor": "Standard"
+		  "queryPerformanceFactor": "Standard",
+          "redisVersion": "6.0.5"
         },
         {
           "databaseId": 43,
@@ -146,7 +149,8 @@ func TestDatabase_List(t *testing.T) {
           "protocol": "redis",
           "provider": "AWS",
           "region": "eu-west-1",
-		  "queryPerformanceFactor": "Standard"
+		  "queryPerformanceFactor": "Standard",
+          "redisVersion": "6.0.5"
         }
       ]
     }
@@ -178,6 +182,7 @@ func TestDatabase_List(t *testing.T) {
 			Provider:               redis.String("AWS"),
 			Region:                 redis.String("eu-west-1"),
 			QueryPerformanceFactor: redis.String("Standard"),
+			RedisVersion:           redis.String("6.0.5"),
 		},
 		{
 			ID:                     redis.Int(43),
@@ -186,6 +191,7 @@ func TestDatabase_List(t *testing.T) {
 			Provider:               redis.String("AWS"),
 			Region:                 redis.String("eu-west-1"),
 			QueryPerformanceFactor: redis.String("Standard"),
+			RedisVersion:           redis.String("6.0.5"),
 		},
 	}, actual)
 
@@ -216,6 +222,7 @@ func TestDatabase_Get(t *testing.T) {
     "value": 10000
   },
   "QueryPerformanceFactor": "Standard",
+  "redisVersion": "6.0.5",
   "activatedOn": "2020-11-03T09:03:30Z",
   "lastModified": "2020-11-03T09:03:30Z",
   "publicEndpoint": "example.com:16668",
@@ -292,6 +299,7 @@ func TestDatabase_Get(t *testing.T) {
 			Value: redis.Int(10_000),
 		},
 		QueryPerformanceFactor: redis.String("Standard"),
+		RedisVersion:           redis.String("6.0.5"),
 		Clustering: &databases.Clustering{
 			NumberOfShards: redis.Int(1),
 			RegexRules: []*databases.RegexRule{
