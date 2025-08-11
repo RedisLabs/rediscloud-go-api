@@ -3,6 +3,7 @@ package rediscloud_api
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -339,67 +340,51 @@ func TestDatabase_Get_wraps404Error(t *testing.T) {
 }
 
 func TestDatabase_Update(t *testing.T) {
-	s := httptest.NewServer(testServer("key", "secret", putRequest(t, "/subscriptions/42/databases/18", `{
-  "dryRun": false,
-  "name": "example",
-  "datasetSizeInGb": 1,
-  "supportOSSClusterApi": false,
-  "respVersion": "resp3",
-  "useExternalEndpointForOSSClusterApi": false,
-  "dataEvictionPolicy": "allkeys-lru",
-  "replication": true,
-  "throughputMeasurement": {
-    "by": "operations-per-second",
-    "value": 1000
-  },
-  "regexRules": [".*"],
-  "dataPersistence": "none",
-  "replicaOf": [
-    "another"
-  ],
-  "periodicBackupPath": "s3://bucket-name",
-  "sourceIp": [
-    "10.0.0.1"
-  ],
-  "clientSslCertificate": "something",
-  "clientTlsCertificates": ["something", "new"],
-  "enableTls": false,
-  "password": "fooBar",
-  "alerts": [
-    {
-      "name": "dataset-size",
-      "value": 80
-    }
-  ],
-  "enableDefaultUser": false,
-  "queryPerformanceFactor": "2x"
-}`, `{
-  "taskId": "task",
-  "commandType": "databaseUpdateRequest",
-  "status": "received",
-  "description": "Task request received and is being queued for processing.",
-  "timestamp": "2020-11-02T09:05:34.3Z",
-  "_links": {
-    "task": {
-      "href": "https://example.org",
-      "title": "getTaskStatusUpdates",
-      "type": "GET"
-    }
-  }
-}`), getRequest(t, "/tasks/task", `{
-  "taskId": "task",
-  "commandType": "databaseUpdateRequest",
-  "status": "processing-completed",
-  "timestamp": "2020-10-28T09:58:16.798Z",
-  "response": {
-  },
-  "_links": {
-    "self": {
-      "href": "https://example.com",
-      "type": "GET"
-    }
-  }
-}`)))
+	flow := taskFlow(
+		t,
+		http.MethodPut,
+		"/subscriptions/42/databases/18",
+		`{
+		  "dryRun": false,
+		  "name": "example",
+		  "datasetSizeInGb": 1,
+		  "supportOSSClusterApi": false,
+		  "respVersion": "resp3",
+		  "useExternalEndpointForOSSClusterApi": false,
+		  "dataEvictionPolicy": "allkeys-lru",
+		  "replication": true,
+		  "throughputMeasurement": {
+		    "by": "operations-per-second",
+		    "value": 1000
+		  },
+		  "regexRules": [".*"],
+		  "dataPersistence": "none",
+		  "replicaOf": [
+		    "another"
+		  ],
+		  "periodicBackupPath": "s3://bucket-name",
+		  "sourceIp": [
+		    "10.0.0.1"
+		  ],
+		  "clientSslCertificate": "something",
+		  "clientTlsCertificates": ["something", "new"],
+		  "enableTls": false,
+		  "password": "fooBar",
+		  "alerts": [
+		    {
+		      "name": "dataset-size",
+		      "value": 80
+		    }
+		  ],
+		  "enableDefaultUser": false,
+		  "queryPerformanceFactor": "2x"
+		}`,
+		"task",
+		"databaseUpdateRequest",
+	)
+
+	s := httptest.NewServer(testServer("key", "secret", flow...))
+	defer s.Close()
 
 	subject, err := clientFromTestServer(s, "key", "secret")
 	require.NoError(t, err)
@@ -439,33 +424,17 @@ func TestDatabase_Update(t *testing.T) {
 }
 
 func TestDatabase_Delete(t *testing.T) {
-	s := httptest.NewServer(testServer("key", "secret", deleteRequest(t, "/subscriptions/42/databases/4291", `{
-  "taskId": "task",
-  "commandType": "databaseDeleteRequest",
-  "status": "received",
-  "description": "Task request received and is being queued for processing.",
-  "timestamp": "2020-11-02T09:05:34.3Z",
-  "_links": {
-    "task": {
-      "href": "https://example.org",
-      "title": "getTaskStatusUpdates",
-      "type": "GET"
-    }
-  }
-}`), getRequest(t, "/tasks/task", `{
-  "taskId": "e02b40d6-1395-4861-a3b9-ecf829d835fd",
-  "commandType": "databaseDeleteRequest",
-  "status": "processing-completed",
-  "timestamp": "2020-10-28T09:58:16.798Z",
-  "response": {
-  },
-  "_links": {
-    "self": {
-      "href": "https://example.com",
-      "type": "GET"
-    }
-  }
-}`)))
+	flow := taskFlow(
+		t,
+		http.MethodDelete,
+		"/subscriptions/42/databases/4291",
+		"",
+		"task",
+		"databaseDeleteRequest",
+	)
+
+	s := httptest.NewServer(testServer("key", "secret", flow...))
+	defer s.Close()
 
 	subject, err := clientFromTestServer(s, "key", "secret")
 	require.NoError(t, err)
@@ -475,33 +444,17 @@ func TestDatabase_Delete(t *testing.T) {
 }
 
 func TestDatabase_Backup(t *testing.T) {
-	s := httptest.NewServer(testServer("key", "secret", postRequestWithNoRequest(t, "/subscriptions/42/databases/18/backup", `{
-  "taskId": "task-uuid",
-  "commandType": "databaseBackupRequest",
-  "status": "received",
-  "description": "Task request received and is being queued for processing.",
-  "timestamp": "2020-11-02T09:05:34.3Z",
-  "_links": {
-    "task": {
-      "href": "https://example.org",
-      "title": "getTaskStatusUpdates",
-      "type": "GET"
-    }
-  }
-}`), getRequest(t, "/tasks/task-uuid", `{
-  "taskId": "task-uuid",
-  "commandType": "databaseBackupRequest",
-  "status": "processing-completed",
-  "timestamp": "2020-10-28T09:58:16.798Z",
-  "response": {
-  },
-  "_links": {
-    "self": {
-      "href": "https://example.com",
-      "type": "GET"
-    }
-  }
-}`)))
+	flow := taskFlow(
+		t,
+		http.MethodPost,
+		"/subscriptions/42/databases/18/backup",
+		"",
+		"task-uuid",
+		"databaseBackupRequest",
+	)
+
+	s := httptest.NewServer(testServer("key", "secret", flow...))
+	defer s.Close()
 
 	subject, err := clientFromTestServer(s, "key", "secret")
 	require.NoError(t, err)
@@ -511,36 +464,20 @@ func TestDatabase_Backup(t *testing.T) {
 }
 
 func TestDatabase_Import(t *testing.T) {
-	s := httptest.NewServer(testServer("key", "secret", postRequest(t, "/subscriptions/42/databases/81/import", `{
-  "sourceType": "magic",
-  "importFromUri": ["tinkerbell"]
-}`, `{
-  "taskId": "task-uuid",
-  "commandType": "databaseImportRequest",
-  "status": "received",
-  "description": "Task request received and is being queued for processing.",
-  "timestamp": "2020-11-02T09:05:34.3Z",
-  "_links": {
-    "task": {
-      "href": "https://example.org",
-      "title": "getTaskStatusUpdates",
-      "type": "GET"
-    }
-  }
-}`), getRequest(t, "/tasks/task-uuid", `{
-  "taskId": "task-uuid",
-  "commandType": "databaseImportRequest",
-  "status": "processing-completed",
-  "timestamp": "2020-10-28T09:58:16.798Z",
-  "response": {
-  },
-  "_links": {
-    "self": {
-      "href": "https://example.com",
-      "type": "GET"
-    }
-  }
-}`)))
+	flow := taskFlow(
+		t,
+		http.MethodPost,
+		"/subscriptions/42/databases/81/import",
+		`{
+		  "sourceType": "magic",
+		  "importFromUri": ["tinkerbell"]
+		}`,
+		"task-uuid",
+		"databaseImportRequest",
+	)
+
+	s := httptest.NewServer(testServer("key", "secret", flow...))
+	defer s.Close()
 
 	subject, err := clientFromTestServer(s, "key", "secret")
 	require.NoError(t, err)
@@ -566,4 +503,31 @@ func TestDatabase_Certificate(t *testing.T) {
 		PublicCertificatePEMString: "public-cert",
 	}, certificate)
 
+}
+
+func TestDatabase_UpgradeRedisVersion(t *testing.T) {
+	flow := taskFlow(
+		t,
+		http.MethodPost,
+		"/subscriptions/42/databases/18/upgrade",
+		`{ "targetRedisVersion": "7.2" }`,
+		"upgrade-task-id",
+		"databaseUpgradeRequest",
+	)
+
+	s := httptest.NewServer(testServer("key", "secret", flow...))
+	defer s.Close()
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	err = subject.Database.UpgradeRedisVersion(
+		context.TODO(),
+		42,
+		18,
+		databases.UpgradeRedisVersion{
+			TargetRedisVersion: redis.String("7.2"),
+		},
+	)
+	require.NoError(t, err)
 }

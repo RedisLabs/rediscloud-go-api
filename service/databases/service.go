@@ -86,6 +86,19 @@ func (a *API) Update(ctx context.Context, subscription int, database int, update
 	return a.taskWaiter.Wait(ctx, *task.ID)
 }
 
+// UpgradeRedisVersion will upgrade the Redis version of an existing database.
+func (a *API) UpgradeRedisVersion(ctx context.Context, subscription int, database int, upgradeVersion UpgradeRedisVersion) error {
+	var task internal.TaskResponse
+	err := a.client.Post(ctx, fmt.Sprintf("upgrade database %d version for subscription %d", database, subscription), fmt.Sprintf("/subscriptions/%d/databases/%d/upgrade", subscription, database), upgradeVersion, &task)
+	if err != nil {
+		return err
+	}
+
+	a.logger.Printf("Waiting for database %d for subscription %d to finish being upgraded", database, subscription)
+
+	return a.taskWaiter.Wait(ctx, *task.ID)
+}
+
 // Delete will destroy an existing database.
 func (a *API) Delete(ctx context.Context, subscription int, database int) error {
 	var task internal.TaskResponse
