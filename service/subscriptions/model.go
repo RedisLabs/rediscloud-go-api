@@ -321,14 +321,14 @@ type ActiveActiveDatabase struct {
 }
 
 type RedisVersion struct {
-	Version   string `json:"version,omitempty"`
-	EolDate   string `json:"eolDate,omitempty"`
-	IsPreview bool   `json:"isPreview,omitempty"`
-	IsDefault bool   `json:"isDefault,omitempty"`
+	Version   *string `json:"version,omitempty"`
+	EolDate   *string `json:"eolDate,omitempty"`
+	IsPreview *bool   `json:"isPreview,omitempty"`
+	IsDefault *bool   `json:"isDefault,omitempty"`
 }
 
 type RedisVersions struct {
-	RedisVersion []RedisVersion `json:"redisVersions,omitempty"`
+	RedisVersions []*RedisVersion `json:"redisVersions,omitempty"`
 }
 
 type NotFound struct {
