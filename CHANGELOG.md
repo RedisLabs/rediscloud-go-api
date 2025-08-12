@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.33.0
+
+### Added:
+* Upgrade Redis database endpoint
+* Get Redis versions for subscription endpoint
+
+## 0.32.0
+
+### Added
+
+* Adding redisVersion support on the create, get and list endpoints for pro databases.
+
 ## 0.31.0
 
 ### Added
