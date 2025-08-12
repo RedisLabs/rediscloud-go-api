@@ -5,8 +5,8 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 ## 0.33.0
 
 ### Added:
-* Upgrade Redis database endpoint
-* Get Redis versions for subscription endpoint
+* Adding Upgrade Redis database endpoint
+* Adding Get Redis versions for subscription endpoint
 
 ## 0.32.0
 
