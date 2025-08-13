@@ -198,6 +198,14 @@ type Import struct {
 	ImportFromURI []*string `json:"importFromUri,omitempty"`
 }
 
+type UpgradeRedisVersion struct {
+	TargetRedisVersion *string `json:"targetRedisVersion,omitempty"`
+}
+
+func (o UpgradeRedisVersion) String() string {
+	return internal.ToString(o)
+}
+
 func (o Import) String() string {
 	return internal.ToString(o)
 }

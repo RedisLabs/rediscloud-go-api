@@ -320,6 +320,17 @@ type ActiveActiveDatabase struct {
 	WriteOperationsPerSecond *int    `json:"writeOperationsPerSecond,omitempty"`
 }
 
+type RedisVersion struct {
+	Version   *string `json:"version,omitempty"`
+	EolDate   *string `json:"eolDate,omitempty"`
+	IsPreview *bool   `json:"isPreview,omitempty"`
+	IsDefault *bool   `json:"isDefault,omitempty"`
+}
+
+type RedisVersions struct {
+	RedisVersions []*RedisVersion `json:"redisVersions,omitempty"`
+}
+
 type NotFound struct {
 	ID int
 }

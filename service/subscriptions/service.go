@@ -267,6 +267,25 @@ func (a *API) ListActiveActiveRegions(ctx context.Context, subscription int) ([]
 	return response.Regions, nil
 }
 
+// GetRedisVersions retrieves the Redis database versions available for this subscription.
+func (a *API) GetRedisVersions(ctx context.Context, subscription int) (*RedisVersions, error) {
+	var redisVersions RedisVersions
+	getRedisVersionsUrl := "/subscriptions/redis-versions?subscriptionId=%d"
+
+	path := fmt.Sprintf(getRedisVersionsUrl, subscription)
+	err := a.client.Get(
+		ctx,
+		fmt.Sprintf("get versions for subscription %d", subscription),
+		path,
+		&redisVersions,
+	)
+
+	if err != nil {
+		return nil, wrap404Error(subscription, err)
+	}
+	return &redisVersions, nil
+}
+
 func wrap404Error(id int, err error) error {
 	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
 		return &NotFound{ID: id}

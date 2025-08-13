@@ -1050,6 +1050,59 @@ func TestSubscription_ListActiveActiveRegions(t *testing.T) {
 
 }
 
+func TestSubscription_GetRedisVersions(t *testing.T) {
+
+	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/subscriptions/redis-versions?subscriptionId=9291", `
+{
+  "redisVersions": [
+    {
+      "version": "6.2",
+      "isPreview": false,
+      "isDefault": false
+    },
+    {
+      "version": "7.2",
+      "isPreview": false,
+      "isDefault": false
+    },
+    {
+      "version": "7.4",
+      "isPreview": false,
+      "isDefault": true
+    }
+  ]
+}
+`)))
+
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Subscription.GetRedisVersions(context.TODO(), 9291)
+	require.NoError(t, err)
+
+	expected := &subscriptions.RedisVersions{
+		RedisVersions: []*subscriptions.RedisVersion{
+			{
+				Version:   redis.String("6.2"),
+				IsPreview: redis.Bool(false),
+				IsDefault: redis.Bool(false),
+			},
+			{
+				Version:   redis.String("7.2"),
+				IsPreview: redis.Bool(false),
+				IsDefault: redis.Bool(false),
+			},
+			{
+				Version:   redis.String("7.4"),
+				IsPreview: redis.Bool(false),
+				IsDefault: redis.Bool(true),
+			},
+		},
+	}
+
+	assert.Equal(t, expected, actual)
+}
+
 func listRegionsExpected() []*subscriptions.ActiveActiveRegion {
 
 	// Initialize databases

@@ -1,12 +1,14 @@
 package rediscloud_api
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -182,4 +184,45 @@ func putRequest(t *testing.T, path string, request string, body string) endpoint
 		status:      http.StatusOK,
 		t:           t,
 	}
+}
+
+// taskFlow returns the two endpointRequests needed for a "POST/PUT/DELETE -> GET /tasks/{id}" flow
+func taskFlow(t *testing.T, method, path, requestBody, taskID, commandType string) []endpointRequest {
+	now := time.Now().UTC().Format(time.RFC3339) // e.g. "2025-08-11T14:33:21Z"
+
+	var first endpointRequest
+	responseTemplate := fmt.Sprintf(`{
+      "taskId": "%s",
+      "commandType": "%s",
+      "status": "received",
+      "description": "Task queued.",
+      "timestamp": "%s",
+      "_links": { "task": { "href": "https://example.org", "title": "getTaskStatusUpdates", "type": "GET" } }
+    }`, taskID, commandType, now)
+
+	switch method {
+	case http.MethodPost:
+		if requestBody != "" {
+			first = postRequest(t, path, requestBody, responseTemplate)
+		} else {
+			first = postRequestWithNoRequest(t, path, responseTemplate)
+		}
+	case http.MethodPut:
+		first = putRequest(t, path, requestBody, responseTemplate)
+	case http.MethodDelete:
+		first = deleteRequest(t, path, responseTemplate)
+	}
+
+	completeTemplate := fmt.Sprintf(`{
+      "taskId": "%s",
+      "commandType": "%s",
+      "status": "processing-completed",
+      "timestamp": "%s",
+      "response": {},
+      "_links": { "self": { "href": "https://example.com", "type": "GET" } }
+    }`, taskID, commandType, now)
+
+	second := getRequest(t, "/tasks/"+taskID, completeTemplate)
+
+	return []endpointRequest{first, second}
 }
