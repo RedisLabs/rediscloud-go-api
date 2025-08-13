@@ -1099,7 +1099,7 @@ func TestSubscription_GetRedisVersions(t *testing.T) {
 			},
 		},
 	}
-	
+
 	assert.Equal(t, expected, actual)
 }
 
