@@ -40,6 +40,7 @@ func TestDatabaseFixtures(t *testing.T) {
 	assert.Equal(t, "active-change-draft", databases.StatusActiveChangeDraft)
 	assert.Equal(t, "active-change-pending", databases.StatusActiveChangePending)
 	assert.Equal(t, "dynamic-endpoints-creation-pending", databases.StatusDynamicEndpointsCreationPending)
+	assert.Equal(t, "active-upgrade-pending", databases.StatusActiveUpgradePending)
 
 	assert.Equal(t, "proxy-policy-change-pending", databases.StatusProxyPolicyChangePending)
 	assert.Equal(t, "proxy-policy-change-draft", databases.StatusProxyPolicyChangeDraft)
