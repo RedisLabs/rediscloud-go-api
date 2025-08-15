@@ -23,6 +23,7 @@ func TestAADatabase_List(t *testing.T) {
 								{
 									"databaseId": 1466,
 									"name": "creation-plan-db-1",
+									"redisVersion": "7.2",
 									"protocol": "redis",
 									"status": "active",
 									"memoryStorage": "ram",
@@ -165,6 +166,7 @@ func TestAADatabase_List(t *testing.T) {
 			ID:                                  redis.Int(1466),
 			Name:                                redis.String("creation-plan-db-1"),
 			Protocol:                            redis.String("redis"),
+			RedisVersion:                        redis.String("7.2"),
 			Status:                              redis.String("active"),
 			MemoryStorage:                       redis.String("ram"),
 			ActiveActiveRedis:                   redis.Bool(true),

@@ -11,6 +11,7 @@ type ActiveActiveDatabase struct {
 	Name                                *string         `json:"name,omitempty"`
 	Protocol                            *string         `json:"protocol,omitempty"`
 	Status                              *string         `json:"status,omitempty"`
+	RedisVersion                        *string         `json:"redisVersion,omitempty"`
 	MemoryStorage                       *string         `json:"memoryStorage,omitempty"`
 	ActiveActiveRedis                   *bool           `json:"activeActiveRedis,omitempty"`
 	ActivatedOn                         *time.Time      `json:"activatedOn,omitempty"`

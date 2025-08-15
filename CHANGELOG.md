@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.34.0
+
+### Added:
+* Adding field `RedisVersion` to Redis Active Active subscription
+
 ## 0.33.0
 
 ### Added:
