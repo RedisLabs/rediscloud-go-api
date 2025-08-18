@@ -2,10 +2,22 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.34.1
+
+### Added:
+* Adding field `RedisVersion` to Redis Active Active subscription create
+
+
 ## 0.34.0
 
 ### Added:
-* Adding field `RedisVersion` to Redis Active Active subscription
+* Adding field `RedisVersion` to Redis Active Active subscription model (get and list)
+
+
+## 0.33.1
+
+### Fixed:
+* Added pending status for database upgrade
 
 ## 0.33.0
 
