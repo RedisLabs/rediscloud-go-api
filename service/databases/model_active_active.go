@@ -79,6 +79,7 @@ type CreateActiveActiveDatabase struct {
 	LocalThroughputMeasurement          []*LocalThroughput `json:"localThroughputMeasurement,omitempty"`
 	PortNumber                          *int               `json:"port,omitempty"`
 	QueryPerformanceFactor              *string            `json:"queryPerformanceFactor,omitempty"`
+	RedisVersion                        *string            `json:"redisVersion,omitempty"`
 }
 
 func (o CreateActiveActiveDatabase) String() string {
