@@ -20,6 +20,7 @@ type ActiveActiveDatabase struct {
 	UseExternalEndpointForOSSClusterAPI *bool           `json:"useExternalEndpointForOSSClusterApi,omitempty"`
 	Replication                         *bool           `json:"replication,omitempty"`
 	DataEvictionPolicy                  *string         `json:"dataEvictionPolicy,omitempty"`
+	Security                            *Security       `json:"security,omitempty"`
 	Modules                             []*Module       `json:"modules,omitempty"`
 	CrdbDatabases                       []*CrdbDatabase `json:"crdbDatabases,omitempty"`
 }
@@ -113,6 +114,7 @@ type UpdateActiveActiveDatabase struct {
 	GlobalAlerts           *[]*Alert                `json:"globalAlerts,omitempty"`
 	Regions                []*LocalRegionProperties `json:"regions,omitempty"`
 	DataEvictionPolicy     *string                  `json:"dataEvictionPolicy,omitempty"`
+	EnableDefaultUser      *bool                    `json:"enableDefaultUser,omitempty"`
 	QueryPerformanceFactor *string                  `json:"queryPerformanceFactor,omitempty"`
 }
 
