@@ -2,11 +2,17 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+
+## 0.35.0
+
+### Added:
+* Adding field `security` to Active Active Database model
+* Adding field `enableDefaultUser` to active active database update request
+
 ## 0.34.1
 
 ### Added:
 * Adding field `RedisVersion` to Redis Active Active subscription create
-
 
 ## 0.34.0
 
