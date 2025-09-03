@@ -3,6 +3,7 @@ package rediscloud_api
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/RedisLabs/rediscloud-go-api/service/privatelink"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -45,6 +46,7 @@ type Client struct {
 	Pricing                   *pricing.API
 	TransitGatewayAttachments *attachments.API
 	PrivateServiceConnect     *psc.API
+	PrivateLink               *privatelink.API
 	Tags                      *tags.API
 	// fixed
 	FixedPlans             *plans.API
@@ -94,6 +96,7 @@ func NewClient(configs ...Option) (*Client, error) {
 		Pricing:                   pricing.NewAPI(client),
 		TransitGatewayAttachments: attachments.NewAPI(client, t, config.logger),
 		PrivateServiceConnect:     psc.NewAPI(client, t, config.logger),
+		PrivateLink:               privatelink.NewAPI(client, t, config.logger),
 		Tags:                      tags.NewAPI(client),
 		// fixed
 		FixedPlans:             plans.NewAPI(client, config.logger),
