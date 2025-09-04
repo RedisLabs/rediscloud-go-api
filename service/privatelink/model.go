@@ -10,7 +10,38 @@ type CreatePrivateLink struct {
 }
 
 type PrivateLink struct {
-	SubscriptionId *int `json:"subscriptionId"`
+	Status                   *string                  `json:"status,omitempty"`
+	Principals               []*PrivateLinkPrincipal  `json:"principals,omitempty"`
+	ResourceConfigurationId  *int                     `json:"resourceConfigurationId,omitempty"`
+	ResourceConfigurationArn *string                  `json:"resourceConfigurationArn,omitempty"`
+	ShareArn                 *string                  `json:"shareArn,omitempty"`
+	ShareName                *string                  `json:"shareName,omitempty"`
+	Connections              []*PrivateLinkConnection `json:"connections,omitempty"`
+	Databases                []*PrivateLinkDatabase   `json:"databases,omitempty"`
+	SubscriptionId           *int                     `json:"subscriptionId,omitempty"`
+	RegionId                 *int                     `json:"regionId,omitempty"`
+	ErrorMessage             *string                  `json:"errorMessage,omitempty"`
+}
+
+type PrivateLinkPrincipal struct {
+	Principal *string `json:"principal,omitempty"`
+	Status    *string `json:"status,omitempty"`
+	Alias     *string `json:"alias,omitempty"`
+	Type      *string `json:"type,omitempty"`
+}
+
+type PrivateLinkConnection struct {
+	AssociationId   *string `json:"associationId,omitempty"`
+	ConnectionId    *int    `json:"connectionId,omitempty"`
+	Type            *string `json:"type,omitempty"`
+	OwnerId         *int    `json:"ownerId,omitempty"`
+	AssociationDate *string `json:"associationDate,omitempty"`
+}
+
+type PrivateLinkDatabase struct {
+	DatabaseId           *int    `json:"databaseId,omitempty"`
+	Port                 *int    `json:"port,omitempty"`
+	ResourceLinkEndpoint *string `json:"rlEndpoint,omitempty"`
 }
 
 type CreatePrivateLinkActiveActive struct {
@@ -43,12 +74,10 @@ func (f *NotFoundActiveActive) Error() string {
 }
 
 const (
-	// PrivateLinkStatusCreateQueued when PrivateLink creation is queued
-	PrivateLinkStatusCreateQueued = "create-queued"
-	// PrivateLinkStatusInitialized when PrivateLink provisioning started
-	PrivateLinkStatusInitialized = "initialized"
-	// PrivateLinkStatusCreatePending when PrivateLink provisioning is completed but databases are pending update
-	PrivateLinkStatusCreatePending = "create-pending"
+	// PrivateLinkStatusInitializing when PrivateLink is initialising
+	PrivateLinkStatusInitializing = "initializing"
+	// PrivateLinkStatusDeleted when PrivateLink has been deleted
+	PrivateLinkStatusDeleted = "deleting"
 	// PrivateLinkStatusActive when PrivateLink is ready
 	PrivateLinkStatusActive = "active"
 )

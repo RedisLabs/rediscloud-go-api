@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetPrivateLinkConfig(t *testing.T) {
+func TestGetPrivateLink(t *testing.T) {
 	tc := []struct {
 		description     string
 		mockedResponse  []endpointRequest
@@ -45,29 +45,87 @@ func TestGetPrivateLinkConfig(t *testing.T) {
 					t,
 					"/tasks/502fc31f-fd44-4cb0-a429-07882309a971",
 					`{
-				  "taskId": "502fc31f-fd44-4cb0-a429-07882309a971",
-				  "commandType": "privatelinkGetRequest",
-				  "status": "processing-completed",
-				  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
-				  "timestamp": "2024-07-16T09:26:49.847808891Z",
-				  "response": {
-					"resourceId": 114019,
-					"resource": {
-					  "subscriptionId": 114019
-					}
-				  },
-				  "links": [
-					{
-					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/502fc31f-fd44-4cb0-a429-07882309a971",
-					  "rel": "self",
-					  "type": "GET"
-					}
-				  ]
+							  "taskId": "502fc31f-fd44-4cb0-a429-07882309a971",
+							  "commandType": "privatelinkGetRequest",
+							  "status": "processing-completed",
+							  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+							  "timestamp": "2024-07-16T09:26:49.847808891Z",
+							  "response": {
+								"resourceId": 114019,
+								"resource": {
+								  "status": "received",
+								  "principals": [
+									{
+									  "principal": "arn:aws:iam::123456789012:root",
+									  "status": "ready",
+									  "alias": "some alias",
+									  "type": "aws_account"
+									}
+								  ],
+								  "resourceConfigurationId": 29291,
+								  "resourceConfigurationArn": "received",
+								  "shareArn": "arn:aws:iam::123456789012:root",
+								  "shareName": "share name",
+								  "connections": [
+									{
+									  "associationId": "received",
+									  "connectionId": 144019,
+									  "type": "connection type",
+									  "ownerId": 12312312,
+									  "associationDate": "2024-07-16T09:26:40.929904847Z"
+									}
+								  ],
+								  "databases": [
+									{
+									  "databaseId": 0,
+									  "port": 6379,
+									  "rlEndpoint": ""
+									}
+								  ],
+								  "subscriptionId": 114019,
+								  "regionId": 12312312,
+								  "errorMessage": "no error"
+								}
+							  },
+							  "links": [
+								{
+								  "href": "https://api-staging.qa.redislabs.com/v1/tasks/502fc31f-fd44-4cb0-a429-07882309a971",
+								  "rel": "self",
+								  "type": "GET"
+								}
+							  ]
 				}`,
 				),
 			},
 			expectedResult: &pl.PrivateLink{
+				Status: redis.String("received"),
+				Principals: []*pl.PrivateLinkPrincipal{
+					{
+						Principal: redis.String("arn:aws:iam::123456789012:root"),
+						Status:    redis.String("ready"),
+						Alias:     redis.String("some alias"),
+						Type:      redis.String("aws_account"),
+					},
+				},
+				ResourceConfigurationId:  redis.Int(29291),
+				ResourceConfigurationArn: redis.String("received"),
+				ShareArn:                 redis.String("arn:aws:iam::123456789012:root"),
+				ShareName:                redis.String("share name"),
+				Connections: []*pl.PrivateLinkConnection{{
+					AssociationId:   redis.String("received"),
+					ConnectionId:    redis.Int(144019),
+					Type:            redis.String("connection type"),
+					OwnerId:         redis.Int(12312312),
+					AssociationDate: redis.String("2024-07-16T09:26:40.929904847Z"),
+				}},
+				Databases: []*pl.PrivateLinkDatabase{{
+					DatabaseId:           redis.Int(0),
+					Port:                 redis.Int(6379),
+					ResourceLinkEndpoint: redis.String(""),
+				}},
 				SubscriptionId: redis.Int(114019),
+				RegionId:       redis.Int(12312312),
+				ErrorMessage:   redis.String("no error"),
 			},
 		},
 		{
