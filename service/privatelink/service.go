@@ -39,7 +39,7 @@ func NewAPI(client HttpClient, taskWaiter TaskWaiter, logger Log) *API {
 	return &API{client: client, taskWaiter: taskWaiter, logger: logger}
 }
 
-func (a *API) GetPrivateLink(ctx context.Context, subscription int) (*PrivateLinkConfig, error) {
+func (a *API) GetPrivateLink(ctx context.Context, subscription int) (*PrivateLink, error) {
 	message := fmt.Sprintf("get private link for subscription %d", subscription)
 	path := fmt.Sprintf("/subscriptions/%d/private-link", subscription)
 	task, err := a.getLink(ctx, message, path)
@@ -49,7 +49,7 @@ func (a *API) GetPrivateLink(ctx context.Context, subscription int) (*PrivateLin
 	return task, nil
 }
 
-func (a *API) getLink(ctx context.Context, message string, path string) (*PrivateLinkConfig, error) {
+func (a *API) getLink(ctx context.Context, message string, path string) (*PrivateLink, error) {
 	var task internal.TaskResponse
 	err := a.client.Get(ctx, message, path, &task)
 	if err != nil {
@@ -58,7 +58,7 @@ func (a *API) getLink(ctx context.Context, message string, path string) (*Privat
 
 	a.logger.Printf("Waiting for privatelink request %d to complete", task.ID)
 
-	var response PrivateLinkConfig
+	var response PrivateLink
 	err = a.taskWaiter.WaitForResource(ctx, *task.ID, &response)
 	if err != nil {
 		return nil, err

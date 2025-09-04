@@ -16,7 +16,7 @@ func TestGetPrivateLinkConfig(t *testing.T) {
 	tc := []struct {
 		description     string
 		mockedResponse  []endpointRequest
-		expectedResult  *pl.PrivateLinkConfig
+		expectedResult  *pl.PrivateLink
 		expectedError   error
 		expectedErrorAs error
 	}{
@@ -53,10 +53,7 @@ func TestGetPrivateLinkConfig(t *testing.T) {
 				  "response": {
 					"resourceId": 114019,
 					"resource": {
-					  "id": 40,
-					  "connectionHostName": "pl.mc2018-0.us-central1-mz.gcp.sdk-cloud.rlrcp.com",
-					  "serviceAttachmentName": "service-attachment-mc2018-0-us-central1-mz-rlrcp",
-					  "status": "active"
+					  "subscriptionId": 114019
 					}
 				  },
 				  "links": [
@@ -69,11 +66,8 @@ func TestGetPrivateLinkConfig(t *testing.T) {
 				}`,
 				),
 			},
-			expectedResult: &pl.PrivateLinkConfig{
-				ID:                    redis.Int(40),
-				ConnectionHostName:    redis.String("pl.mc2018-0.us-central1-mz.gcp.sdk-cloud.rlrcp.com"),
-				ServiceAttachmentName: redis.String("service-attachment-mc2018-0-us-central1-mz-rlrcp"),
-				Status:                redis.String("active"),
+			expectedResult: &pl.PrivateLink{
+				SubscriptionId: redis.Int(114019),
 			},
 		},
 		{
