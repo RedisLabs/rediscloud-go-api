@@ -16,7 +16,7 @@ type HttpClient interface {
 	Get(ctx context.Context, name, path string, responseBody interface{}) error
 	Post(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 	Put(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
-	Delete(ctx context.Context, name, path string, responseBody interface{}) error
+	Delete(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 }
 
 type TaskWaiter interface {
@@ -95,7 +95,7 @@ func (a *API) Update(ctx context.Context, id int, user UpdateUserRequest) error 
 // Delete will destroy an existing user.
 func (a *API) Delete(ctx context.Context, id int) error {
 	var task internal.TaskResponse
-	err := a.client.Delete(ctx, fmt.Sprintf("delete user %d", id), fmt.Sprintf("/acl/users/%d", id), &task)
+	err := a.client.Delete(ctx, fmt.Sprintf("delete user %d", id), fmt.Sprintf("/acl/users/%d", id), nil, &task)
 	if err != nil {
 		return wrap404Error(id, err)
 	}

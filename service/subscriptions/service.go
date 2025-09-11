@@ -16,7 +16,7 @@ type HttpClient interface {
 	Get(ctx context.Context, name, path string, responseBody interface{}) error
 	Post(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 	Put(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
-	Delete(ctx context.Context, name, path string, responseBody interface{}) error
+	Delete(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 }
 
 type TaskWaiter interface {
@@ -115,7 +115,7 @@ func (a *API) UpdateCMKs(ctx context.Context, id int, subscriptionCMKs UpdateSub
 // deleted, otherwise this function will fail.
 func (a *API) Delete(ctx context.Context, id int) error {
 	var task internal.TaskResponse
-	err := a.client.Delete(ctx, fmt.Sprintf("delete subscription %d", id), fmt.Sprintf("/subscriptions/%d", id), &task)
+	err := a.client.Delete(ctx, fmt.Sprintf("delete subscription %d", id), fmt.Sprintf("/subscriptions/%d", id), nil, &task)
 	if err != nil {
 		return wrap404Error(id, err)
 	}
@@ -234,7 +234,7 @@ func (a *API) CreateActiveActiveVPCPeering(ctx context.Context, id int, create C
 // DeleteVPCPeering destroys an existing VPC peering connection.
 func (a *API) DeleteVPCPeering(ctx context.Context, subscription int, peering int) error {
 	var task internal.TaskResponse
-	err := a.client.Delete(ctx, fmt.Sprintf("deleting peering %d for subscription %d", peering, subscription), fmt.Sprintf("/subscriptions/%d/peerings/%d", subscription, peering), &task)
+	err := a.client.Delete(ctx, fmt.Sprintf("deleting peering %d for subscription %d", peering, subscription), fmt.Sprintf("/subscriptions/%d/peerings/%d", subscription, peering), nil, &task)
 	if err != nil {
 		return err
 	}
@@ -246,7 +246,7 @@ func (a *API) DeleteVPCPeering(ctx context.Context, subscription int, peering in
 
 func (a *API) DeleteActiveActiveVPCPeering(ctx context.Context, subscription int, peering int) error {
 	var task internal.TaskResponse
-	err := a.client.Delete(ctx, fmt.Sprintf("deleting peering %d for subscription %d", peering, subscription), fmt.Sprintf("/subscriptions/%d/regions/peerings/%d", subscription, peering), &task)
+	err := a.client.Delete(ctx, fmt.Sprintf("deleting peering %d for subscription %d", peering, subscription), fmt.Sprintf("/subscriptions/%d/regions/peerings/%d", subscription, peering), nil, &task)
 	if err != nil {
 		return err
 	}

@@ -16,7 +16,7 @@ type HttpClient interface {
 	Get(ctx context.Context, name, path string, responseBody interface{}) error
 	Post(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 	Put(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
-	Delete(ctx context.Context, name, path string, responseBody interface{}) error
+	Delete(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 }
 
 type TaskWaiter interface {
@@ -90,7 +90,7 @@ func (a *API) Update(ctx context.Context, id int, account UpdateCloudAccount) er
 // Delete will delete an existing Cloud Account.
 func (a *API) Delete(ctx context.Context, id int) error {
 	var response internal.TaskResponse
-	if err := a.client.Delete(ctx, fmt.Sprintf("delete cloud account %d", id), fmt.Sprintf("/cloud-accounts/%d", id), &response); err != nil {
+	if err := a.client.Delete(ctx, fmt.Sprintf("delete cloud account %d", id), fmt.Sprintf("/cloud-accounts/%d", id), nil, &response); err != nil {
 		return wrap404Error(id, err)
 	}
 

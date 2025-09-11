@@ -67,8 +67,8 @@ func (c *HttpClient) Post(ctx context.Context, name, path string, requestBody in
 	return c.connectionWithRetries(ctx, http.MethodPost, name, path, nil, requestBody, responseBody)
 }
 
-func (c *HttpClient) Delete(ctx context.Context, name, path string, responseBody interface{}) error {
-	return c.connectionWithRetries(ctx, http.MethodDelete, name, path, nil, nil, responseBody)
+func (c *HttpClient) Delete(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error {
+	return c.connectionWithRetries(ctx, http.MethodDelete, name, path, nil, requestBody, responseBody)
 }
 
 func (c *HttpClient) DeleteWithQuery(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error {

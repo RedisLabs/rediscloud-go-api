@@ -3,8 +3,8 @@ package privatelink
 import "fmt"
 
 type CreatePrivateLink struct {
-	SubscriptionId *int    `json:"subscriptionId"`
-	PrincipalId    *int    `json:"principal,omitempty"`
+	ShareName      *string `json:"shareName,omitempty"`
+	Principal      *string `json:"principal,omitempty"`
 	PrincipalType  *string `json:"type,omitempty"`
 	PrincipalAlias *string `json:"alias,omitempty"`
 }
@@ -25,9 +25,9 @@ type PrivateLink struct {
 
 type PrivateLinkPrincipal struct {
 	Principal *string `json:"principal,omitempty"`
-	Status    *string `json:"status,omitempty"`
-	Alias     *string `json:"alias,omitempty"`
 	Type      *string `json:"type,omitempty"`
+	Alias     *string `json:"alias,omitempty"`
+	Status    *string `json:"status,omitempty"`
 }
 
 type PrivateLinkConnection struct {
