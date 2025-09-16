@@ -12,7 +12,7 @@ type CreatePrivateLink struct {
 type PrivateLink struct {
 	Status                   *string                  `json:"status,omitempty"`
 	Principals               []*PrivateLinkPrincipal  `json:"principals,omitempty"`
-	ResourceConfigurationId  *int                     `json:"resourceConfigurationId,omitempty"`
+	ResourceConfigurationId  *string                     `json:"resourceConfigurationId,omitempty"`
 	ResourceConfigurationArn *string                  `json:"resourceConfigurationArn,omitempty"`
 	ShareArn                 *string                  `json:"shareArn,omitempty"`
 	ShareName                *string                  `json:"shareName,omitempty"`
@@ -42,6 +42,12 @@ type PrivateLinkDatabase struct {
 	DatabaseId           *int    `json:"databaseId,omitempty"`
 	Port                 *int    `json:"port,omitempty"`
 	ResourceLinkEndpoint *string `json:"rlEndpoint,omitempty"`
+}
+
+type CreatePrivateLinkPrincipal struct {
+	Principal      *string `json:"principal,omitempty"`
+	PrincipalType  *string `json:"type,omitempty"`
+	PrincipalAlias *string `json:"alias,omitempty"`
 }
 
 type CreatePrivateLinkActiveActive struct {

@@ -142,7 +142,7 @@ func (m *mockHttpClient) Put(ctx context.Context, name, path string, requestBody
 	return args.Error(0)
 }
 
-func (m *mockHttpClient) Delete(ctx context.Context, name, path string, responseBody interface{}) error {
+func (m *mockHttpClient) Delete(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error {
 	args := m.Called(ctx, name, path, responseBody)
 	return args.Error(0)
 }

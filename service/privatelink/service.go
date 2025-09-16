@@ -50,9 +50,9 @@ func (a *API) CreatePrivateLink(ctx context.Context, subscriptionId int, private
 	return nil
 }
 
-func (a *API) create(ctx context.Context, message string, path string, link CreatePrivateLink) error {
+func (a *API) create(ctx context.Context, message string, path string, requestBody interface{}) error {
 	var task internal.TaskResponse
-	err := a.client.Post(ctx, message, path, nil, &task)
+	err := a.client.Post(ctx, message, path, requestBody, &task)
 	if err != nil {
 		return err
 	}
@@ -94,6 +94,18 @@ func (a *API) get(ctx context.Context, message string, path string) (*PrivateLin
 	}
 
 	return &response, nil
+}
+
+// CreatePrincipal will add a principal to a PrivateLink.
+func (a *API) CreatePrincipal(ctx context.Context, subscriptionId int, principal CreatePrivateLinkPrincipal) error {
+	message := fmt.Sprintf("create principal %s for subscription %d", *principal.Principal, subscriptionId)
+	path := fmt.Sprintf("/subscriptions/%d/private-link/principals", subscriptionId)
+
+	err := a.create(ctx, message, path, principal)
+	if err != nil {
+		return wrap404Error(subscriptionId, err)
+	}
+	return nil
 }
 
 // DeletePrincipal will remove a principal from a PrivateLink.
