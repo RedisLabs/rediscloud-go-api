@@ -50,23 +50,6 @@ func (a *API) CreatePrivateLink(ctx context.Context, subscriptionId int, private
 	return nil
 }
 
-func (a *API) create(ctx context.Context, message string, path string, requestBody interface{}) error {
-	var task internal.TaskResponse
-	err := a.client.Post(ctx, message, path, requestBody, &task)
-	if err != nil {
-		return err
-	}
-
-	a.logger.Printf("Waiting for task %s to finish creating the PrivateLink", task)
-
-	id, err := a.taskWaiter.WaitForResourceId(ctx, *task.ID)
-	if err != nil {
-		return fmt.Errorf("failed when creating PrivateLink %d: %w", id, err)
-	}
-
-	return nil
-}
-
 // GetPrivateLink will get a new PrivateLink.
 func (a *API) GetPrivateLink(ctx context.Context, subscription int) (*PrivateLink, error) {
 	message := fmt.Sprintf("get private link for subscription %d", subscription)
@@ -76,24 +59,6 @@ func (a *API) GetPrivateLink(ctx context.Context, subscription int) (*PrivateLin
 		return nil, wrap404Error(subscription, err)
 	}
 	return task, nil
-}
-
-func (a *API) get(ctx context.Context, message string, path string) (*PrivateLink, error) {
-	var task internal.TaskResponse
-	err := a.client.Get(ctx, message, path, &task)
-	if err != nil {
-		return nil, err
-	}
-
-	a.logger.Printf("Waiting for privatelink request %d to complete", task.ID)
-
-	var response PrivateLink
-	err = a.taskWaiter.WaitForResource(ctx, *task.ID, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	return &response, nil
 }
 
 // CreatePrincipal will add a principal to a PrivateLink.
@@ -122,6 +87,91 @@ func (a *API) DeletePrincipal(ctx context.Context, subscriptionId int, principal
 		return wrap404Error(subscriptionId, err)
 	}
 	return nil
+}
+
+// CreateActiveActivePrivateLink will create a new active active PrivateLink.
+func (a *API) CreateActiveActivePrivateLink(ctx context.Context, subscriptionId int, privateLink CreatePrivateLink) error {
+	message := fmt.Sprintf("create privatelink for subscription %d", subscriptionId)
+	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link", subscriptionId)
+	err := a.create(ctx, message, path, privateLink)
+	if err != nil {
+		return wrap404Error(subscriptionId, err)
+	}
+	return nil
+}
+
+// GetActiveActivePrivateLink will get a new active active PrivateLink.
+func (a *API) GetActiveActivePrivateLink(ctx context.Context, subscription int) (*PrivateLink, error) {
+	message := fmt.Sprintf("get private link for subscription %d", subscription)
+	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link", subscription)
+	task, err := a.get(ctx, message, path)
+	if err != nil {
+		return nil, wrap404Error(subscription, err)
+	}
+	return task, nil
+}
+
+// CreateActiveActivePrincipal will add a principal to an active active PrivateLink.
+func (a *API) CreateActiveActivePrincipal(ctx context.Context, subscriptionId int, principal CreatePrivateLinkPrincipal) error {
+	message := fmt.Sprintf("create principal %s for subscription %d", *principal.Principal, subscriptionId)
+	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link/principals", subscriptionId)
+
+	err := a.create(ctx, message, path, principal)
+	if err != nil {
+		return wrap404Error(subscriptionId, err)
+	}
+	return nil
+}
+
+// DeleteActiveActivePrincipal will remove a principal from an active active PrivateLink.
+func (a *API) DeleteActiveActivePrincipal(ctx context.Context, subscriptionId int, principal string) error {
+	message := fmt.Sprintf("delete principal %s for subscription %d", principal, subscriptionId)
+	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link/principals", subscriptionId)
+
+	requestBody := map[string]interface{}{
+		"principal": principal,
+	}
+
+	err := a.delete(ctx, message, path, requestBody, nil)
+	if err != nil {
+		return wrap404Error(subscriptionId, err)
+	}
+	return nil
+}
+
+func (a *API) create(ctx context.Context, message string, path string, requestBody interface{}) error {
+	var task internal.TaskResponse
+	err := a.client.Post(ctx, message, path, requestBody, &task)
+	if err != nil {
+		return err
+	}
+
+	a.logger.Printf("Waiting for task %s to finish creating the PrivateLink", task)
+
+	id, err := a.taskWaiter.WaitForResourceId(ctx, *task.ID)
+	if err != nil {
+		return fmt.Errorf("failed when creating PrivateLink %d: %w", id, err)
+	}
+
+	return nil
+}
+
+func (a *API) get(ctx context.Context, message string, path string) (*PrivateLink, error) {
+	var task internal.TaskResponse
+	err := a.client.Get(ctx, message, path, &task)
+	if err != nil {
+		return nil, err
+	}
+
+	a.logger.Printf("Waiting for privatelink request %d to complete", task.ID)
+
+	var response PrivateLink
+	err = a.taskWaiter.WaitForResource(ctx, *task.ID, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response, nil
 }
 
 func (a *API) delete(ctx context.Context, message string, path string, requestBody interface{}, responseBody interface{}) error {
