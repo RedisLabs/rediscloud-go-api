@@ -12,7 +12,7 @@ type CreatePrivateLink struct {
 type PrivateLink struct {
 	Status                   *string                  `json:"status,omitempty"`
 	Principals               []*PrivateLinkPrincipal  `json:"principals,omitempty"`
-	ResourceConfigurationId  *string                     `json:"resourceConfigurationId,omitempty"`
+	ResourceConfigurationId  *string                  `json:"resourceConfigurationId,omitempty"`
 	ResourceConfigurationArn *string                  `json:"resourceConfigurationArn,omitempty"`
 	ShareArn                 *string                  `json:"shareArn,omitempty"`
 	ShareName                *string                  `json:"shareName,omitempty"`
@@ -86,4 +86,20 @@ const (
 	PrivateLinkStatusDeleted = "deleting"
 	// PrivateLinkStatusActive when PrivateLink is ready
 	PrivateLinkStatusActive = "active"
+
+	// PrivateLinkPrincipalStatusInitializing when PrivateLinkPrincipal is initializing
+	PrivateLinkPrincipalStatusInitializing = "initializing"
+
+	// PrivateLinkPrincipalStatusDisassociating when PrivateLinkPrincipal is disassociating
+	PrivateLinkPrincipalStatusDisassociating = "disassociating"
+	// PrivateLinkPrincipalStatusDisassociated when PrivateLinkPrincipal has disassociated
+	PrivateLinkPrincipalStatusDisassociated = "disassociated"
+
+	// PrivateLinkPrincipalStatusAssociating when PrivateLinkPrincipal is associating
+	PrivateLinkPrincipalStatusAssociating = "associating"
+	// PrivateLinkPrincipalStatusAssociated when PrivateLinkPrincipal has associated
+	PrivateLinkPrincipalStatusAssociated = "associated"
+
+	// PrivateLinkPrincipalStatusFailed when PrivateLinkPrincipal has failed
+	PrivateLinkPrincipalStatusFailed = "failed"
 )
