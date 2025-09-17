@@ -62,8 +62,8 @@ func TestGetPrivateLink(t *testing.T) {
 									  "type": "aws_account"
 									}
 								  ],
-								  "resourceConfigurationId": 29291,
-								  "resourceConfigurationArn": "received",
+								  "resourceConfigurationId": "123456789012",
+								  "resourceConfigurationArn": "arn:aws:iam::123456789012:root",
 								  "shareArn": "arn:aws:iam::123456789012:root",
 								  "shareName": "share name",
 								  "connections": [
@@ -107,8 +107,8 @@ func TestGetPrivateLink(t *testing.T) {
 						Type:      redis.String("aws_account"),
 					},
 				},
-				ResourceConfigurationId:  redis.Int(29291),
-				ResourceConfigurationArn: redis.String("received"),
+				ResourceConfigurationId:  redis.String("123456789012"),
+				ResourceConfigurationArn: redis.String("arn:aws:iam::123456789012:root"),
 				ShareArn:                 redis.String("arn:aws:iam::123456789012:root"),
 				ShareName:                redis.String("share name"),
 				Connections: []*pl.PrivateLinkConnection{{
