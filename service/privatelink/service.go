@@ -61,6 +61,19 @@ func (a *API) GetPrivateLink(ctx context.Context, subscription int) (*PrivateLin
 	return task, nil
 }
 
+type PrivateLinkEndpointScript = string
+
+// GetPrivateLinkEndpointScript will get the script for an endpoint.
+func (a *API) GetPrivateLinkEndpointScript(ctx context.Context, subscription int) (*PrivateLinkEndpointScript, error) {
+	message := fmt.Sprintf("get private link for subscription %d", subscription)
+	path := fmt.Sprintf("/subscriptions/%d/private-link/endpoint-script/?includeTerraformAwsScript=true", subscription)
+	task, err := a.getScript(ctx, message, path)
+	if err != nil {
+		return nil, wrap404Error(subscription, err)
+	}
+	return task, nil
+}
+
 // CreatePrincipal will add a principal to a PrivateLink.
 func (a *API) CreatePrincipal(ctx context.Context, subscriptionId int, principal CreatePrivateLinkPrincipal) error {
 	message := fmt.Sprintf("create principal %s for subscription %d", *principal.Principal, subscriptionId)
@@ -90,9 +103,9 @@ func (a *API) DeletePrincipal(ctx context.Context, subscriptionId int, principal
 }
 
 // CreateActiveActivePrivateLink will create a new active active PrivateLink.
-func (a *API) CreateActiveActivePrivateLink(ctx context.Context, subscriptionId int, privateLink CreatePrivateLink) error {
-	message := fmt.Sprintf("create privatelink for subscription %d", subscriptionId)
-	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link", subscriptionId)
+func (a *API) CreateActiveActivePrivateLink(ctx context.Context, subscriptionId int, regionId int, privateLink CreatePrivateLink) error {
+	message := fmt.Sprintf("create active active PrivateLink for subscription %d", subscriptionId)
+	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link", subscriptionId, regionId)
 	err := a.create(ctx, message, path, privateLink)
 	if err != nil {
 		return wrap404Error(subscriptionId, err)
@@ -101,9 +114,9 @@ func (a *API) CreateActiveActivePrivateLink(ctx context.Context, subscriptionId 
 }
 
 // GetActiveActivePrivateLink will get a new active active PrivateLink.
-func (a *API) GetActiveActivePrivateLink(ctx context.Context, subscription int) (*PrivateLink, error) {
-	message := fmt.Sprintf("get private link for subscription %d", subscription)
-	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link", subscription)
+func (a *API) GetActiveActivePrivateLink(ctx context.Context, subscription int, regionId int) (*PrivateLink, error) {
+	message := fmt.Sprintf("get active active PrivateLink for subscription %d", subscription)
+	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link", subscription, regionId)
 	task, err := a.get(ctx, message, path)
 	if err != nil {
 		return nil, wrap404Error(subscription, err)
@@ -112,9 +125,9 @@ func (a *API) GetActiveActivePrivateLink(ctx context.Context, subscription int) 
 }
 
 // CreateActiveActivePrincipal will add a principal to an active active PrivateLink.
-func (a *API) CreateActiveActivePrincipal(ctx context.Context, subscriptionId int, principal CreatePrivateLinkPrincipal) error {
+func (a *API) CreateActiveActivePrincipal(ctx context.Context, subscriptionId int, regionId int, principal CreatePrivateLinkPrincipal) error {
 	message := fmt.Sprintf("create principal %s for subscription %d", *principal.Principal, subscriptionId)
-	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link/principals", subscriptionId)
+	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link/principals", subscriptionId, regionId)
 
 	err := a.create(ctx, message, path, principal)
 	if err != nil {
@@ -124,9 +137,9 @@ func (a *API) CreateActiveActivePrincipal(ctx context.Context, subscriptionId in
 }
 
 // DeleteActiveActivePrincipal will remove a principal from an active active PrivateLink.
-func (a *API) DeleteActiveActivePrincipal(ctx context.Context, subscriptionId int, principal string) error {
+func (a *API) DeleteActiveActivePrincipal(ctx context.Context, subscriptionId int, regionId int, principal string) error {
 	message := fmt.Sprintf("delete principal %s for subscription %d", principal, subscriptionId)
-	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link/principals", subscriptionId)
+	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link/principals", subscriptionId, regionId)
 
 	requestBody := map[string]interface{}{
 		"principal": principal,
@@ -166,6 +179,24 @@ func (a *API) get(ctx context.Context, message string, path string) (*PrivateLin
 	a.logger.Printf("Waiting for privatelink request %d to complete", task.ID)
 
 	var response PrivateLink
+	err = a.taskWaiter.WaitForResource(ctx, *task.ID, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}
+
+func (a *API) getScript(ctx context.Context, message string, path string) (*PrivateLinkEndpointScript, error) {
+	var task internal.TaskResponse
+	err := a.client.Get(ctx, message, path, &task)
+	if err != nil {
+		return nil, err
+	}
+
+	a.logger.Printf("Waiting for privatelink request %d to complete", task.ID)
+
+	var response PrivateLinkEndpointScript
 	err = a.taskWaiter.WaitForResource(ctx, *task.ID, &response)
 	if err != nil {
 		return nil, err
