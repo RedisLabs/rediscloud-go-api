@@ -124,6 +124,17 @@ func (a *API) GetActiveActivePrivateLink(ctx context.Context, subscription int, 
 	return task, nil
 }
 
+// GetPrivateLinkEndpointScript will get the script for an endpoint.
+func (a *API) GetActiveActivePrivateLinkEndpointScript(ctx context.Context, subscription int, regionId int) (*PrivateLinkEndpointScript, error) {
+	message := fmt.Sprintf("get private link for subscription %d", subscription)
+	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link/endpoint-script/?includeTerraformAwsScript=true", subscription)
+	task, err := a.getScript(ctx, message, path)
+	if err != nil {
+		return nil, wrap404Error(subscription, err)
+	}
+	return task, nil
+}
+
 // CreateActiveActivePrincipal will add a principal to an active active PrivateLink.
 func (a *API) CreateActiveActivePrincipal(ctx context.Context, subscriptionId int, regionId int, principal CreatePrivateLinkPrincipal) error {
 	message := fmt.Sprintf("create principal %s for subscription %d", *principal.Principal, subscriptionId)
@@ -176,7 +187,7 @@ func (a *API) get(ctx context.Context, message string, path string) (*PrivateLin
 		return nil, err
 	}
 
-	a.logger.Printf("Waiting for privatelink request %d to complete", task.ID)
+	a.logger.Printf("Waiting for PrivateLink get request %d to complete", task.ID)
 
 	var response PrivateLink
 	err = a.taskWaiter.WaitForResource(ctx, *task.ID, &response)
@@ -194,7 +205,7 @@ func (a *API) getScript(ctx context.Context, message string, path string) (*Priv
 		return nil, err
 	}
 
-	a.logger.Printf("Waiting for privatelink request %d to complete", task.ID)
+	a.logger.Printf("Waiting for PrivateLink script get request %d to complete", task.ID)
 
 	var response PrivateLinkEndpointScript
 	err = a.taskWaiter.WaitForResource(ctx, *task.ID, &response)
@@ -212,7 +223,7 @@ func (a *API) delete(ctx context.Context, message string, path string, requestBo
 		return err
 	}
 
-	a.logger.Printf("Waiting for task %s to finish deleting", task)
+	a.logger.Printf("Waiting for task %s to finish deleting the PrivateLink", task)
 
 	err = a.taskWaiter.Wait(ctx, *task.ID)
 	if err != nil {
