@@ -127,7 +127,7 @@ func (a *API) GetActiveActivePrivateLink(ctx context.Context, subscription int, 
 // GetPrivateLinkEndpointScript will get the script for an endpoint.
 func (a *API) GetActiveActivePrivateLinkEndpointScript(ctx context.Context, subscription int, regionId int) (*PrivateLinkEndpointScript, error) {
 	message := fmt.Sprintf("get private link for subscription %d", subscription)
-	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link/endpoint-script/?includeTerraformAwsScript=true", subscription)
+	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link/endpoint-script/?includeTerraformAwsScript=true", subscription, regionId)
 	task, err := a.getScript(ctx, message, path)
 	if err != nil {
 		return nil, wrap404Error(subscription, err)
