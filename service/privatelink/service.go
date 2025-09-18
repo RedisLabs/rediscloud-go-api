@@ -39,15 +39,15 @@ func NewAPI(client HttpClient, taskWaiter TaskWaiter, logger Log) *API {
 	return &API{client: client, taskWaiter: taskWaiter, logger: logger}
 }
 
-// // CreatePrivateLink will create a new PrivateLink.
-func (a *API) CreatePrivateLink(ctx context.Context, subscriptionId int, privateLink CreatePrivateLink) (error, error) {
+// CreatePrivateLink will create a new PrivateLink.
+func (a *API) CreatePrivateLink(ctx context.Context, subscriptionId int, privateLink CreatePrivateLink) error {
 	message := fmt.Sprintf("create privatelink for subscription %d", subscriptionId)
 	path := fmt.Sprintf("/subscriptions/%d/private-link", subscriptionId)
 	err := a.create(ctx, message, path, privateLink)
 	if err != nil {
-		return wrap404Error(subscriptionId, err), nil
+		return wrap404Error(subscriptionId, err)
 	}
-	return nil, nil
+	return nil
 }
 
 // GetPrivateLink will get a new PrivateLink.
