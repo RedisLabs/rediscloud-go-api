@@ -64,12 +64,12 @@ func (a *API) GetPrivateLink(ctx context.Context, subscription int) (*PrivateLin
 type PrivateLinkEndpointScript = string
 
 // GetPrivateLinkEndpointScript will get the script for an endpoint.
-func (a *API) GetPrivateLinkEndpointScript(ctx context.Context, subscription int) (*PrivateLinkEndpointScript, error) {
-	message := fmt.Sprintf("get private link for subscription %d", subscription)
-	path := fmt.Sprintf("/subscriptions/%d/private-link/endpoint-script/?includeTerraformAwsScript=true", subscription)
+func (a *API) GetPrivateLinkEndpointScript(ctx context.Context, subscriptionId int) (*PrivateLinkEndpointScript, error) {
+	message := fmt.Sprintf("get private link for subscription %d", subscriptionId)
+	path := fmt.Sprintf("/subscriptions/%d/private-link/endpoint-script/?includeTerraformAwsScript=true", subscriptionId)
 	task, err := a.getScript(ctx, message, path)
 	if err != nil {
-		return nil, wrap404Error(subscription, err)
+		return nil, wrap404Error(subscriptionId, err)
 	}
 	return task, nil
 }
