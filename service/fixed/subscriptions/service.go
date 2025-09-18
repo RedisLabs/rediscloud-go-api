@@ -16,7 +16,7 @@ type HttpClient interface {
 	Get(ctx context.Context, name, path string, responseBody interface{}) error
 	Post(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 	Put(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
-	Delete(ctx context.Context, name, path string, responseBody interface{}) error
+	Delete(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 }
 
 type TaskWaiter interface {
@@ -96,7 +96,7 @@ func (a *API) Update(ctx context.Context, id int, subscription FixedSubscription
 // deleted, otherwise this function will fail.
 func (a *API) Delete(ctx context.Context, id int) error {
 	var task internal.TaskResponse
-	err := a.client.Delete(ctx, fmt.Sprintf("delete fixed subscription %d", id), fmt.Sprintf("/fixed/subscriptions/%d", id), &task)
+	err := a.client.Delete(ctx, fmt.Sprintf("delete fixed subscription %d", id), fmt.Sprintf("/fixed/subscriptions/%d", id), nil, &task)
 	if err != nil {
 		return wrap404Error(id, err)
 	}

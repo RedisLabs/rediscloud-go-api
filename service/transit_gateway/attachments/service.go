@@ -10,9 +10,9 @@ import (
 
 type HttpClient interface {
 	Get(ctx context.Context, name, path string, responseBody interface{}) error
-	Post(ctx context.Context, name, path string, requsetBody interface{}, responseBody interface{}) error
+	Post(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 	Put(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
-	Delete(ctx context.Context, name, path string, responseBody interface{}) error
+	Delete(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 }
 
 type TaskWaiter interface {
@@ -179,7 +179,7 @@ func (a *API) update(ctx context.Context, message string, address string, cidrs 
 
 func (a *API) delete(ctx context.Context, message string, address string) error {
 	var task internal.TaskResponse
-	err := a.client.Delete(ctx, message, address, &task)
+	err := a.client.Delete(ctx, message, address, nil, &task)
 	if err != nil {
 		return err
 	}

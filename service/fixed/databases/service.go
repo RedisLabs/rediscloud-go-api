@@ -19,7 +19,7 @@ type HttpClient interface {
 	GetWithQuery(ctx context.Context, name, path string, query url.Values, responseBody interface{}) error
 	Post(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 	Put(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
-	Delete(ctx context.Context, name, path string, responseBody interface{}) error
+	Delete(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 }
 
 type TaskWaiter interface {
@@ -88,7 +88,7 @@ func (a *API) Update(ctx context.Context, subscription int, database int, update
 // Delete will destroy an existing fixed database.
 func (a *API) Delete(ctx context.Context, subscription int, database int) error {
 	var task internal.TaskResponse
-	err := a.client.Delete(ctx, fmt.Sprintf("delete fixed database %d/%d", subscription, database), fmt.Sprintf("/fixed/subscriptions/%d/databases/%d", subscription, database), &task)
+	err := a.client.Delete(ctx, fmt.Sprintf("delete fixed database %d/%d", subscription, database), fmt.Sprintf("/fixed/subscriptions/%d/databases/%d", subscription, database), nil, &task)
 	if err != nil {
 		return err
 	}

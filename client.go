@@ -10,12 +10,10 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/RedisLabs/rediscloud-go-api/internal"
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/redis_rules"
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/roles"
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/users"
-	"github.com/RedisLabs/rediscloud-go-api/service/psc"
-
-	"github.com/RedisLabs/rediscloud-go-api/internal"
 	"github.com/RedisLabs/rediscloud-go-api/service/account"
 	"github.com/RedisLabs/rediscloud-go-api/service/cloud_accounts"
 	"github.com/RedisLabs/rediscloud-go-api/service/databases"
@@ -27,6 +25,8 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/service/latest_imports"
 	"github.com/RedisLabs/rediscloud-go-api/service/maintenance"
 	"github.com/RedisLabs/rediscloud-go-api/service/pricing"
+	"github.com/RedisLabs/rediscloud-go-api/service/privatelink"
+	"github.com/RedisLabs/rediscloud-go-api/service/psc"
 	"github.com/RedisLabs/rediscloud-go-api/service/regions"
 	"github.com/RedisLabs/rediscloud-go-api/service/subscriptions"
 	"github.com/RedisLabs/rediscloud-go-api/service/tags"
@@ -45,6 +45,7 @@ type Client struct {
 	Pricing                   *pricing.API
 	TransitGatewayAttachments *attachments.API
 	PrivateServiceConnect     *psc.API
+	PrivateLink               *privatelink.API
 	Tags                      *tags.API
 	// fixed
 	FixedPlans             *plans.API
@@ -94,6 +95,7 @@ func NewClient(configs ...Option) (*Client, error) {
 		Pricing:                   pricing.NewAPI(client),
 		TransitGatewayAttachments: attachments.NewAPI(client, t, config.logger),
 		PrivateServiceConnect:     psc.NewAPI(client, t, config.logger),
+		PrivateLink:               privatelink.NewAPI(client, t, config.logger),
 		Tags:                      tags.NewAPI(client),
 		// fixed
 		FixedPlans:             plans.NewAPI(client, config.logger),

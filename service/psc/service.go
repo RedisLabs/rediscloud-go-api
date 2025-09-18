@@ -16,7 +16,7 @@ type HttpClient interface {
 	GetWithQuery(ctx context.Context, name, path string, query url.Values, responseBody interface{}) error
 	Post(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 	Put(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
-	Delete(ctx context.Context, name, path string, responseBody interface{}) error
+	Delete(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
 }
 
 type TaskWaiter interface {
@@ -363,7 +363,7 @@ func (a *API) update(ctx context.Context, message string, path string, body any)
 
 func (a *API) delete(ctx context.Context, message string, path string) error {
 	var task internal.TaskResponse
-	err := a.client.Delete(ctx, message, path, &task)
+	err := a.client.Delete(ctx, message, path, nil, &task)
 	if err != nil {
 		return err
 	}
