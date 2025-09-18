@@ -76,7 +76,7 @@ type NotFoundActiveActive struct {
 }
 
 func (f *NotFoundActiveActive) Error() string {
-	return fmt.Sprintf("resource not found - subscription %d and region %d", f.subscriptionID, f.regionID)
+	return fmt.Sprintf("privatelink resource not found - subscription %d, region %d", f.subscriptionID, f.regionID)
 }
 
 const (

@@ -83,7 +83,6 @@ func TestGetPrivateLink(t *testing.T) {
 									}
 								  ],
 								  "subscriptionId": 114019,
-								  "regionId": 12312312,
 								  "errorMessage": "no error"
 								}
 							  },
@@ -124,7 +123,6 @@ func TestGetPrivateLink(t *testing.T) {
 					ResourceLinkEndpoint: redis.String(""),
 				}},
 				SubscriptionId: redis.Int(114019),
-				RegionId:       redis.Int(12312312),
 				ErrorMessage:   redis.String("no error"),
 			},
 		},
@@ -175,7 +173,7 @@ func TestGetPrivateLink(t *testing.T) {
 				}`,
 				),
 			},
-			expectedError:   errors.New("resource not found - subscription 114019"),
+			expectedError:   errors.New("privatelink resource not found - subscription 114019"),
 			expectedErrorAs: &pl.NotFound{},
 		},
 		{
@@ -192,7 +190,7 @@ func TestGetPrivateLink(t *testing.T) {
 					  "path" : "/v1/subscriptions/114019/private-link"
 					}`),
 			},
-			expectedError:   errors.New("resource not found - subscription 114019"),
+			expectedError:   errors.New("privatelink resource not found - subscription 114019"),
 			expectedErrorAs: &pl.NotFound{},
 		},
 	}
@@ -216,3 +214,276 @@ func TestGetPrivateLink(t *testing.T) {
 		})
 	}
 }
+
+func TestGetActiveActivePrivateLink(t *testing.T) {
+	tc := []struct {
+		description     string
+		mockedResponse  []endpointRequest
+		expectedResult  *pl.PrivateLink
+		expectedError   error
+		expectedErrorAs error
+	}{
+		{
+			description: "should successfully return an active active privatelink config",
+			mockedResponse: []endpointRequest{
+				getRequest(
+					t,
+					"/subscriptions/114019/regions/1/private-link",
+					`{
+				  "taskId": "502fc31f-fd44-4cb0-a429-07882309a971",
+				  "commandType": "activeActivePrivateLinkGetRequest",
+				  "status": "received",
+				  "description": "Task request received and is being queued for processing.",
+				  "timestamp": "2024-07-16T09:26:40.929904847Z",
+				  "links": [
+					{
+					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/502fc31f-fd44-4cb0-a429-07882309a971",
+					  "rel": "task",
+					  "type": "GET"
+					}
+				  ]
+				}`,
+				),
+				getRequest(
+					t,
+					"/tasks/502fc31f-fd44-4cb0-a429-07882309a971",
+					`{
+							  "taskId": "502fc31f-fd44-4cb0-a429-07882309a971",
+							  "commandType": "activeActivePrivateLinkGetRequest",
+							  "status": "processing-completed",
+							  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+							  "timestamp": "2024-07-16T09:26:49.847808891Z",
+							  "response": {
+								"resourceId": 114019,
+								"resource": {
+								  "status": "received",
+								  "principals": [
+									{
+									  "principal": "arn:aws:iam::123456789012:root",
+									  "status": "ready",
+									  "alias": "some alias",
+									  "type": "aws_account"
+									}
+								  ],
+								  "resourceConfigurationId": "123456789012",
+								  "resourceConfigurationArn": "arn:aws:iam::123456789012:root",
+								  "shareArn": "arn:aws:iam::123456789012:root",
+								  "shareName": "share name",
+								  "connections": [
+									{
+									  "associationId": "received",
+									  "connectionId": 144019,
+									  "type": "connection type",
+									  "ownerId": 12312312,
+									  "associationDate": "2024-07-16T09:26:40.929904847Z"
+									}
+								  ],
+								  "databases": [
+									{
+									  "databaseId": 0,
+									  "port": 6379,
+									  "rlEndpoint": ""
+									}
+								  ],
+								  "subscriptionId": 114019,
+								  "regionId": 1,
+								  "errorMessage": "no error"
+								}
+							  },
+							  "links": [
+								{
+								  "href": "https://api-staging.qa.redislabs.com/v1/tasks/502fc31f-fd44-4cb0-a429-07882309a971",
+								  "rel": "self",
+								  "type": "GET"
+								}
+							  ]
+				}`,
+				),
+			},
+			expectedResult: &pl.PrivateLink{
+				Status: redis.String("received"),
+				Principals: []*pl.PrivateLinkPrincipal{
+					{
+						Principal: redis.String("arn:aws:iam::123456789012:root"),
+						Status:    redis.String("ready"),
+						Alias:     redis.String("some alias"),
+						Type:      redis.String("aws_account"),
+					},
+				},
+				ResourceConfigurationId:  redis.String("123456789012"),
+				ResourceConfigurationArn: redis.String("arn:aws:iam::123456789012:root"),
+				ShareArn:                 redis.String("arn:aws:iam::123456789012:root"),
+				ShareName:                redis.String("share name"),
+				Connections: []*pl.PrivateLinkConnection{{
+					AssociationId:   redis.String("received"),
+					ConnectionId:    redis.Int(144019),
+					Type:            redis.String("connection type"),
+					OwnerId:         redis.Int(12312312),
+					AssociationDate: redis.String("2024-07-16T09:26:40.929904847Z"),
+				}},
+				Databases: []*pl.PrivateLinkDatabase{{
+					DatabaseId:           redis.Int(0),
+					Port:                 redis.Int(6379),
+					ResourceLinkEndpoint: redis.String(""),
+				}},
+				SubscriptionId: redis.Int(114019),
+				RegionId:       redis.Int(1),
+				ErrorMessage:   redis.String("no error"),
+			},
+		},
+		{
+			description: "should fail when private link is not found",
+			mockedResponse: []endpointRequest{
+				getRequest(
+					t,
+					"/subscriptions/114019/regions/1/private-link",
+					`{
+				  "taskId": "502fc31f-fd44-4cb0-a429-07882309a971",
+				  "commandType": "activeActivePrivateLinkGetRequest",
+				  "status": "received",
+				  "description": "Task request received and is being queued for processing.",
+				  "timestamp": "2024-07-16T09:26:40.929904847Z",
+				  "links": [
+					{
+					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/502fc31f-fd44-4cb0-a429-07882309a971",
+					  "rel": "task",
+					  "type": "GET"
+					}
+				  ]
+				}`,
+				),
+				getRequest(
+					t,
+					"/tasks/502fc31f-fd44-4cb0-a429-07882309a971",
+					`{
+				  "taskId": "502fc31f-fd44-4cb0-a429-07882309a971",
+				  "commandType": "activeActivePrivateLinkGetRequest",
+				  "status": "processing-error",
+				  "description": "Task request failed during processing. See error information for failure details.",
+				  "timestamp": "2025-01-13T11:22:51.204189721Z",
+				  "response": {
+					"error": {
+					  "type": "PRIVATELINK_SERVICE_NOT_FOUND",
+					  "status": "404 NOT_FOUND",
+					  "description": "Private Service Connect service not found"
+					}
+				  },
+				  "links": [
+					{
+					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/502fc31f-fd44-4cb0-a429-07882309a971",
+					  "rel": "self",
+					  "type": "GET"
+					}
+				  ]
+				}`,
+				),
+			},
+			expectedError:   errors.New("privatelink resource not found - subscription 114019"),
+			expectedErrorAs: &pl.NotFound{},
+		},
+		{
+			description: "should fail when subscription is not found",
+			mockedResponse: []endpointRequest{
+				getRequestWithStatus(
+					t,
+					"/subscriptions/114019/regions/1/private-link",
+					404,
+					`{
+					  "timestamp" : "2025-01-17T09:34:25.803+00:00",
+					  "status" : 404,
+					  "error" : "Not Found",
+					  "path" : "/v1/subscriptions/114019/regions/1/private-link"
+					}`),
+			},
+			expectedError:   errors.New("privatelink resource not found - subscription 114019"),
+			expectedErrorAs: &pl.NotFound{},
+		},
+	}
+
+	for _, testCase := range tc {
+		t.Run(testCase.description, func(t *testing.T) {
+			server := httptest.NewServer(
+				testServer("key", "secret", testCase.mockedResponse...))
+
+			subject, err := clientFromTestServer(server, "key", "secret")
+			require.NoError(t, err)
+
+			actual, err := subject.PrivateLink.GetActiveActivePrivateLink(context.TODO(), 114019, 1)
+			if testCase.expectedError == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, testCase.expectedResult, actual)
+			} else {
+				assert.IsType(t, err, testCase.expectedErrorAs)
+				assert.EqualError(t, err, testCase.expectedError.Error())
+			}
+		})
+	}
+}
+
+//func TestCreatePrivateLink(t *testing.T) {
+//	expected := 114019
+//	server := httptest.NewServer(
+//		testServer(
+//			"key",
+//			"secret",
+//			postRequest(
+//				t,
+//				"/subscriptions/114019/private-link",
+//				`{
+//                    "alias": "test",
+//                    "principal": "123456789012"
+//                    "shareName": "testshare"
+//                    "type": "aws-account"
+//                }`,
+//				`{
+//                    "taskId": "abcd-efgh-ijkl-mnop",
+//                    "commandType": "privateLinkCreateRequest",
+//                    "status": "received",
+//                    "description": "Task request received and is being queued for processing.",
+//                    "timestamp": "2025-09-18T15:56:00Z",
+//                    "links": [
+//                        {
+//                            "rel": "task",
+//                            "href": "https://api-staging.qa.redislabs.com/v1/tasks/abcd-efgh-ijkl-mnop",
+//                            "title": "getTaskStatusUpdates",
+//                            "type": "GET"
+//                        }
+//                    ]
+//                }`,
+//			),
+//			getRequest(
+//				t,
+//				"/tasks/abcd-efgh-ijkl-mnop",
+//				fmt.Sprintf(`{
+//                    "taskId": "abcd-efgh-ijkl-mnop",
+//                    "commandType": "privateLinkCreateRequest",
+//                    "status": "processing-completed",
+//                    "description": "Request processing completed successfully.",
+//                    "timestamp": "2025-09-18T15:56:10Z",
+//                    "response": {
+//                        "resourceId": %[1]d
+//                    },
+//				  "links": [
+//					{
+//					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/502fc31f-fd44-4cb0-a429-07882309a971",
+//					  "rel": "self",
+//					  "type": "GET"
+//					}
+//				  ]
+//                }`, expected),
+//			),
+//		),
+//	)
+//
+//	subject, err := clientFromTestServer(server, "key", "secret")
+//	require.NoError(t, err)
+//
+//	actual, err := subject.PrivateLink.CreatePrivateLink(context.TODO(), 114019, pl.CreatePrivateLink{
+//		ShareName:      redis.String("testshare"),
+//		Principal:      redis.String("12345679012"),
+//		PrincipalType:  redis.String("aws-account"),
+//		PrincipalAlias: redis.String("test"),
+//	})
+//	require.NoError(t, err)
+//	assert.Equal(t, expected, actual)
+//}
