@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
 
+## 0.36.0
+
+# Added:
+* Adding model and service for new PrivateLink endpoints
+
+# Changed:
+* Modified `delete` in API client so that it takes a `requestBody` parameter.
+* Updating Testify to v1.11.1
+
 ## 0.35.0
 
 ### Added:
