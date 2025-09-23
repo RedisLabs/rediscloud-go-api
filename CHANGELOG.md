@@ -9,7 +9,7 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed:
 * Changing `regionId` back to an int.
-
+* Bumping dependency versions
 
 ## v0.36.2
 
