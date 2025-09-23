@@ -58,8 +58,8 @@ type CreatePrivateLinkActiveActive struct {
 }
 
 type PrivateLinkActiveActive struct {
-	SubscriptionId *int    `json:"subscriptionId"`
-	RegionId       *string `json:"region_id"`
+	SubscriptionId *int `json:"subscriptionId"`
+	RegionId       *int `json:"region_id"`
 }
 
 type NotFound struct {
