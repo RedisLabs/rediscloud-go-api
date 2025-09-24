@@ -2,13 +2,21 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.36.3
 
-## 0.36.0
+### Added:
+* The `regionId` property is now supported on `GET` ActiveActiveRegion requests.
 
-# Added:
+### Changed:
+* Changing `regionId` back to an int.
+* Bumping dependency versions
+
+## v0.36.2
+
+### Added:
 * Adding model and service for new PrivateLink endpoints
 
-# Changed:
+### Changed:
 * Modified `delete` in API client so that it takes a `requestBody` parameter.
 * Updating Testify to v1.11.1
 
