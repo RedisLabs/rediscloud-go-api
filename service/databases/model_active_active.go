@@ -114,7 +114,6 @@ type UpdateActiveActiveDatabase struct {
 	GlobalAlerts           *[]*Alert                `json:"globalAlerts,omitempty"`
 	Regions                []*LocalRegionProperties `json:"regions,omitempty"`
 	DataEvictionPolicy     *string                  `json:"dataEvictionPolicy,omitempty"`
-	EnableDefaultUser      *bool                    `json:"enableDefaultUser,omitempty"`
 	QueryPerformanceFactor *string                  `json:"queryPerformanceFactor,omitempty"`
 }
 
@@ -129,6 +128,7 @@ type LocalRegionProperties struct {
 	DataPersistence            *string               `json:"dataPersistence,omitempty"`
 	Password                   *string               `json:"password,omitempty"`
 	SourceIP                   []*string             `json:"sourceIp,omitempty"`
+	EnableDefaultUser          *bool                 `json:"enableDefaultUser,omitempty"`
 	// Using a pointer to allow empty slices to be serialised/sent
 	Alerts *[]*Alert `json:"alerts,omitempty"`
 }
