@@ -69,9 +69,9 @@ func TestGetPrivateLink(t *testing.T) {
 								  "connections": [
 									{
 									  "associationId": "received",
-									  "connectionId": 144019,
+									  "connectionId": "vpce-con-12345678",
 									  "type": "connection type",
-									  "ownerId": 12312312,
+									  "ownerId": "123456789012",
 									  "associationDate": "2024-07-16T09:26:40.929904847Z"
 									}
 								  ],
@@ -112,9 +112,9 @@ func TestGetPrivateLink(t *testing.T) {
 				ShareName:                redis.String("share name"),
 				Connections: []*pl.PrivateLinkConnection{{
 					AssociationId:   redis.String("received"),
-					ConnectionId:    redis.Int(144019),
+					ConnectionId:    redis.String("vpce-con-12345678"),
 					Type:            redis.String("connection type"),
-					OwnerId:         redis.Int(12312312),
+					OwnerId:         redis.String("123456789012"),
 					AssociationDate: redis.String("2024-07-16T09:26:40.929904847Z"),
 				}},
 				Databases: []*pl.PrivateLinkDatabase{{
@@ -272,9 +272,9 @@ func TestGetActiveActivePrivateLink(t *testing.T) {
 								  "connections": [
 									{
 									  "associationId": "received",
-									  "connectionId": 144019,
+									  "connectionId": "vpce-con-12345678",
 									  "type": "connection type",
-									  "ownerId": 12312312,
+									  "ownerId": "123456789012",
 									  "associationDate": "2024-07-16T09:26:40.929904847Z"
 									}
 								  ],
@@ -316,9 +316,9 @@ func TestGetActiveActivePrivateLink(t *testing.T) {
 				ShareName:                redis.String("share name"),
 				Connections: []*pl.PrivateLinkConnection{{
 					AssociationId:   redis.String("received"),
-					ConnectionId:    redis.Int(144019),
+					ConnectionId:    redis.String("vpce-con-12345678"),
 					Type:            redis.String("connection type"),
-					OwnerId:         redis.Int(12312312),
+					OwnerId:         redis.String("123456789012"),
 					AssociationDate: redis.String("2024-07-16T09:26:40.929904847Z"),
 				}},
 				Databases: []*pl.PrivateLinkDatabase{{
