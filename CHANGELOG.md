@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.36.4
+
+### Changed:
+* Several fields in the PrivateLink connections datatype now have data types aligned with the API.
+
 ## 0.36.3
 
 ### Added:
