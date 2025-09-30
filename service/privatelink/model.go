@@ -32,9 +32,9 @@ type PrivateLinkPrincipal struct {
 
 type PrivateLinkConnection struct {
 	AssociationId   *string `json:"associationId,omitempty"`
-	ConnectionId    *int    `json:"connectionId,omitempty"`
+	ConnectionId    *string `json:"connectionId,omitempty"`
 	Type            *string `json:"type,omitempty"`
-	OwnerId         *int    `json:"ownerId,omitempty"`
+	OwnerId         *string `json:"ownerId,omitempty"`
 	AssociationDate *string `json:"associationDate,omitempty"`
 }
 
