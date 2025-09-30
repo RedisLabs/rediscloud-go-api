@@ -421,6 +421,7 @@ func TestGetActiveActivePrivateLink(t *testing.T) {
 }
 
 func TestGetPrivateLinkScript(t *testing.T) {
+	t.Skipf("skipping test until privatelink script is available")
 
 	tc := []struct {
 		description     string
@@ -463,6 +464,7 @@ func TestGetPrivateLinkScript(t *testing.T) {
 }
 
 func TestGetActiveActivePrivateLinkScript(t *testing.T) {
+	t.Skipf("skipping test until privatelink script is available")
 
 	tc := []struct {
 		description     string
