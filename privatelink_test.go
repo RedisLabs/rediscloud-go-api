@@ -69,9 +69,9 @@ func TestGetPrivateLink(t *testing.T) {
 								  "connections": [
 									{
 									  "associationId": "received",
-									  "connectionId": 144019,
+									  "connectionId": "vpce-con-12345678",
 									  "type": "connection type",
-									  "ownerId": 12312312,
+									  "ownerId": "123456789012",
 									  "associationDate": "2024-07-16T09:26:40.929904847Z"
 									}
 								  ],
@@ -112,9 +112,9 @@ func TestGetPrivateLink(t *testing.T) {
 				ShareName:                redis.String("share name"),
 				Connections: []*pl.PrivateLinkConnection{{
 					AssociationId:   redis.String("received"),
-					ConnectionId:    redis.Int(144019),
+					ConnectionId:    redis.String("vpce-con-12345678"),
 					Type:            redis.String("connection type"),
-					OwnerId:         redis.Int(12312312),
+					OwnerId:         redis.String("123456789012"),
 					AssociationDate: redis.String("2024-07-16T09:26:40.929904847Z"),
 				}},
 				Databases: []*pl.PrivateLinkDatabase{{
@@ -272,9 +272,9 @@ func TestGetActiveActivePrivateLink(t *testing.T) {
 								  "connections": [
 									{
 									  "associationId": "received",
-									  "connectionId": 144019,
+									  "connectionId": "vpce-con-12345678",
 									  "type": "connection type",
-									  "ownerId": 12312312,
+									  "ownerId": "123456789012",
 									  "associationDate": "2024-07-16T09:26:40.929904847Z"
 									}
 								  ],
@@ -316,9 +316,9 @@ func TestGetActiveActivePrivateLink(t *testing.T) {
 				ShareName:                redis.String("share name"),
 				Connections: []*pl.PrivateLinkConnection{{
 					AssociationId:   redis.String("received"),
-					ConnectionId:    redis.Int(144019),
+					ConnectionId:    redis.String("vpce-con-12345678"),
 					Type:            redis.String("connection type"),
-					OwnerId:         redis.Int(12312312),
+					OwnerId:         redis.String("123456789012"),
 					AssociationDate: redis.String("2024-07-16T09:26:40.929904847Z"),
 				}},
 				Databases: []*pl.PrivateLinkDatabase{{
@@ -409,6 +409,92 @@ func TestGetActiveActivePrivateLink(t *testing.T) {
 			require.NoError(t, err)
 
 			actual, err := subject.PrivateLink.GetActiveActivePrivateLink(context.TODO(), 114019, 1)
+			if testCase.expectedError == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, testCase.expectedResult, actual)
+			} else {
+				assert.IsType(t, err, testCase.expectedErrorAs)
+				assert.EqualError(t, err, testCase.expectedError.Error())
+			}
+		})
+	}
+}
+
+func TestGetPrivateLinkScript(t *testing.T) {
+	t.Skipf("skipping test until privatelink script is available")
+
+	tc := []struct {
+		description     string
+		mockedResponse  []endpointRequest
+		expectedResult  *pl.PrivateLinkEndpointScript
+		expectedError   error
+		expectedErrorAs error
+	}{
+		{
+			description: "should successfully return a privatelink script",
+			mockedResponse: []endpointRequest{
+				getRequest(
+					t,
+					"/subscriptions/114019/private-link/endpoint-script?includeTerraformAwsScript=true",
+					`a pro privatelink aws terraform endpoint script`,
+				),
+			},
+			expectedResult: redis.String("a pro privatelink aws terraform endpoint script"),
+		},
+	}
+	for _, testCase := range tc {
+
+		t.Run(testCase.description, func(t *testing.T) {
+			server := httptest.NewServer(
+				testServer("key", "secret", testCase.mockedResponse...))
+
+			subject, err := clientFromTestServer(server, "key", "secret")
+			require.NoError(t, err)
+
+			actual, err := subject.PrivateLink.GetPrivateLinkEndpointScript(context.TODO(), 114019)
+			if testCase.expectedError == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, testCase.expectedResult, actual)
+			} else {
+				assert.IsType(t, err, testCase.expectedErrorAs)
+				assert.EqualError(t, err, testCase.expectedError.Error())
+			}
+		})
+	}
+}
+
+func TestGetActiveActivePrivateLinkScript(t *testing.T) {
+	t.Skipf("skipping test until privatelink script is available")
+
+	tc := []struct {
+		description     string
+		mockedResponse  []endpointRequest
+		expectedResult  *pl.PrivateLinkEndpointScript
+		expectedError   error
+		expectedErrorAs error
+	}{
+		{
+			description: "should successfully return an active active privatelink script",
+			mockedResponse: []endpointRequest{
+				getRequest(
+					t,
+					"/subscriptions/114019/regions/1/private-link/endpoint-script?includeTerraformAwsScript=true",
+					`an active active aws terraform endpoint script`,
+				),
+			},
+			expectedResult: redis.String("an active active aws terraform endpoint script"),
+		},
+	}
+	for _, testCase := range tc {
+
+		t.Run(testCase.description, func(t *testing.T) {
+			server := httptest.NewServer(
+				testServer("key", "secret", testCase.mockedResponse...))
+
+			subject, err := clientFromTestServer(server, "key", "secret")
+			require.NoError(t, err)
+
+			actual, err := subject.PrivateLink.GetActiveActivePrivateLinkEndpointScript(context.TODO(), 114019, 1)
 			if testCase.expectedError == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, testCase.expectedResult, actual)
