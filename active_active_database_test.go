@@ -150,7 +150,7 @@ func TestAADatabase_Update(t *testing.T) {
   "enableTls": true,
   "globalDataPersistence": "aof-every-1-second",
   "globalPassword": "new-password",
-  "enableDefaultUser": true,
+  "globalEnableDefaultUser": true,
   "globalSourceIp": [
     "192.168.1.0/24"
   ],

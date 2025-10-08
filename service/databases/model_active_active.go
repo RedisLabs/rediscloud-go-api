@@ -109,7 +109,7 @@ type UpdateActiveActiveDatabase struct {
 	EnableTls                           *bool                    `json:"enableTls,omitempty"`
 	GlobalDataPersistence               *string                  `json:"globalDataPersistence,omitempty"`
 	GlobalPassword                      *string                  `json:"globalPassword,omitempty"`
-	GlobalEnableDefaultUser             *bool                    `json:"enableDefaultUser,omitempty"`
+	GlobalEnableDefaultUser             *bool                    `json:"globalEnableDefaultUser,omitempty"`
 	GlobalSourceIP                      []*string                `json:"globalSourceIp,omitempty"`
 	GlobalAlerts                        *[]*Alert                `json:"globalAlerts,omitempty"`
 	Regions                             []*LocalRegionProperties `json:"regions,omitempty"`
