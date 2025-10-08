@@ -97,24 +97,24 @@ func (o LocalThroughput) String() string {
 	return internal.ToString(o)
 }
 
+// Uses pointers for slices to allow empty slices to be serialised/sent
 type UpdateActiveActiveDatabase struct {
-	DryRun                              *bool    `json:"dryRun,omitempty"`
-	MemoryLimitInGB                     *float64 `json:"memoryLimitInGb,omitempty"`
-	DatasetSizeInGB                     *float64 `json:"datasetSizeInGb,omitempty"`
-	SupportOSSClusterAPI                *bool    `json:"supportOSSClusterApi,omitempty"`
-	UseExternalEndpointForOSSClusterAPI *bool    `json:"useExternalEndpointForOSSClusterApi,omitempty"`
-	ClientSSLCertificate                *string  `json:"clientSslCertificate,omitempty"`
-	// Using a pointer to allow empty slices to be serialised/sent
-	ClientTLSCertificates *[]*string `json:"clientTlsCertificates,omitempty"`
-	EnableTls             *bool      `json:"enableTls,omitempty"`
-	GlobalDataPersistence *string    `json:"globalDataPersistence,omitempty"`
-	GlobalPassword        *string    `json:"globalPassword,omitempty"`
-	GlobalSourceIP        []*string  `json:"globalSourceIp,omitempty"`
-	// Using a pointer to allow empty slices to be serialised/sent
-	GlobalAlerts           *[]*Alert                `json:"globalAlerts,omitempty"`
-	Regions                []*LocalRegionProperties `json:"regions,omitempty"`
-	DataEvictionPolicy     *string                  `json:"dataEvictionPolicy,omitempty"`
-	QueryPerformanceFactor *string                  `json:"queryPerformanceFactor,omitempty"`
+	DryRun                              *bool                    `json:"dryRun,omitempty"`
+	MemoryLimitInGB                     *float64                 `json:"memoryLimitInGb,omitempty"`
+	DatasetSizeInGB                     *float64                 `json:"datasetSizeInGb,omitempty"`
+	SupportOSSClusterAPI                *bool                    `json:"supportOSSClusterApi,omitempty"`
+	UseExternalEndpointForOSSClusterAPI *bool                    `json:"useExternalEndpointForOSSClusterApi,omitempty"`
+	ClientSSLCertificate                *string                  `json:"clientSslCertificate,omitempty"`
+	ClientTLSCertificates               *[]*string               `json:"clientTlsCertificates,omitempty"`
+	EnableTls                           *bool                    `json:"enableTls,omitempty"`
+	GlobalDataPersistence               *string                  `json:"globalDataPersistence,omitempty"`
+	GlobalPassword                      *string                  `json:"globalPassword,omitempty"`
+	GlobalEnableDefaultUser             *bool                    `json:"enableDefaultUser,omitempty"`
+	GlobalSourceIP                      []*string                `json:"globalSourceIp,omitempty"`
+	GlobalAlerts                        *[]*Alert                `json:"globalAlerts,omitempty"`
+	Regions                             []*LocalRegionProperties `json:"regions,omitempty"`
+	DataEvictionPolicy                  *string                  `json:"dataEvictionPolicy,omitempty"`
+	QueryPerformanceFactor              *string                  `json:"queryPerformanceFactor,omitempty"`
 }
 
 func (o UpdateActiveActiveDatabase) String() string {
