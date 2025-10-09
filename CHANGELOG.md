@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.37.0 (8th October 2025)
+
+### Added:
+* Added `GlobalEnableDefaultUser` field to UpdateActiveActiveDatabase struct
+* New tests for ActiveActiveCreate and ActiveActiveUpdate methods
+
 ## v0.36.5
 
 ### Changed:

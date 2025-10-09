@@ -2,6 +2,8 @@ package rediscloud_api
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -11,6 +13,244 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func TestAADatabase_Create(t *testing.T) {
+	expected := 1466
+	s := httptest.NewServer(testServer("key", "secret", postRequest(t, "/subscriptions/111478/databases", `{
+  "dryRun": false,
+  "name": "active-active-example",
+  "protocol": "redis",
+  "memoryLimitInGb": 1,
+  "datasetSizeInGb": 1,
+  "supportOSSClusterApi": false,
+  "respVersion": "resp3",
+  "useExternalEndpointForOSSClusterApi": false,
+  "dataEvictionPolicy": "noeviction",
+  "dataPersistence": "none",
+  "sourceIp": [
+    "0.0.0.0/0"
+  ],
+  "password": "test-password",
+  "alerts": [
+    {
+      "name": "dataset-size",
+      "value": 80
+    }
+  ],
+  "modules": [
+    {
+      "name": "RedisJSON"
+    }
+  ],
+  "localThroughputMeasurement": [
+    {
+      "region": "us-east-1",
+      "writeOperationsPerSecond": 1000,
+      "readOperationsPerSecond": 1000
+    },
+    {
+      "region": "us-east-2",
+      "writeOperationsPerSecond": 1000,
+      "readOperationsPerSecond": 1000
+    }
+  ],
+  "port": 12000,
+  "queryPerformanceFactor": "Standard",
+  "redisVersion": "7.2"
+}`, `{
+  "taskId": "task",
+  "commandType": "databaseCreateRequest",
+  "status": "received",
+  "description": "Task request received and is being queued for processing.",
+  "timestamp": "2024-05-08T08:10:02Z",
+  "_links": {
+    "task": {
+      "href": "https://example.org",
+      "title": "getTaskStatusUpdates",
+      "type": "GET"
+    }
+  }
+}`), getRequest(t, "/tasks/task", fmt.Sprintf(`{
+  "taskId": "task",
+  "commandType": "databaseCreateRequest",
+  "status": "processing-completed",
+  "timestamp": "2024-05-08T08:22:34Z",
+  "response": {
+    "resourceId": %d
+  },
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`, expected))))
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Database.ActiveActiveCreate(context.TODO(), 111478, databases.CreateActiveActiveDatabase{
+		DryRun:                              redis.Bool(false),
+		Name:                                redis.String("active-active-example"),
+		Protocol:                            redis.String("redis"),
+		MemoryLimitInGB:                     redis.Float64(1),
+		DatasetSizeInGB:                     redis.Float64(1),
+		SupportOSSClusterAPI:                redis.Bool(false),
+		RespVersion:                         redis.String("resp3"),
+		UseExternalEndpointForOSSClusterAPI: redis.Bool(false),
+		DataEvictionPolicy:                  redis.String("noeviction"),
+		GlobalDataPersistence:               redis.String("none"),
+		GlobalSourceIP:                      redis.StringSlice("0.0.0.0/0"),
+		GlobalPassword:                      redis.String("test-password"),
+		GlobalAlerts: []*databases.Alert{
+			{
+				Name:  redis.String("dataset-size"),
+				Value: redis.Int(80),
+			},
+		},
+		GlobalModules: []*databases.Module{
+			{
+				Name: redis.String("RedisJSON"),
+			},
+		},
+		LocalThroughputMeasurement: []*databases.LocalThroughput{
+			{
+				Region:                   redis.String("us-east-1"),
+				WriteOperationsPerSecond: redis.Int(1000),
+				ReadOperationsPerSecond:  redis.Int(1000),
+			},
+			{
+				Region:                   redis.String("us-east-2"),
+				WriteOperationsPerSecond: redis.Int(1000),
+				ReadOperationsPerSecond:  redis.Int(1000),
+			},
+		},
+		PortNumber:             redis.Int(12000),
+		QueryPerformanceFactor: redis.String("Standard"),
+		RedisVersion:           redis.String("7.2"),
+	})
+	require.NoError(t, err)
+
+	assert.Equal(t, expected, actual)
+}
+
+func TestAADatabase_Update(t *testing.T) {
+	flow := taskFlow(
+		t,
+		http.MethodPut,
+		"/subscriptions/111478/databases/1466/regions",
+		`{
+  "dryRun": false,
+  "memoryLimitInGb": 2,
+  "datasetSizeInGb": 2,
+  "supportOSSClusterApi": false,
+  "useExternalEndpointForOSSClusterApi": false,
+  "clientSslCertificate": "cert-content",
+  "clientTlsCertificates": ["cert1", "cert2"],
+  "enableTls": true,
+  "globalDataPersistence": "aof-every-1-second",
+  "globalPassword": "new-password",
+  "globalEnableDefaultUser": true,
+  "globalSourceIp": [
+    "192.168.1.0/24"
+  ],
+  "globalAlerts": [
+    {
+      "name": "throughput-higher-than",
+      "value": 90
+    }
+  ],
+  "regions": [
+    {
+      "region": "us-east-1",
+      "remoteBackup": {
+        "active": true,
+        "interval": "every-12-hours",
+        "timeUTC": "10:00",
+        "storageType": "aws-s3",
+        "storagePath": "s3://bucket/path"
+      },
+      "localThroughputMeasurement": {
+        "writeOperationsPerSecond": 2000,
+        "readOperationsPerSecond": 2000
+      },
+      "dataPersistence": "aof-every-1-second",
+      "password": "region-password",
+      "sourceIp": [
+        "10.0.0.0/8"
+      ],
+      "enableDefaultUser": false,
+      "alerts": [
+        {
+          "name": "dataset-size",
+          "value": 85
+        }
+      ]
+    }
+  ],
+  "dataEvictionPolicy": "allkeys-lru",
+  "queryPerformanceFactor": "6x"
+}`,
+		"update-task",
+		"databaseUpdateRequest",
+	)
+
+	s := httptest.NewServer(testServer("key", "secret", flow...))
+	defer s.Close()
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	err = subject.Database.ActiveActiveUpdate(context.TODO(), 111478, 1466, databases.UpdateActiveActiveDatabase{
+		DryRun:                              redis.Bool(false),
+		MemoryLimitInGB:                     redis.Float64(2),
+		DatasetSizeInGB:                     redis.Float64(2),
+		SupportOSSClusterAPI:                redis.Bool(false),
+		UseExternalEndpointForOSSClusterAPI: redis.Bool(false),
+		ClientSSLCertificate:                redis.String("cert-content"),
+		ClientTLSCertificates:               &[]*string{redis.String("cert1"), redis.String("cert2")},
+		EnableTls:                           redis.Bool(true),
+		GlobalDataPersistence:               redis.String("aof-every-1-second"),
+		GlobalPassword:                      redis.String("new-password"),
+		GlobalEnableDefaultUser:             redis.Bool(true),
+		GlobalSourceIP:                      redis.StringSlice("192.168.1.0/24"),
+		GlobalAlerts: &[]*databases.Alert{
+			{
+				Name:  redis.String("throughput-higher-than"),
+				Value: redis.Int(90),
+			},
+		},
+		Regions: []*databases.LocalRegionProperties{
+			{
+				Region: redis.String("us-east-1"),
+				RemoteBackup: &databases.DatabaseBackupConfig{
+					Active:      redis.Bool(true),
+					Interval:    redis.String("every-12-hours"),
+					TimeUTC:     redis.String("10:00"),
+					StorageType: redis.String("aws-s3"),
+					StoragePath: redis.String("s3://bucket/path"),
+				},
+				LocalThroughputMeasurement: &databases.LocalThroughput{
+					WriteOperationsPerSecond: redis.Int(2000),
+					ReadOperationsPerSecond:  redis.Int(2000),
+				},
+				DataPersistence:   redis.String("aof-every-1-second"),
+				Password:          redis.String("region-password"),
+				SourceIP:          redis.StringSlice("10.0.0.0/8"),
+				EnableDefaultUser: redis.Bool(false),
+				Alerts: &[]*databases.Alert{
+					{
+						Name:  redis.String("dataset-size"),
+						Value: redis.Int(85),
+					},
+				},
+			},
+		},
+		DataEvictionPolicy:     redis.String("allkeys-lru"),
+		QueryPerformanceFactor: redis.String("6x"),
+	})
+	require.NoError(t, err)
+}
 
 func TestAADatabase_List(t *testing.T) {
 	body := `{
