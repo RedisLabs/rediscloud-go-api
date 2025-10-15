@@ -17,6 +17,7 @@ type CreateSubscription struct {
 	Databases                       []*CreateDatabase      `json:"databases,omitempty"`
 	RedisVersion                    *string                `json:"redisVersion,omitempty"`
 	PersistentStorageEncryptionType *string                `json:"persistentStorageEncryptionType,omitempty"`
+	PublicEndpointAccess            *bool                  `json:"publicEndpointAccess,omitempty"`
 }
 
 func (o CreateSubscription) String() string {
@@ -101,8 +102,9 @@ func (o CreateModules) String() string {
 }
 
 type UpdateSubscription struct {
-	Name            *string `json:"name,omitempty"`
-	PaymentMethodID *int    `json:"paymentMethodId,omitempty"`
+	Name                 *string `json:"name,omitempty"`
+	PaymentMethodID      *int    `json:"paymentMethodId,omitempty"`
+	PublicEndpointAccess *bool   `json:"publicEndpointAccess,omitempty"`
 }
 
 func (o UpdateSubscription) String() string {
@@ -135,6 +137,7 @@ type Subscription struct {
 	NumberOfDatabases               *int                             `json:"numberOfDatabases,omitempty"`
 	CloudDetails                    []*CloudDetail                   `json:"cloudDetails,omitempty"`
 	CustomerManagedKeyAccessDetails *CustomerManagedKeyAccessDetails `json:"customerManagedKeyAccessDetails,omitempty"`
+	PublicEndpointAccess            *bool                            `json:"publicEndpointAccess,omitempty"`
 }
 
 type CustomerManagedKeyAccessDetails struct {
