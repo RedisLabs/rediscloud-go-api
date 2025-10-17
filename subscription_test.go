@@ -144,6 +144,111 @@ func TestSubscription_Create(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+func TestSubscription_Create_PublicEndpointAccess(t *testing.T) {
+	expected := 1236
+	s := httptest.NewServer(testServer("key", "secret", postRequest(t, "/subscriptions", `{
+  "name": "Test subscription",
+  "dryRun": false,
+  "paymentMethodId": 2,
+  "paymentMethod": "credit-card",
+  "memoryStorage": "ram",
+  "publicEndpointAccess": false,
+  "cloudProviders": [
+    {
+      "provider": "AWS",
+      "cloudAccountId": 1,
+      "regions": [
+        {
+          "region": "eu-west-1"
+        }
+      ]
+    }
+  ],
+  "databases": [
+    {
+      "name": "example",
+      "protocol": "redis",
+      "datasetSizeInGb": 1,
+      "supportOSSClusterApi": true,
+      "dataPersistence": "none",
+      "replication": false,
+      "throughputMeasurement": {
+        "by": "operations-per-second",
+        "value": 10000
+      },
+      "quantity": 1
+    }
+  ]
+}`, `{
+  "taskId": "task-id",
+  "commandType": "subscriptionCreateRequest",
+  "status": "received",
+  "description": "Task request received and is being queued for processing.",
+  "timestamp": "2020-11-02T09:05:34.3Z",
+  "_links": {
+    "task": {
+      "href": "https://example.org",
+      "title": "getTaskStatusUpdates",
+      "type": "GET"
+    }
+  }
+}`), getRequest(t, "/tasks/task-id", fmt.Sprintf(`{
+  "taskId": "task-id",
+  "commandType": "subscriptionCreateRequest",
+  "status": "processing-completed",
+  "timestamp": "2020-10-28T09:58:16.798Z",
+  "response": {
+    "resourceId": %d
+  },
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`, expected))))
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Subscription.Create(context.TODO(), subscriptions.CreateSubscription{
+		Name:                 redis.String("Test subscription"),
+		DryRun:               redis.Bool(false),
+		PaymentMethodID:      redis.Int(2),
+		PaymentMethod:        redis.String("credit-card"),
+		MemoryStorage:        redis.String("ram"),
+		PublicEndpointAccess: redis.Bool(false),
+		CloudProviders: []*subscriptions.CreateCloudProvider{
+			{
+				Provider:       redis.String("AWS"),
+				CloudAccountID: redis.Int(1),
+				Regions: []*subscriptions.CreateRegion{
+					{
+						Region: redis.String("eu-west-1"),
+					},
+				},
+			},
+		},
+		Databases: []*subscriptions.CreateDatabase{
+			{
+				Name:                 redis.String("example"),
+				Protocol:             redis.String("redis"),
+				DatasetSizeInGB:      redis.Float64(1),
+				SupportOSSClusterAPI: redis.Bool(true),
+				DataPersistence:      redis.String("none"),
+				Replication:          redis.Bool(false),
+				ThroughputMeasurement: &subscriptions.CreateThroughput{
+					By:    redis.String("operations-per-second"),
+					Value: redis.Int(10000),
+				},
+				Quantity: redis.Int(1),
+			},
+		},
+	})
+	require.NoError(t, err)
+	assert.Equal(t, expected, actual)
+}
+
 // tests CMK flow
 func TestSubscription_CreateCMK(t *testing.T) {
 	expected := 1235
@@ -538,6 +643,86 @@ func TestSubscription_Get(t *testing.T) {
 	}, actual)
 }
 
+func TestSubscription_Get_PublicEndpointAccess(t *testing.T) {
+	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/subscriptions/98766", `{
+  "id": 2,
+  "name": "Get-test-public-endpoint",
+  "status": "active",
+  "paymentMethodType": "credit-card",
+  "paymentMethodId": 2,
+  "memoryStorage": "ram",
+  "storageEncryption": false,
+  "publicEndpointAccess": false,
+  "numberOfDatabases": 1,
+  "cloudDetails": [
+    {
+      "provider": "AWS",
+      "cloudAccountId": 3,
+      "totalSizeInGb": 4,
+      "regions": [
+        {
+          "region": "eu-west-1",
+          "networking": [
+            {
+              "deploymentCIDR": "10.0.0.0/24",
+              "subnetId": "subnet-123456"
+            }
+          ],
+          "preferredAvailabilityZones": [
+            "eu-west-1a"
+          ],
+          "multipleAvailabilityZones": false
+        }
+      ]
+    }
+  ],
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`)))
+
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Subscription.Get(context.TODO(), 98766)
+	require.NoError(t, err)
+
+	assert.Equal(t, &subscriptions.Subscription{
+		ID:                   redis.Int(2),
+		Name:                 redis.String("Get-test-public-endpoint"),
+		Status:               redis.String("active"),
+		PaymentMethod:        redis.String("credit-card"),
+		PaymentMethodID:      redis.Int(2),
+		MemoryStorage:        redis.String("ram"),
+		StorageEncryption:    redis.Bool(false),
+		PublicEndpointAccess: redis.Bool(false),
+		NumberOfDatabases:    redis.Int(1),
+		CloudDetails: []*subscriptions.CloudDetail{
+			{
+				Provider:       redis.String("AWS"),
+				CloudAccountID: redis.Int(3),
+				TotalSizeInGB:  redis.Float64(4),
+				Regions: []*subscriptions.Region{
+					{
+						Region: redis.String("eu-west-1"),
+						Networking: []*subscriptions.Networking{
+							{
+								DeploymentCIDR: redis.String("10.0.0.0/24"),
+								SubnetID:       redis.String("subnet-123456"),
+							},
+						},
+						PreferredAvailabilityZones: redis.StringSlice("eu-west-1a"),
+						MultipleAvailabilityZones:  redis.Bool(false),
+					},
+				},
+			},
+		},
+	}, actual)
+}
+
 func TestSubscription_Get_wraps404Error(t *testing.T) {
 	s := httptest.NewServer(testServer("apiKey", "secret", getRequestWithStatus(t, "/subscriptions/123", 404, "")))
 
@@ -548,6 +733,50 @@ func TestSubscription_Get_wraps404Error(t *testing.T) {
 
 	assert.Nil(t, actual)
 	assert.IsType(t, &subscriptions.NotFound{}, err)
+}
+
+func TestSubscription_Update_PublicEndpointAccess(t *testing.T) {
+	s := httptest.NewServer(testServer("key", "secret", putRequest(t, "/subscriptions/1234", `{
+  "name": "test",
+  "paymentMethodId": 7,
+  "publicEndpointAccess": false
+}`, `{
+  "taskId": "task",
+  "commandType": "subscriptionUpdateRequest",
+  "status": "received",
+  "description": "Task request received and is being queued for processing.",
+  "timestamp": "2020-11-02T09:05:34.3Z",
+  "_links": {
+    "task": {
+      "href": "https://example.org",
+      "title": "getTaskStatusUpdates",
+      "type": "GET"
+    }
+  }
+}`), getRequest(t, "/tasks/task", `{
+  "taskId": "e02b40d6-1395-4861-a3b9-ecf829d835fd",
+  "commandType": "subscriptionUpdateRequest",
+  "status": "processing-completed",
+  "timestamp": "2020-10-28T09:58:16.798Z",
+  "response": {
+  },
+  "_links": {
+    "self": {
+      "href": "https://example.com",
+      "type": "GET"
+    }
+  }
+}`)))
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	err = subject.Subscription.Update(context.TODO(), 1234, subscriptions.UpdateSubscription{
+		Name:                 redis.String("test"),
+		PaymentMethodID:      redis.Int(7),
+		PublicEndpointAccess: redis.Bool(false),
+	})
+	require.NoError(t, err)
 }
 
 func TestSubscription_Update(t *testing.T) {
