@@ -23,19 +23,19 @@ type CreateDatabase struct {
 	AverageItemSizeInBytes              *int                         `json:"averageItemSizeInBytes,omitempty"`
 	ReplicaOf                           []*string                    `json:"replicaOf,omitempty"`
 	// Deprecated: Use RemoteBackup instead
-	PeriodicBackupPath     *string               `json:"periodicBackupPath,omitempty"`
-	SourceIP               []*string             `json:"sourceIp,omitempty"`
-	ClientSSLCertificate   *string               `json:"clientSslCertificate,omitempty"`
-	ClientTLSCertificates  *[]*string            `json:"clientTlsCertificates,omitempty"`
-	Password               *string               `json:"password,omitempty"`
-	Alerts                 []*Alert              `json:"alerts,omitempty"`
-	Modules                []*Module             `json:"modules,omitempty"`
-	EnableTls              *bool                 `json:"enableTls,omitempty"`
-	PortNumber             *int                  `json:"port,omitempty"`
-	RemoteBackup           *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
-	QueryPerformanceFactor      *string               `json:"queryPerformanceFactor,omitempty"`
-	RedisVersion                *string               `json:"redisVersion,omitempty"`
-	AutoMinorVersionUpgrade     *bool                 `json:"autoMinorVersionUpgrade,omitempty"`
+	PeriodicBackupPath      *string               `json:"periodicBackupPath,omitempty"`
+	SourceIP                []*string             `json:"sourceIp,omitempty"`
+	ClientSSLCertificate    *string               `json:"clientSslCertificate,omitempty"`
+	ClientTLSCertificates   *[]*string            `json:"clientTlsCertificates,omitempty"`
+	Password                *string               `json:"password,omitempty"`
+	Alerts                  []*Alert              `json:"alerts,omitempty"`
+	Modules                 []*Module             `json:"modules,omitempty"`
+	EnableTls               *bool                 `json:"enableTls,omitempty"`
+	PortNumber              *int                  `json:"port,omitempty"`
+	RemoteBackup            *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
+	QueryPerformanceFactor  *string               `json:"queryPerformanceFactor,omitempty"`
+	RedisVersion            *string               `json:"redisVersion,omitempty"`
+	AutoMinorVersionUpgrade *bool                 `json:"autoMinorVersionUpgrade,omitempty"`
 }
 
 func (o CreateDatabase) String() string {
@@ -56,34 +56,34 @@ type Database struct {
 	Name     *string `json:"name,omitempty"`
 	Protocol *string `json:"protocol,omitempty"`
 	// For filtering out active-active entries, this property should not be present in the JSON response
-	ActiveActiveRedis      *bool       `json:"activeActiveRedis,omitempty"`
-	Provider               *string     `json:"provider,omitempty"`
-	Region                 *string     `json:"region,omitempty"`
-	Status                 *string     `json:"status,omitempty"`
-	MemoryLimitInGB        *float64    `json:"memoryLimitInGb,omitempty"`
-	DatasetSizeInGB        *float64    `json:"datasetSizeInGb,omitempty"`
-	MemoryUsedInMB         *float64    `json:"memoryUsedInMb,omitempty"`
-	SupportOSSClusterAPI   *bool       `json:"supportOSSClusterApi,omitempty"`
-	RespVersion            *string     `json:"respVersion,omitempty"`
-	DataPersistence        *string     `json:"dataPersistence,omitempty"`
-	Replication            *bool       `json:"replication,omitempty"`
-	DataEvictionPolicy     *string     `json:"dataEvictionPolicy,omitempty"`
-	ThroughputMeasurement  *Throughput `json:"throughputMeasurement,omitempty"`
-	ReplicaOf              *ReplicaOf  `json:"replicaOf,omitempty"`
-	Clustering             *Clustering `json:"clustering,omitempty"`
-	Security               *Security   `json:"security,omitempty"`
-	Modules                []*Module   `json:"modules,omitempty"`
-	Alerts                 []*Alert    `json:"alerts,omitempty"`
-	ActivatedOn            *time.Time  `json:"activatedOn,omitempty"`
-	LastModified           *time.Time  `json:"lastModified,omitempty"`
-	MemoryStorage          *string     `json:"memoryStorage,omitempty"`
-	PrivateEndpoint        *string     `json:"privateEndpoint,omitempty"`
-	PublicEndpoint         *string     `json:"publicEndpoint,omitempty"`
-	RedisVersionCompliance *string     `json:"redisVersionCompliance,omitempty"`
-	Backup                 *Backup     `json:"backup,omitempty"`
-	QueryPerformanceFactor *string     `json:"queryPerformanceFactor,omitempty"`
-	RedisVersion           *string     `json:"redisVersion,omitempty"`
-	AutoMinorVersionUpgrade *bool      `json:"autoMinorVersionUpgrade,omitempty"`
+	ActiveActiveRedis       *bool       `json:"activeActiveRedis,omitempty"`
+	Provider                *string     `json:"provider,omitempty"`
+	Region                  *string     `json:"region,omitempty"`
+	Status                  *string     `json:"status,omitempty"`
+	MemoryLimitInGB         *float64    `json:"memoryLimitInGb,omitempty"`
+	DatasetSizeInGB         *float64    `json:"datasetSizeInGb,omitempty"`
+	MemoryUsedInMB          *float64    `json:"memoryUsedInMb,omitempty"`
+	SupportOSSClusterAPI    *bool       `json:"supportOSSClusterApi,omitempty"`
+	RespVersion             *string     `json:"respVersion,omitempty"`
+	DataPersistence         *string     `json:"dataPersistence,omitempty"`
+	Replication             *bool       `json:"replication,omitempty"`
+	DataEvictionPolicy      *string     `json:"dataEvictionPolicy,omitempty"`
+	ThroughputMeasurement   *Throughput `json:"throughputMeasurement,omitempty"`
+	ReplicaOf               *ReplicaOf  `json:"replicaOf,omitempty"`
+	Clustering              *Clustering `json:"clustering,omitempty"`
+	Security                *Security   `json:"security,omitempty"`
+	Modules                 []*Module   `json:"modules,omitempty"`
+	Alerts                  []*Alert    `json:"alerts,omitempty"`
+	ActivatedOn             *time.Time  `json:"activatedOn,omitempty"`
+	LastModified            *time.Time  `json:"lastModified,omitempty"`
+	MemoryStorage           *string     `json:"memoryStorage,omitempty"`
+	PrivateEndpoint         *string     `json:"privateEndpoint,omitempty"`
+	PublicEndpoint          *string     `json:"publicEndpoint,omitempty"`
+	RedisVersionCompliance  *string     `json:"redisVersionCompliance,omitempty"`
+	Backup                  *Backup     `json:"backup,omitempty"`
+	QueryPerformanceFactor  *string     `json:"queryPerformanceFactor,omitempty"`
+	RedisVersion            *string     `json:"redisVersion,omitempty"`
+	AutoMinorVersionUpgrade *bool       `json:"autoMinorVersionUpgrade,omitempty"`
 }
 
 func (o Database) String() string {
@@ -175,12 +175,12 @@ type UpdateDatabase struct {
 	// It's important to use a pointer here, because the terraform user may want to send an empty list.
 	// In that case, the developer must pass a (pointer to a) non-nil, zero-length slice
 	// If the developer really wants to omit this value, passing a nil slice value would work
-	Alerts                 *[]*Alert             `json:"alerts,omitempty"`
-	EnableTls              *bool                 `json:"enableTls,omitempty"`
-	RemoteBackup           *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
-	EnableDefaultUser      *bool                 `json:"enableDefaultUser,omitempty"`
-	QueryPerformanceFactor *string               `json:"queryPerformanceFactor,omitempty"`
-	AutoMinorVersionUpgrade *bool                `json:"autoMinorVersionUpgrade,omitempty"`
+	Alerts                  *[]*Alert             `json:"alerts,omitempty"`
+	EnableTls               *bool                 `json:"enableTls,omitempty"`
+	RemoteBackup            *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
+	EnableDefaultUser       *bool                 `json:"enableDefaultUser,omitempty"`
+	QueryPerformanceFactor  *string               `json:"queryPerformanceFactor,omitempty"`
+	AutoMinorVersionUpgrade *bool                 `json:"autoMinorVersionUpgrade,omitempty"`
 }
 
 func (o UpdateDatabase) String() string {
