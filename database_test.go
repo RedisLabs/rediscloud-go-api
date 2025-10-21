@@ -54,7 +54,8 @@ func TestDatabase_Create(t *testing.T) {
     {
       "name": "RedisSearch"
     }
-  ]
+  ],
+  "autoMinorVersionUpgrade": true
 }`, `{
   "taskId": "task",
   "commandType": "databaseCreateRequest",
@@ -122,6 +123,7 @@ func TestDatabase_Create(t *testing.T) {
 				Name: redis.String("RedisSearch"),
 			},
 		},
+		AutoMinorVersionUpgrade: redis.Bool(true),
 	})
 	require.NoError(t, err)
 
@@ -377,7 +379,8 @@ func TestDatabase_Update(t *testing.T) {
 		    }
 		  ],
 		  "enableDefaultUser": false,
-		  "queryPerformanceFactor": "2x"
+		  "queryPerformanceFactor": "2x",
+		  "autoMinorVersionUpgrade": true
 		}`,
 		"task",
 		"databaseUpdateRequest",
@@ -419,6 +422,7 @@ func TestDatabase_Update(t *testing.T) {
 		},
 		EnableDefaultUser:      redis.Bool(false),
 		QueryPerformanceFactor: redis.String("2x"),
+		AutoMinorVersionUpgrade: redis.Bool(true),
 	})
 	require.NoError(t, err)
 }

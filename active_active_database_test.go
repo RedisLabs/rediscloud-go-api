@@ -56,7 +56,8 @@ func TestAADatabase_Create(t *testing.T) {
   ],
   "port": 12000,
   "queryPerformanceFactor": "Standard",
-  "redisVersion": "7.2"
+  "redisVersion": "7.2",
+  "autoMinorVersionUpgrade": true
 }`, `{
   "taskId": "task",
   "commandType": "databaseCreateRequest",
@@ -128,6 +129,7 @@ func TestAADatabase_Create(t *testing.T) {
 		PortNumber:             redis.Int(12000),
 		QueryPerformanceFactor: redis.String("Standard"),
 		RedisVersion:           redis.String("7.2"),
+		AutoMinorVersionUpgrade: redis.Bool(true),
 	})
 	require.NoError(t, err)
 
@@ -189,7 +191,8 @@ func TestAADatabase_Update(t *testing.T) {
     }
   ],
   "dataEvictionPolicy": "allkeys-lru",
-  "queryPerformanceFactor": "6x"
+  "queryPerformanceFactor": "6x",
+  "autoMinorVersionUpgrade": true
 }`,
 		"update-task",
 		"databaseUpdateRequest",
@@ -248,6 +251,7 @@ func TestAADatabase_Update(t *testing.T) {
 		},
 		DataEvictionPolicy:     redis.String("allkeys-lru"),
 		QueryPerformanceFactor: redis.String("6x"),
+		AutoMinorVersionUpgrade: redis.Bool(true),
 	})
 	require.NoError(t, err)
 }
