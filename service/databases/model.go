@@ -33,8 +33,9 @@ type CreateDatabase struct {
 	EnableTls              *bool                 `json:"enableTls,omitempty"`
 	PortNumber             *int                  `json:"port,omitempty"`
 	RemoteBackup           *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
-	QueryPerformanceFactor *string               `json:"queryPerformanceFactor,omitempty"`
-	RedisVersion           *string               `json:"redisVersion,omitempty"`
+	QueryPerformanceFactor      *string               `json:"queryPerformanceFactor,omitempty"`
+	RedisVersion                *string               `json:"redisVersion,omitempty"`
+	AutoMinorVersionUpgrade     *bool                 `json:"autoMinorVersionUpgrade,omitempty"`
 }
 
 func (o CreateDatabase) String() string {
@@ -82,6 +83,7 @@ type Database struct {
 	Backup                 *Backup     `json:"backup,omitempty"`
 	QueryPerformanceFactor *string     `json:"queryPerformanceFactor,omitempty"`
 	RedisVersion           *string     `json:"redisVersion,omitempty"`
+	AutoMinorVersionUpgrade *bool      `json:"autoMinorVersionUpgrade,omitempty"`
 }
 
 func (o Database) String() string {
@@ -178,6 +180,7 @@ type UpdateDatabase struct {
 	RemoteBackup           *DatabaseBackupConfig `json:"remoteBackup,omitempty"`
 	EnableDefaultUser      *bool                 `json:"enableDefaultUser,omitempty"`
 	QueryPerformanceFactor *string               `json:"queryPerformanceFactor,omitempty"`
+	AutoMinorVersionUpgrade *bool                `json:"autoMinorVersionUpgrade,omitempty"`
 }
 
 func (o UpdateDatabase) String() string {

@@ -81,6 +81,7 @@ type CreateActiveActiveDatabase struct {
 	PortNumber                          *int               `json:"port,omitempty"`
 	QueryPerformanceFactor              *string            `json:"queryPerformanceFactor,omitempty"`
 	RedisVersion                        *string            `json:"redisVersion,omitempty"`
+	AutoMinorVersionUpgrade             *bool              `json:"autoMinorVersionUpgrade,omitempty"`
 }
 
 func (o CreateActiveActiveDatabase) String() string {
@@ -115,6 +116,7 @@ type UpdateActiveActiveDatabase struct {
 	Regions                             []*LocalRegionProperties `json:"regions,omitempty"`
 	DataEvictionPolicy                  *string                  `json:"dataEvictionPolicy,omitempty"`
 	QueryPerformanceFactor              *string                  `json:"queryPerformanceFactor,omitempty"`
+	AutoMinorVersionUpgrade             *bool                    `json:"autoMinorVersionUpgrade,omitempty"`
 }
 
 func (o UpdateActiveActiveDatabase) String() string {
