@@ -126,9 +126,9 @@ func TestAADatabase_Create(t *testing.T) {
 				ReadOperationsPerSecond:  redis.Int(1000),
 			},
 		},
-		PortNumber:             redis.Int(12000),
-		QueryPerformanceFactor: redis.String("Standard"),
-		RedisVersion:           redis.String("7.2"),
+		PortNumber:              redis.Int(12000),
+		QueryPerformanceFactor:  redis.String("Standard"),
+		RedisVersion:            redis.String("7.2"),
 		AutoMinorVersionUpgrade: redis.Bool(true),
 	})
 	require.NoError(t, err)
@@ -249,8 +249,8 @@ func TestAADatabase_Update(t *testing.T) {
 				},
 			},
 		},
-		DataEvictionPolicy:     redis.String("allkeys-lru"),
-		QueryPerformanceFactor: redis.String("6x"),
+		DataEvictionPolicy:      redis.String("allkeys-lru"),
+		QueryPerformanceFactor:  redis.String("6x"),
 		AutoMinorVersionUpgrade: redis.Bool(true),
 	})
 	require.NoError(t, err)

@@ -420,8 +420,8 @@ func TestDatabase_Update(t *testing.T) {
 				Value: redis.Int(80),
 			},
 		},
-		EnableDefaultUser:      redis.Bool(false),
-		QueryPerformanceFactor: redis.String("2x"),
+		EnableDefaultUser:       redis.Bool(false),
+		QueryPerformanceFactor:  redis.String("2x"),
 		AutoMinorVersionUpgrade: redis.Bool(true),
 	})
 	require.NoError(t, err)
