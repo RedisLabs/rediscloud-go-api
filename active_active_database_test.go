@@ -278,6 +278,7 @@ func TestAADatabase_List(t *testing.T) {
 									"useExternalEndpointForOSSClusterApi": false,
 									"replication": true,
 									"dataEvictionPolicy": "noeviction",
+									"autoMinorVersionUpgrade": true,
 									"modules": [],
 									"crdbDatabases": [
 										{
@@ -420,6 +421,7 @@ func TestAADatabase_List(t *testing.T) {
 			UseExternalEndpointForOSSClusterAPI: redis.Bool(false),
 			Replication:                         redis.Bool(true),
 			DataEvictionPolicy:                  redis.String("noeviction"),
+			AutoMinorVersionUpgrade:             redis.Bool(true),
 			Modules:                             []*databases.Module{},
 			CrdbDatabases: []*databases.CrdbDatabase{
 				{

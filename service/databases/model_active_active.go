@@ -23,6 +23,7 @@ type ActiveActiveDatabase struct {
 	Security                            *Security       `json:"security,omitempty"`
 	Modules                             []*Module       `json:"modules,omitempty"`
 	CrdbDatabases                       []*CrdbDatabase `json:"crdbDatabases,omitempty"`
+	AutoMinorVersionUpgrade             *bool           `json:"autoMinorVersionUpgrade,omitempty"`
 }
 
 func (o ActiveActiveDatabase) String() string {
