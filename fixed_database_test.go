@@ -693,3 +693,269 @@ func TestFixedDatabase_UpgradeRedisVersion(t *testing.T) {
 
 	require.NoError(t, err)
 }
+
+// Error path tests - test error scenarios
+
+func TestFixedDatabase_Create_APIError(t *testing.T) {
+	// Test API returning 400 Bad Request
+	server := httptest.NewServer(
+		testServer("apiKey", "secret",
+			postRequestWithStatus(
+				t,
+				"/fixed/subscriptions/111728/databases",
+				`{
+					"name": "my-test-fixed-database",
+					"protocol": "memcached",
+					"respVersion": "resp2",
+					"dataPersistence": "none",
+					"dataEvictionPolicy": "noeviction",
+					"replication": false,
+					"alerts": []
+				}`,
+				400,
+				`{"errorCode": "INVALID_REQUEST"}`,
+			),
+		),
+	)
+	defer server.Close()
+
+	subject, err := clientFromTestServer(server, "apiKey", "secret")
+	require.NoError(t, err)
+
+	_, err = subject.FixedDatabases.Create(
+		context.TODO(),
+		111728,
+		fixedDatabases.CreateFixedDatabase{
+			Name:               redis.String("my-test-fixed-database"),
+			Protocol:           redis.String("memcached"),
+			RespVersion:        redis.String("resp2"),
+			DataPersistence:    redis.String("none"),
+			DataEvictionPolicy: redis.String("noeviction"),
+			Replication:        redis.Bool(false),
+			Alerts:             &[]*databases.Alert{},
+		},
+	)
+
+	require.Error(t, err)
+}
+
+func TestFixedDatabase_Update_APIError(t *testing.T) {
+	// Test API returning error during update
+	server := httptest.NewServer(
+		testServer("apiKey", "secret",
+			putRequestWithStatus(
+				t,
+				"/fixed/subscriptions/112119/databases/51056892",
+				`{
+					"name": "my-test-fixed-database",
+					"respVersion": "resp2",
+					"dataPersistence": "none",
+					"dataEvictionPolicy": "volatile-lru",
+					"replication": false,
+					"enableDefaultUser": true,
+					"alerts": [
+						{
+							"name": "datasets-size",
+							"value": 80
+						}
+					]
+				}`,
+				404,
+				`{"errorCode": "DATABASE_NOT_FOUND"}`,
+			),
+		),
+	)
+	defer server.Close()
+
+	subject, err := clientFromTestServer(server, "apiKey", "secret")
+	require.NoError(t, err)
+
+	err = subject.FixedDatabases.Update(
+		context.TODO(),
+		112119,
+		51056892,
+		fixedDatabases.UpdateFixedDatabase{
+			Name:               redis.String("my-test-fixed-database"),
+			RespVersion:        redis.String("resp2"),
+			DataPersistence:    redis.String("none"),
+			DataEvictionPolicy: redis.String("volatile-lru"),
+			Replication:        redis.Bool(false),
+			EnableDefaultUser:  redis.Bool(true),
+			Alerts: &[]*databases.Alert{
+				{
+					Name:  redis.String("datasets-size"),
+					Value: redis.Int(80),
+				},
+			},
+		},
+	)
+
+	require.Error(t, err)
+}
+
+func TestFixedDatabase_Delete_APIError(t *testing.T) {
+	// Test API returning error during delete
+	server := httptest.NewServer(
+		testServer("apiKey", "secret",
+			deleteRequestWithStatus(
+				t,
+				"/fixed/subscriptions/112119/databases/51056892",
+				500,
+				`{"errorCode": "INTERNAL_ERROR"}`,
+			),
+		),
+	)
+	defer server.Close()
+
+	subject, err := clientFromTestServer(server, "apiKey", "secret")
+	require.NoError(t, err)
+
+	err = subject.FixedDatabases.Delete(context.TODO(), 112119, 51056892)
+	require.Error(t, err)
+}
+
+func TestFixedDatabase_UpgradeRedisVersion_APIError(t *testing.T) {
+	// Test API returning error during version upgrade request
+	server := httptest.NewServer(
+		testServer("apiKey", "secret",
+			postRequestWithStatus(
+				t,
+				"/fixed/subscriptions/112119/databases/51056892/upgrade",
+				`{ "targetRedisVersion": "7.4" }`,
+				400,
+				`{"errorCode": "INVALID_REDIS_VERSION"}`,
+			),
+		),
+	)
+	defer server.Close()
+
+	subject, err := clientFromTestServer(server, "apiKey", "secret")
+	require.NoError(t, err)
+
+	err = subject.FixedDatabases.UpgradeRedisVersion(
+		context.TODO(),
+		112119,
+		51056892,
+		fixedDatabases.UpgradeFixedDatabaseRedisVersion{
+			TargetRedisVersion: redis.String("7.4"),
+		},
+	)
+
+	require.Error(t, err)
+}
+
+func TestFixedDatabase_UpgradeRedisVersion_TaskWaiterError(t *testing.T) {
+	server := httptest.NewServer(
+		testServer(
+			"apiKey",
+			"secret",
+			postRequest(
+				t,
+				"/fixed/subscriptions/112119/databases/51056892/upgrade",
+				`{ "targetRedisVersion": "7.4" }`,
+				`{
+					"taskId": "upgrade-task-uuid",
+					"commandType": "fixedDatabaseUpgradeRequest",
+					"status": "received",
+					"description": "Task request received and is being queued for processing.",
+					"timestamp": "2024-05-15T14:55:04.008723915Z",
+					"links": [
+						{
+							"rel": "task",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/tasks/upgrade-task-uuid"
+						}
+					]
+				}`,
+			),
+			getRequest(
+				t,
+				"/tasks/upgrade-task-uuid",
+				`{
+					"taskId": "upgrade-task-uuid",
+					"commandType": "fixedDatabaseUpgradeRequest",
+					"status": "processing-failed",
+					"description": "Task processing failed - database version is already at target version",
+					"timestamp": "2024-05-15T14:55:06.538386979Z",
+					"response": {},
+					"links": [
+						{
+							"rel": "self",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/tasks/upgrade-task-uuid"
+						}
+					]
+				}`,
+			),
+		),
+	)
+
+	subject, err := clientFromTestServer(server, "apiKey", "secret")
+	require.NoError(t, err)
+
+	err = subject.FixedDatabases.UpgradeRedisVersion(
+		context.TODO(),
+		112119,
+		51056892,
+		fixedDatabases.UpgradeFixedDatabaseRedisVersion{
+			TargetRedisVersion: redis.String("7.4"),
+		},
+	)
+
+	require.Error(t, err)
+}
+
+func TestFixedDatabase_Backup_APIError(t *testing.T) {
+	// Test API returning error during backup
+	server := httptest.NewServer(
+		testServer("apiKey", "secret",
+			postRequestWithNoRequestAndStatus(
+				t,
+				"/fixed/subscriptions/112119/databases/51056892/backup",
+				500,
+				`{"errorCode": "BACKUP_FAILED"}`,
+			),
+		),
+	)
+	defer server.Close()
+
+	subject, err := clientFromTestServer(server, "apiKey", "secret")
+	require.NoError(t, err)
+
+	err = subject.FixedDatabases.Backup(context.TODO(), 112119, 51056892)
+	require.Error(t, err)
+}
+
+func TestFixedDatabase_Import_APIError(t *testing.T) {
+	// Test API returning error during import
+	server := httptest.NewServer(
+		testServer("apiKey", "secret",
+			postRequestWithStatus(
+				t,
+				"/fixed/subscriptions/112119/databases/51056892/import",
+				`{
+					"sourceType": "rdb-file",
+					"importFromUri": ["s3://bucket/file.rdb"]
+				}`,
+				400,
+				`{"errorCode": "INVALID_SOURCE"}`,
+			),
+		),
+	)
+	defer server.Close()
+
+	subject, err := clientFromTestServer(server, "apiKey", "secret")
+	require.NoError(t, err)
+
+	err = subject.FixedDatabases.Import(
+		context.TODO(),
+		112119,
+		51056892,
+		fixedDatabases.Import{
+			SourceType:    redis.String("rdb-file"),
+			ImportFromURI: redis.StringSlice("s3://bucket/file.rdb"),
+		},
+	)
+
+	require.Error(t, err)
+}

@@ -165,12 +165,33 @@ func postRequest(t *testing.T, path string, request string, body string) endpoin
 	}
 }
 
+func postRequestWithStatus(t *testing.T, path string, request string, status int, body string) endpointRequest {
+	return endpointRequest{
+		method:      http.MethodPost,
+		path:        path,
+		body:        body,
+		requestBody: &request,
+		status:      status,
+		t:           t,
+	}
+}
+
 func postRequestWithNoRequest(t *testing.T, path string, body string) endpointRequest {
 	return endpointRequest{
 		method: http.MethodPost,
 		path:   path,
 		body:   body,
 		status: http.StatusOK,
+		t:      t,
+	}
+}
+
+func postRequestWithNoRequestAndStatus(t *testing.T, path string, status int, body string) endpointRequest {
+	return endpointRequest{
+		method: http.MethodPost,
+		path:   path,
+		body:   body,
+		status: status,
 		t:      t,
 	}
 }
@@ -182,6 +203,17 @@ func putRequest(t *testing.T, path string, request string, body string) endpoint
 		body:        body,
 		requestBody: &request,
 		status:      http.StatusOK,
+		t:           t,
+	}
+}
+
+func putRequestWithStatus(t *testing.T, path string, request string, status int, body string) endpointRequest {
+	return endpointRequest{
+		method:      http.MethodPut,
+		path:        path,
+		body:        body,
+		requestBody: &request,
+		status:      status,
 		t:           t,
 	}
 }
