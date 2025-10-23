@@ -7,6 +7,10 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 ### Added:
 * Added `RedisVersion` to Fixed (Essentials) databases.
 
+### Changed:
+* Added tests to strengthen coverage of fixed databases.
+* Refactored structure of unit tests for fixed databases.
+
 ## 0.39.0 (21st October 2025)
 
 ### Added:
