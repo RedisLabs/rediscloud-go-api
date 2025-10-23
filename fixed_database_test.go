@@ -96,6 +96,89 @@ func TestFixedDatabase_Create(t *testing.T) {
 	assert.Equal(t, 51055029, actual)
 }
 
+func TestFixedDatabase_Create_with_RedisVersion(t *testing.T) {
+	server := httptest.NewServer(
+		testServer(
+			"apiKey",
+			"secret",
+			postRequest(
+				t,
+				"/fixed/subscriptions/111728/databases",
+				`{
+					"name": "my-redis-essentials-db",
+					"protocol": "redis",
+					"redisVersion": "7.4",
+					"dataPersistence": "none",
+					"dataEvictionPolicy": "noeviction",
+					"replication": false,
+					"alerts": []
+				}`,
+				`{
+					"taskId": "784299af-17ea-4ed6-b08f-dd643238c8dd",
+					"commandType": "fixedDatabaseCreateRequest",
+					"status": "received",
+					"description": "Task request received and is being queued for processing.",
+					"timestamp": "2024-05-10T14:14:14.736763484Z",
+					"links": [
+						{
+							"rel": "task",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/tasks/784299af-17ea-4ed6-b08f-dd643238c8dd"
+						}
+					]
+				}`,
+			),
+			getRequest(
+				t,
+				"/tasks/784299af-17ea-4ed6-b08f-dd643238c8dd",
+				`{
+					"taskId": "784299af-17ea-4ed6-b08f-dd643238c8dd",
+					"commandType": "fixedDatabaseCreateRequest",
+					"status": "processing-completed",
+					"description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+					"timestamp": "2024-05-10T14:14:34.153537279Z",
+					"response": {
+						"resourceId": 51055030,
+						"additionalResourceId": 111728
+					},
+					"links": [
+						{
+							"rel": "resource",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/fixed/subscriptions/111728/databases/51055030"
+						},
+						{
+							"rel": "self",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/tasks/784299af-17ea-4ed6-b08f-dd643238c8dd"
+						}
+					]
+				}`,
+			),
+		),
+	)
+
+	subject, err := clientFromTestServer(server, "apiKey", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.FixedDatabases.Create(
+		context.TODO(),
+		111728,
+		fixedDatabases.CreateFixedDatabase{
+			Name:               redis.String("my-redis-essentials-db"),
+			Protocol:           redis.String("redis"),
+			RedisVersion:       redis.String("7.4"),
+			DataPersistence:    redis.String("none"),
+			DataEvictionPolicy: redis.String("noeviction"),
+			Replication:        redis.Bool(false),
+			Alerts:             &[]*databases.Alert{},
+		},
+	)
+
+	require.NoError(t, err)
+	assert.Equal(t, 51055030, actual)
+}
+
 func TestFixedDatabase_List(t *testing.T) {
 	server := httptest.NewServer(
 		testServer(
@@ -545,4 +628,68 @@ func TestFixedDatabase_Delete(t *testing.T) {
 	err = subject.FixedDatabases.Delete(context.TODO(), 112119, 51056892)
 	require.NoError(t, err)
 
+}
+
+func TestFixedDatabase_UpgradeRedisVersion(t *testing.T) {
+	server := httptest.NewServer(
+		testServer(
+			"apiKey",
+			"secret",
+			postRequest(
+				t,
+				"/fixed/subscriptions/112119/databases/51056892/upgrade",
+				`{ "targetRedisVersion": "7.4" }`,
+				`{
+					"taskId": "upgrade-task-uuid",
+					"commandType": "fixedDatabaseUpgradeRequest",
+					"status": "received",
+					"description": "Task request received and is being queued for processing.",
+					"timestamp": "2024-05-15T14:55:04.008723915Z",
+					"links": [
+						{
+							"rel": "task",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/tasks/upgrade-task-uuid"
+						}
+					]
+				}`,
+			),
+			getRequest(
+				t,
+				"/tasks/upgrade-task-uuid",
+				`{
+					"taskId": "upgrade-task-uuid",
+					"commandType": "fixedDatabaseUpgradeRequest",
+					"status": "processing-completed",
+					"description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+					"timestamp": "2024-05-15T14:55:06.538386979Z",
+					"response": {
+						"resourceId": 51056892,
+						"additionalResourceId": 112119
+					},
+					"links": [
+						{
+							"rel": "self",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/tasks/upgrade-task-uuid"
+						}
+					]
+				}`,
+			),
+		),
+	)
+
+	subject, err := clientFromTestServer(server, "apiKey", "secret")
+	require.NoError(t, err)
+
+	err = subject.FixedDatabases.UpgradeRedisVersion(
+		context.TODO(),
+		112119,
+		51056892,
+		fixedDatabases.UpgradeFixedDatabaseRedisVersion{
+			TargetRedisVersion: redis.String("7.4"),
+		},
+	)
+
+	require.NoError(t, err)
 }

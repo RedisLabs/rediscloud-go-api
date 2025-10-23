@@ -124,6 +124,19 @@ func (a *API) Import(ctx context.Context, subscription int, database int, reques
 	return a.taskWaiter.Wait(ctx, *task.ID)
 }
 
+// UpgradeRedisVersion will upgrade the Redis version of an existing fixed database.
+func (a *API) UpgradeRedisVersion(ctx context.Context, subscription int, database int, upgradeVersion UpgradeFixedDatabaseRedisVersion) error {
+	var task internal.TaskResponse
+	err := a.client.Post(ctx, fmt.Sprintf("upgrade fixed database %d version for subscription %d", database, subscription), fmt.Sprintf("/fixed/subscriptions/%d/databases/%d/upgrade", subscription, database), upgradeVersion, &task)
+	if err != nil {
+		return err
+	}
+
+	a.logger.Printf("Waiting for fixed database %d for subscription %d to finish being upgraded", database, subscription)
+
+	return a.taskWaiter.Wait(ctx, *task.ID)
+}
+
 type ListFixedDatabase struct {
 	client       HttpClient
 	subscription int
