@@ -11,6 +11,7 @@ import (
 type CreateFixedDatabase struct {
 	Name                                *string                `json:"name,omitempty"`
 	Protocol                            *string                `json:"protocol,omitempty"`
+	RedisVersion                        *string                `json:"redisVersion,omitempty"`
 	MemoryLimitInGB                     *float64               `json:"memoryLimitInGb,omitempty"`
 	DatasetSizeInGB                     *float64               `json:"datasetSizeInGb,omitempty"`
 	SupportOSSClusterAPI                *bool                  `json:"supportOSSClusterApi,omitempty"`
@@ -60,6 +61,7 @@ type FixedDatabase struct {
 	Protocol                            *string    `json:"protocol,omitempty"`
 	Provider                            *string    `json:"provider,omitempty"`
 	Region                              *string    `json:"region,omitempty"`
+	RedisVersion                        *string    `json:"redisVersion,omitempty"`
 	RedisVersionCompliance              *string    `json:"redisVersionCompliance,omitempty"`
 	RespVersion                         *string    `json:"respVersion,omitempty"`
 	Status                              *string    `json:"status,omitempty"`
@@ -184,6 +186,10 @@ type NotFound struct {
 
 func (f *NotFound) Error() string {
 	return fmt.Sprintf("fixed database %d in subscription %d not found", f.dbId, f.subId)
+}
+
+type UpgradeRedisVersion struct {
+	TargetRedisVersion *string `json:"targetRedisVersion,omitempty"`
 }
 
 func ProtocolValues() []string {
