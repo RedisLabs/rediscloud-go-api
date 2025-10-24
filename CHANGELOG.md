@@ -7,9 +7,14 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 ### Added:
 * Added `RedisVersion` to Fixed (Essentials) databases.
 
+### Security:
+* Updated Go toolchain to 1.24.4 to address stdlib vulnerabilities (GO-2025-3751, GO-2025-3750, GO-2025-3749, GO-2025-3563)
+* Added govulncheck to CI pipeline for automated vulnerability detection
+
 ### Changed:
 * Added tests to strengthen coverage of fixed databases.
 * Refactored structure of unit tests for fixed databases.
+* Enabled Go module caching in GitHub Actions for improved build performance
 
 ## 0.39.0 (21st October 2025)
 

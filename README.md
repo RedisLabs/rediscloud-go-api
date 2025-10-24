@@ -1,5 +1,8 @@
 # rediscloud-go-api
 
+[![CI](https://github.com/RedisLabs/rediscloud-go-api/workflows/CI/badge.svg)](https://github.com/RedisLabs/rediscloud-go-api/actions?query=workflow%3ACI)
+[![Vulnerability Check](https://github.com/RedisLabs/rediscloud-go-api/workflows/Vulnerability%20Check/badge.svg)](https://github.com/RedisLabs/rediscloud-go-api/actions?query=workflow%3A%22Vulnerability+Check%22)
+
 This repository is a Go SDK for the [Redis Cloud REST API](https://docs.redislabs.com/latest/rc/api/).
 
 ## Getting Started
