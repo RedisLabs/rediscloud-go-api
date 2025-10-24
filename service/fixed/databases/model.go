@@ -61,6 +61,7 @@ type FixedDatabase struct {
 	Protocol                            *string    `json:"protocol,omitempty"`
 	Provider                            *string    `json:"provider,omitempty"`
 	Region                              *string    `json:"region,omitempty"`
+	RedisVersion                        *string    `json:"redisVersion,omitempty"`
 	RedisVersionCompliance              *string    `json:"redisVersionCompliance,omitempty"`
 	RespVersion                         *string    `json:"respVersion,omitempty"`
 	Status                              *string    `json:"status,omitempty"`
@@ -187,7 +188,7 @@ func (f *NotFound) Error() string {
 	return fmt.Sprintf("fixed database %d in subscription %d not found", f.dbId, f.subId)
 }
 
-type UpgradeFixedDatabaseRedisVersion struct {
+type UpgradeRedisVersion struct {
 	TargetRedisVersion *string `json:"targetRedisVersion,omitempty"`
 }
 

@@ -125,7 +125,7 @@ func (a *API) Import(ctx context.Context, subscription int, database int, reques
 }
 
 // UpgradeRedisVersion will upgrade the Redis version of an existing fixed database.
-func (a *API) UpgradeRedisVersion(ctx context.Context, subscription int, database int, upgradeVersion UpgradeFixedDatabaseRedisVersion) error {
+func (a *API) UpgradeRedisVersion(ctx context.Context, subscription int, database int, upgradeVersion UpgradeRedisVersion) error {
 	var task internal.TaskResponse
 	err := a.client.Post(ctx, fmt.Sprintf("upgrade fixed database %d version for subscription %d", database, subscription), fmt.Sprintf("/fixed/subscriptions/%d/databases/%d/upgrade", subscription, database), upgradeVersion, &task)
 	if err != nil {

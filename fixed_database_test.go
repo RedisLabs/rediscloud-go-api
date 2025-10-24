@@ -686,7 +686,7 @@ func TestFixedDatabase_UpgradeRedisVersion(t *testing.T) {
 		context.TODO(),
 		112119,
 		51056892,
-		fixedDatabases.UpgradeFixedDatabaseRedisVersion{
+		fixedDatabases.UpgradeRedisVersion{
 			TargetRedisVersion: redis.String("7.4"),
 		},
 	)
@@ -710,13 +710,13 @@ func testClient(t *testing.T, server *httptest.Server) *Client {
 
 func TestFixedDatabase_APIErrors(t *testing.T) {
 	tests := []struct {
-		name         string
-		path         string
-		httpMethod   string
-		requestBody  string
-		statusCode   int
-		errorBody    string
-		apiCall      func(*Client) error
+		name        string
+		path        string
+		httpMethod  string
+		requestBody string
+		statusCode  int
+		errorBody   string
+		apiCall     func(*Client) error
 	}{
 		{
 			name:        "Create_APIError",
@@ -765,11 +765,11 @@ func TestFixedDatabase_APIErrors(t *testing.T) {
 			},
 		},
 		{
-			name:        "Delete_APIError",
-			path:        "/fixed/subscriptions/112119/databases/51056892",
-			httpMethod:  "DELETE",
-			statusCode:  500,
-			errorBody:   `{"errorCode": "INTERNAL_ERROR"}`,
+			name:       "Delete_APIError",
+			path:       "/fixed/subscriptions/112119/databases/51056892",
+			httpMethod: "DELETE",
+			statusCode: 500,
+			errorBody:  `{"errorCode": "INTERNAL_ERROR"}`,
 			apiCall: func(c *Client) error {
 				return c.FixedDatabases.Delete(context.TODO(), 112119, 51056892)
 			},
@@ -783,17 +783,17 @@ func TestFixedDatabase_APIErrors(t *testing.T) {
 			errorBody:   `{"errorCode": "INVALID_REDIS_VERSION"}`,
 			apiCall: func(c *Client) error {
 				return c.FixedDatabases.UpgradeRedisVersion(context.TODO(), 112119, 51056892,
-					fixedDatabases.UpgradeFixedDatabaseRedisVersion{
+					fixedDatabases.UpgradeRedisVersion{
 						TargetRedisVersion: redis.String("7.4"),
 					})
 			},
 		},
 		{
-			name:        "Backup_APIError",
-			path:        "/fixed/subscriptions/112119/databases/51056892/backup",
-			httpMethod:  "POST",
-			statusCode:  500,
-			errorBody:   `{"errorCode": "BACKUP_FAILED"}`,
+			name:       "Backup_APIError",
+			path:       "/fixed/subscriptions/112119/databases/51056892/backup",
+			httpMethod: "POST",
+			statusCode: 500,
+			errorBody:  `{"errorCode": "BACKUP_FAILED"}`,
 			apiCall: func(c *Client) error {
 				return c.FixedDatabases.Backup(context.TODO(), 112119, 51056892)
 			},
@@ -895,7 +895,7 @@ func TestFixedDatabase_UpgradeRedisVersion_TaskWaiterError(t *testing.T) {
 		context.TODO(),
 		112119,
 		51056892,
-		fixedDatabases.UpgradeFixedDatabaseRedisVersion{
+		fixedDatabases.UpgradeRedisVersion{
 			TargetRedisVersion: redis.String("7.4"),
 		},
 	)
