@@ -256,6 +256,231 @@ func TestAADatabase_Update(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestAADatabase_Get(t *testing.T) {
+	body := `{
+		"databaseId": 1466,
+		"name": "active-active-db",
+		"redisVersion": "7.2",
+		"protocol": "redis",
+		"status": "active",
+		"memoryStorage": "ram",
+		"activeActiveRedis": true,
+		"activatedOn": "2024-05-08T08:10:02Z",
+		"lastModified": "2024-05-08T08:22:34Z",
+		"supportOSSClusterApi": false,
+		"useExternalEndpointForOSSClusterApi": false,
+		"replication": true,
+		"dataEvictionPolicy": "noeviction",
+		"autoMinorVersionUpgrade": true,
+		"modules": [],
+		"globalDataPersistence": "aof-every-1-second",
+		"globalSourceIp": ["192.168.1.0/24"],
+		"globalPassword": "********",
+		"globalAlerts": [
+			{
+				"name": "throughput-higher-than",
+				"value": 90
+			}
+		],
+		"globalModules": [
+			{
+				"name": "RedisJSON"
+			}
+		],
+		"globalEnableDefaultUser": false,
+		"crdbDatabases": [
+			{
+				"provider": "AWS",
+				"region": "us-east-1",
+				"redisVersionCompliance": "7.2.0",
+				"publicEndpoint": "redis-14383.mc940-1.us-east-1-mz.ec2.qa-cloud.rlrcp.com:14383",
+				"privateEndpoint": "redis-14383.internal.mc940-1.us-east-1-mz.ec2.qa-cloud.rlrcp.com:14383",
+				"memoryLimitInGb": 2,
+				"datasetSizeInGb": 2,
+				"memoryUsedInMb": 45.5,
+				"readOperationsPerSecond": 2000,
+				"writeOperationsPerSecond": 2000,
+				"dataPersistence": "aof-every-1-second",
+				"queryPerformanceFactor": "6x",
+				"alerts": [
+					{
+						"id": "51054122-2",
+						"name": "dataset-size",
+						"value": 85,
+						"defaultValue": 80
+					}
+				],
+				"security": {
+					"enableDefaultUser": false,
+					"sslClientAuthentication": false,
+					"tlsClientAuthentication": true,
+					"enableTls": true,
+					"sourceIps": ["10.0.0.0/8"]
+				},
+				"backup": {
+					"enableRemoteBackup": true,
+					"interval": "every-12-hours",
+					"timeUTC": "10:00",
+					"destination": "s3://bucket/path"
+				}
+			},
+			{
+				"provider": "AWS",
+				"region": "us-east-2",
+				"redisVersionCompliance": "7.2.0",
+				"publicEndpoint": "redis-14383.mc940-0.us-east-2-mz.ec2.qa-cloud.rlrcp.com:14383",
+				"privateEndpoint": "redis-14383.internal.mc940-0.us-east-2-mz.ec2.qa-cloud.rlrcp.com:14383",
+				"memoryLimitInGb": 2,
+				"datasetSizeInGb": 2,
+				"memoryUsedInMb": 45.3,
+				"readOperationsPerSecond": 2000,
+				"writeOperationsPerSecond": 2000,
+				"dataPersistence": "aof-every-1-second",
+				"queryPerformanceFactor": "6x",
+				"alerts": [
+					{
+						"id": "51054121-2",
+						"name": "dataset-size",
+						"value": 85,
+						"defaultValue": 80
+					}
+				],
+				"security": {
+					"enableDefaultUser": false,
+					"sslClientAuthentication": false,
+					"tlsClientAuthentication": true,
+					"enableTls": true,
+					"sourceIps": ["10.0.0.0/8"]
+				},
+				"backup": {
+					"enableRemoteBackup": true,
+					"interval": "every-12-hours",
+					"timeUTC": "10:00",
+					"destination": "s3://bucket/path"
+				}
+			}
+		]
+	}`
+
+	s := httptest.NewServer(
+		testServer(
+			"apiKey",
+			"secret",
+			getRequest(t, "/subscriptions/111478/databases/1466", body),
+		),
+	)
+	defer s.Close()
+
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Database.GetActiveActive(context.TODO(), 111478, 1466)
+	require.NoError(t, err)
+
+	expected := &databases.ActiveActiveDatabase{
+		ID:                                  redis.Int(1466),
+		Name:                                redis.String("active-active-db"),
+		Protocol:                            redis.String("redis"),
+		RedisVersion:                        redis.String("7.2"),
+		Status:                              redis.String("active"),
+		MemoryStorage:                       redis.String("ram"),
+		ActiveActiveRedis:                   redis.Bool(true),
+		ActivatedOn:                         redis.Time(time.Date(2024, 5, 8, 8, 10, 02, 0, time.UTC)),
+		LastModified:                        redis.Time(time.Date(2024, 5, 8, 8, 22, 34, 0, time.UTC)),
+		SupportOSSClusterAPI:                redis.Bool(false),
+		UseExternalEndpointForOSSClusterAPI: redis.Bool(false),
+		Replication:                         redis.Bool(true),
+		DataEvictionPolicy:                  redis.String("noeviction"),
+		AutoMinorVersionUpgrade:             redis.Bool(true),
+		Modules:                             []*databases.Module{},
+		GlobalDataPersistence:               redis.String("aof-every-1-second"),
+		GlobalSourceIP:                      redis.StringSlice("192.168.1.0/24"),
+		GlobalPassword:                      redis.String("********"),
+		GlobalAlerts: []*databases.Alert{
+			{
+				Name:  redis.String("throughput-higher-than"),
+				Value: redis.Int(90),
+			},
+		},
+		GlobalModules: []*databases.Module{
+			{
+				Name: redis.String("RedisJSON"),
+			},
+		},
+		GlobalEnableDefaultUser: redis.Bool(false),
+		CrdbDatabases: []*databases.CrdbDatabase{
+			{
+				Provider:                 redis.String("AWS"),
+				Region:                   redis.String("us-east-1"),
+				RedisVersionCompliance:   redis.String("7.2.0"),
+				PublicEndpoint:           redis.String("redis-14383.mc940-1.us-east-1-mz.ec2.qa-cloud.rlrcp.com:14383"),
+				PrivateEndpoint:          redis.String("redis-14383.internal.mc940-1.us-east-1-mz.ec2.qa-cloud.rlrcp.com:14383"),
+				MemoryLimitInGB:          redis.Float64(2),
+				DatasetSizeInGB:          redis.Float64(2),
+				MemoryUsedInMB:           redis.Float64(45.5),
+				ReadOperationsPerSecond:  redis.Int(2000),
+				WriteOperationsPerSecond: redis.Int(2000),
+				DataPersistence:          redis.String("aof-every-1-second"),
+				QueryPerformanceFactor:   redis.String("6x"),
+				Alerts: []*databases.Alert{
+					{
+						Name:  redis.String("dataset-size"),
+						Value: redis.Int(85),
+					},
+				},
+				Security: &databases.Security{
+					EnableDefaultUser:       redis.Bool(false),
+					SSLClientAuthentication: redis.Bool(false),
+					TLSClientAuthentication: redis.Bool(true),
+					EnableTls:               redis.Bool(true),
+					SourceIPs:               redis.StringSlice("10.0.0.0/8"),
+				},
+				Backup: &databases.Backup{
+					Enabled:     redis.Bool(true),
+					Interval:    redis.String("every-12-hours"),
+					TimeUTC:     redis.String("10:00"),
+					Destination: redis.String("s3://bucket/path"),
+				},
+			},
+			{
+				Provider:                 redis.String("AWS"),
+				Region:                   redis.String("us-east-2"),
+				RedisVersionCompliance:   redis.String("7.2.0"),
+				PublicEndpoint:           redis.String("redis-14383.mc940-0.us-east-2-mz.ec2.qa-cloud.rlrcp.com:14383"),
+				PrivateEndpoint:          redis.String("redis-14383.internal.mc940-0.us-east-2-mz.ec2.qa-cloud.rlrcp.com:14383"),
+				MemoryLimitInGB:          redis.Float64(2),
+				DatasetSizeInGB:          redis.Float64(2),
+				MemoryUsedInMB:           redis.Float64(45.3),
+				ReadOperationsPerSecond:  redis.Int(2000),
+				WriteOperationsPerSecond: redis.Int(2000),
+				DataPersistence:          redis.String("aof-every-1-second"),
+				QueryPerformanceFactor:   redis.String("6x"),
+				Alerts: []*databases.Alert{
+					{
+						Name:  redis.String("dataset-size"),
+						Value: redis.Int(85),
+					},
+				},
+				Security: &databases.Security{
+					EnableDefaultUser:       redis.Bool(false),
+					SSLClientAuthentication: redis.Bool(false),
+					TLSClientAuthentication: redis.Bool(true),
+					EnableTls:               redis.Bool(true),
+					SourceIPs:               redis.StringSlice("10.0.0.0/8"),
+				},
+				Backup: &databases.Backup{
+					Enabled:     redis.Bool(true),
+					Interval:    redis.String("every-12-hours"),
+					TimeUTC:     redis.String("10:00"),
+					Destination: redis.String("s3://bucket/path"),
+				},
+			},
+		},
+	}
+
+	assert.Equal(t, expected, actual)
+}
+
 func TestAADatabase_List(t *testing.T) {
 	body := `{
 					"accountId": 69369,
