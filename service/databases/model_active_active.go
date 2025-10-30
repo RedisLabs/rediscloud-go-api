@@ -22,6 +22,12 @@ type ActiveActiveDatabase struct {
 	DataEvictionPolicy                  *string         `json:"dataEvictionPolicy,omitempty"`
 	Security                            *Security       `json:"security,omitempty"`
 	Modules                             []*Module       `json:"modules,omitempty"`
+	GlobalDataPersistence               *string         `json:"globalDataPersistence,omitempty"`
+	GlobalSourceIP                      []*string       `json:"globalSourceIp,omitempty"`
+	GlobalPassword                      *string         `json:"globalPassword,omitempty"`
+	GlobalAlerts                        []*Alert        `json:"globalAlerts,omitempty"`
+	GlobalModules                       []*Module       `json:"globalModules,omitempty"`
+	GlobalEnableDefaultUser             *bool           `json:"globalEnableDefaultUser,omitempty"`
 	CrdbDatabases                       []*CrdbDatabase `json:"crdbDatabases,omitempty"`
 	AutoMinorVersionUpgrade             *bool           `json:"autoMinorVersionUpgrade,omitempty"`
 }

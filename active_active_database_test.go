@@ -280,6 +280,16 @@ func TestAADatabase_List(t *testing.T) {
 									"dataEvictionPolicy": "noeviction",
 									"autoMinorVersionUpgrade": true,
 									"modules": [],
+									"globalDataPersistence": "none",
+									"globalSourceIp": ["0.0.0.0/0"],
+									"globalAlerts": [
+										{
+											"name": "dataset-size",
+											"value": 80
+										}
+									],
+									"globalModules": [],
+									"globalEnableDefaultUser": true,
 									"crdbDatabases": [
 										{
 											"provider": "AWS",
@@ -423,6 +433,16 @@ func TestAADatabase_List(t *testing.T) {
 			DataEvictionPolicy:                  redis.String("noeviction"),
 			AutoMinorVersionUpgrade:             redis.Bool(true),
 			Modules:                             []*databases.Module{},
+			GlobalDataPersistence:               redis.String("none"),
+			GlobalSourceIP:                      redis.StringSlice("0.0.0.0/0"),
+			GlobalAlerts: []*databases.Alert{
+				{
+					Name:  redis.String("dataset-size"),
+					Value: redis.Int(80),
+				},
+			},
+			GlobalModules:           []*databases.Module{},
+			GlobalEnableDefaultUser: redis.Bool(true),
 			CrdbDatabases: []*databases.CrdbDatabase{
 				{
 					Provider:                 redis.String("AWS"),
