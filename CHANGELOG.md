@@ -9,6 +9,10 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 * New `TestAADatabase_Get` test for ActiveActive Get method coverage
 * Updated `TestAADatabase_List` test to include global values in response
 
+### Updated:
+* Bump golang.org/x/tools to 0.38.0
+* Bump github.com/avast/retry-go/v4 to 4.7.0
+
 ## 0.39.0 (21st October 2025)
 
 ### Added:
