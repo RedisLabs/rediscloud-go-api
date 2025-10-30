@@ -26,7 +26,6 @@ type ActiveActiveDatabase struct {
 	GlobalSourceIP                      []*string       `json:"globalSourceIp,omitempty"`
 	GlobalPassword                      *string         `json:"globalPassword,omitempty"`
 	GlobalAlerts                        []*Alert        `json:"globalAlerts,omitempty"`
-	GlobalModules                       []*Module       `json:"globalModules,omitempty"`
 	GlobalEnableDefaultUser             *bool           `json:"globalEnableDefaultUser,omitempty"`
 	CrdbDatabases                       []*CrdbDatabase `json:"crdbDatabases,omitempty"`
 	AutoMinorVersionUpgrade             *bool           `json:"autoMinorVersionUpgrade,omitempty"`

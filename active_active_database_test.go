@@ -282,11 +282,6 @@ func TestAADatabase_Get(t *testing.T) {
 				"value": 90
 			}
 		],
-		"globalModules": [
-			{
-				"name": "RedisJSON"
-			}
-		],
 		"globalEnableDefaultUser": false,
 		"crdbDatabases": [
 			{
@@ -402,11 +397,6 @@ func TestAADatabase_Get(t *testing.T) {
 				Value: redis.Int(90),
 			},
 		},
-		GlobalModules: []*databases.Module{
-			{
-				Name: redis.String("RedisJSON"),
-			},
-		},
 		GlobalEnableDefaultUser: redis.Bool(false),
 		CrdbDatabases: []*databases.CrdbDatabase{
 			{
@@ -513,7 +503,6 @@ func TestAADatabase_List(t *testing.T) {
 											"value": 80
 										}
 									],
-									"globalModules": [],
 									"globalEnableDefaultUser": true,
 									"crdbDatabases": [
 										{
@@ -666,7 +655,6 @@ func TestAADatabase_List(t *testing.T) {
 					Value: redis.Int(80),
 				},
 			},
-			GlobalModules:           []*databases.Module{},
 			GlobalEnableDefaultUser: redis.Bool(true),
 			CrdbDatabases: []*databases.CrdbDatabase{
 				{
