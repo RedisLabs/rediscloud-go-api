@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.39.0 (21st October 2025)
+
+### Added:
+* Added `AutoMinorVersionUpgrade` to Pro and Active Active models, for upgrade and create endpoints.
+
+## 0.38.0 (15th October 2025)
+
+### Added:
+* Added `PublicEndpointAccess` field to Subscription create/update API
+* New tests to check this field is used correctly
+
 ## 0.37.0 (8th October 2025)
 
 ### Added:
