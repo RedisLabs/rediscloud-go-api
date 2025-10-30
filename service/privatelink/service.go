@@ -61,8 +61,6 @@ func (a *API) GetPrivateLink(ctx context.Context, subscription int) (*PrivateLin
 	return task, nil
 }
 
-type PrivateLinkEndpointScript = string
-
 // GetPrivateLinkEndpointScript will get the script for an endpoint.
 func (a *API) GetPrivateLinkEndpointScript(ctx context.Context, subscriptionId int) (*PrivateLinkEndpointScript, error) {
 	message := fmt.Sprintf("get private link for subscription %d", subscriptionId)
@@ -205,7 +203,7 @@ func (a *API) getScript(ctx context.Context, message string, path string) (*Priv
 		return nil, err
 	}
 
-	a.logger.Printf("Waiting for PrivateLink script get request %d to complete", task.ID)
+	a.logger.Printf("Waiting for PrivateLink script get request %s to complete", *task.ID)
 
 	var response PrivateLinkEndpointScript
 	err = a.taskWaiter.WaitForResource(ctx, *task.ID, &response)
