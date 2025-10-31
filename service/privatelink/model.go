@@ -79,6 +79,11 @@ func (f *NotFoundActiveActive) Error() string {
 	return fmt.Sprintf("privatelink resource not found - subscription %d, region %d", f.subscriptionID, f.regionID)
 }
 
+type PrivateLinkEndpointScript struct {
+	ResourceEndpointScript *string `json:"resourceEndpointScript,omitempty"`
+	TerraformAwsScript     *string `json:"terraformAwsScript,omitempty"`
+}
+
 const (
 	// PrivateLinkStatusInitializing when PrivateLink is initialising
 	PrivateLinkStatusInitializing = "initializing"
