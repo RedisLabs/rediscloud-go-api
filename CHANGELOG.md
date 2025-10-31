@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
-## 0.40.0 (30th October 2025)
+## 0.40.0 (31st October 2025)
 
 ### Added:
 * Added global values fields to `ActiveActiveDatabase` read response: `GlobalDataPersistence`, `GlobalSourceIP`, `GlobalPassword`, `GlobalAlerts`, and `GlobalEnableDefaultUser`
@@ -12,6 +12,9 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 ### Updated:
 * Bump golang.org/x/tools to 0.38.0
 * Bump github.com/avast/retry-go/v4 to 4.7.0
+
+### Fixed:
+* Fixed an issue with endpoint scripts not unmarshalling correctly.
 
 ## 0.39.0 (21st October 2025)
 
