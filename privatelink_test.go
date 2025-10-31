@@ -421,8 +421,6 @@ func TestGetActiveActivePrivateLink(t *testing.T) {
 }
 
 func TestGetPrivateLinkScript(t *testing.T) {
-	t.Skipf("skipping test until privatelink script is available")
-
 	tc := []struct {
 		description     string
 		mockedResponse  []endpointRequest
@@ -436,10 +434,51 @@ func TestGetPrivateLinkScript(t *testing.T) {
 				getRequest(
 					t,
 					"/subscriptions/114019/private-link/endpoint-script?includeTerraformAwsScript=true",
-					`a pro privatelink aws terraform endpoint script`,
+					`{
+				  "taskId": "4e62bd68-06ce-4207-91cd-62b9d8b60dff",
+				  "commandType": "privateLinkEndpointScriptGetRequest",
+				  "status": "received",
+				  "description": "Task request received and is being queued for processing.",
+				  "timestamp": "2025-10-30T14:13:46.539111211Z",
+				  "links": [
+					{
+					  "type": "GET",
+					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/4e62bd68-06ce-4207-91cd-62b9d8b60dff",
+					  "rel": "task"
+					}
+				  ]
+				}`,
+				),
+				getRequest(
+					t,
+					"/tasks/4e62bd68-06ce-4207-91cd-62b9d8b60dff",
+					`{
+							  "taskId": "4e62bd68-06ce-4207-91cd-62b9d8b60dff",
+							  "commandType": "privateLinkEndpointScriptGetRequest",
+							  "status": "processing-completed",
+							  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+							  "timestamp": "2025-10-30T14:13:51.991415541Z",
+							  "response": {
+								"resourceId": 114019,
+								"resource": {
+								  "resourceEndpointScript": "python script content here",
+								  "terraformAwsScript": "terraform script content here"
+								}
+							  },
+							  "links": [
+								{
+								  "type": "GET",
+								  "href": "https://api-staging.qa.redislabs.com/v1/tasks/4e62bd68-06ce-4207-91cd-62b9d8b60dff",
+								  "rel": "self"
+								}
+							  ]
+							}`,
 				),
 			},
-			expectedResult: redis.String("a pro privatelink aws terraform endpoint script"),
+			expectedResult: &pl.PrivateLinkEndpointScript{
+				ResourceEndpointScript: redis.String("python script content here"),
+				TerraformAwsScript:     redis.String("terraform script content here"),
+			},
 		},
 	}
 	for _, testCase := range tc {
@@ -464,8 +503,6 @@ func TestGetPrivateLinkScript(t *testing.T) {
 }
 
 func TestGetActiveActivePrivateLinkScript(t *testing.T) {
-	t.Skipf("skipping test until privatelink script is available")
-
 	tc := []struct {
 		description     string
 		mockedResponse  []endpointRequest
@@ -479,10 +516,51 @@ func TestGetActiveActivePrivateLinkScript(t *testing.T) {
 				getRequest(
 					t,
 					"/subscriptions/114019/regions/1/private-link/endpoint-script?includeTerraformAwsScript=true",
-					`an active active aws terraform endpoint script`,
+					`{
+				  "taskId": "5f73ce79-17df-5db1-a2de-18993ea71f00",
+				  "commandType": "activeActivePrivateLinkEndpointScriptGetRequest",
+				  "status": "received",
+				  "description": "Task request received and is being queued for processing.",
+				  "timestamp": "2025-10-30T14:13:46.539111211Z",
+				  "links": [
+					{
+					  "type": "GET",
+					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/5f73ce79-17df-5db1-a2de-18993ea71f00",
+					  "rel": "task"
+					}
+				  ]
+				}`,
+				),
+				getRequest(
+					t,
+					"/tasks/5f73ce79-17df-5db1-a2de-18993ea71f00",
+					`{
+							  "taskId": "5f73ce79-17df-5db1-a2de-18993ea71f00",
+							  "commandType": "activeActivePrivateLinkEndpointScriptGetRequest",
+							  "status": "processing-completed",
+							  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+							  "timestamp": "2025-10-30T14:13:51.991415541Z",
+							  "response": {
+								"resourceId": 114019,
+								"resource": {
+								  "resourceEndpointScript": "active active python script content here",
+								  "terraformAwsScript": "active active terraform script content here"
+								}
+							  },
+							  "links": [
+								{
+								  "type": "GET",
+								  "href": "https://api-staging.qa.redislabs.com/v1/tasks/5f73ce79-17df-5db1-a2de-18993ea71f00",
+								  "rel": "self"
+								}
+							  ]
+							}`,
 				),
 			},
-			expectedResult: redis.String("an active active aws terraform endpoint script"),
+			expectedResult: &pl.PrivateLinkEndpointScript{
+				ResourceEndpointScript: redis.String("active active python script content here"),
+				TerraformAwsScript:     redis.String("active active terraform script content here"),
+			},
 		},
 	}
 	for _, testCase := range tc {

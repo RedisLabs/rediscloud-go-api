@@ -277,3 +277,4 @@ CLAUDE.md
 .claude
 
 coverage.out
+swagger-redis-api.json
