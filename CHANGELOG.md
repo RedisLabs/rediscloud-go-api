@@ -11,7 +11,7 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 * Enabled Go module caching in GitHub Actions for improved build performance
 
 ### Updated:
-* Updated Go toolchain to 1.24.4 to address stdlib vulnerabilities (GO-2025-3751, GO-2025-3750, GO-2025-3749, GO-2025-3563)
+* Updated Go toolchain to 1.25.3 to address stdlib vulnerabilities (GO-2025-4007, GO-2025-3751, GO-2025-3750, GO-2025-3749, GO-2025-3563)
 
 ### Tests:
 * Added AWS account ID to subscription test fixtures (`TestSubscription_List`, `TestSubscription_Get`, `TestSubscription_Get_PublicEndpointAccess`)
