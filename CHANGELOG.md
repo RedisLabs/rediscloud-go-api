@@ -7,14 +7,23 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 ### Added:
 * Added `RedisVersion` to Fixed (Essentials) databases.
 
-### Security:
-* Updated Go toolchain to 1.24.4 to address stdlib vulnerabilities (GO-2025-3751, GO-2025-3750, GO-2025-3749, GO-2025-3563)
-* Added govulncheck to CI pipeline for automated vulnerability detection
-
 ### Changed:
 * Added tests to strengthen coverage of fixed databases.
 * Refactored structure of unit tests for fixed databases.
+
+## 0.41.0 (3rd November 2025)
+
+### Added:
+* Added `AWSAccountID` field to `CloudDetail` struct in subscriptions model for AWS account identification
+* Added `govulncheck` to CI pipeline for automated vulnerability detection
+* New `.github/workflows/vulnerability.yml` workflow for parallel vulnerability checking
 * Enabled Go module caching in GitHub Actions for improved build performance
+
+### Updated:
+* Updated Go toolchain to 1.25.3 to address stdlib vulnerabilities (GO-2025-4007, GO-2025-3751, GO-2025-3750, GO-2025-3749, GO-2025-3563)
+
+### Tests:
+* Added AWS account ID to subscription test fixtures (`TestSubscription_List`, `TestSubscription_Get`, `TestSubscription_Get_PublicEndpointAccess`)
 
 ## 0.40.0 (31st October 2025)
 

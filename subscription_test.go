@@ -425,6 +425,7 @@ func TestSubscription_List(t *testing.T) {
         {
           "provider": "AWS",
           "cloudAccountId": 2,
+          "awsAccountId": "123456789012",
           "totalSizeInGb": 0.0062,
           "regions": [
             {
@@ -509,6 +510,7 @@ func TestSubscription_List(t *testing.T) {
 				{
 					Provider:       redis.String("AWS"),
 					CloudAccountID: redis.Int(2),
+					AWSAccountID:   redis.String("123456789012"),
 					TotalSizeInGB:  redis.Float64(0.0062),
 					Regions: []*subscriptions.Region{
 						{
@@ -579,6 +581,7 @@ func TestSubscription_Get(t *testing.T) {
     {
       "provider": "AWS",
       "cloudAccountId": 3,
+      "awsAccountId": "987654321098",
       "totalSizeInGb": 4,
       "regions": [
         {
@@ -624,6 +627,7 @@ func TestSubscription_Get(t *testing.T) {
 			{
 				Provider:       redis.String("AWS"),
 				CloudAccountID: redis.Int(3),
+				AWSAccountID:   redis.String("987654321098"),
 				TotalSizeInGB:  redis.Float64(4),
 				Regions: []*subscriptions.Region{
 					{
@@ -658,6 +662,7 @@ func TestSubscription_Get_PublicEndpointAccess(t *testing.T) {
     {
       "provider": "AWS",
       "cloudAccountId": 3,
+      "awsAccountId": "111222333444",
       "totalSizeInGb": 4,
       "regions": [
         {
@@ -704,6 +709,7 @@ func TestSubscription_Get_PublicEndpointAccess(t *testing.T) {
 			{
 				Provider:       redis.String("AWS"),
 				CloudAccountID: redis.Int(3),
+				AWSAccountID:   redis.String("111222333444"),
 				TotalSizeInGB:  redis.Float64(4),
 				Regions: []*subscriptions.Region{
 					{
