@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## 0.41.0 (3rd November 2025)
 
 ### Added:
 * Added `AWSAccountID` field to `CloudDetail` struct in subscriptions model for AWS account identification
