@@ -153,6 +153,7 @@ func (o Subscription) String() string {
 type CloudDetail struct {
 	Provider       *string   `json:"provider,omitempty"`
 	CloudAccountID *int      `json:"cloudAccountId,omitempty"`
+	AWSAccountID   *string   `json:"awsAccountId,omitempty"`
 	TotalSizeInGB  *float64  `json:"totalSizeInGb,omitempty"`
 	Regions        []*Region `json:"regions,omitempty"`
 }
