@@ -4,8 +4,7 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
 ## Unreleased
 
-* Support for Region ID from regions endpoint
-
+* Added `ID` field to `Region` struct in account model
 
 ## 0.41.0 (3rd November 2025)
 
