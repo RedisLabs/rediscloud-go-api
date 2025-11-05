@@ -68,10 +68,12 @@ func TestAccount_ListRegions(t *testing.T) {
 	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/regions", `{
   "regions": [
     {
+      "id": 1,
       "name": "asia-east1",
       "provider": "GCP"
     },
     {
+      "id": 2,
       "name": "eu-west-1",
       "provider": "AWS"
     }
@@ -92,10 +94,12 @@ func TestAccount_ListRegions(t *testing.T) {
 
 	assert.ElementsMatch(t, []*account.Region{
 		{
+			ID:       redis.Int(1),
 			Name:     redis.String("asia-east1"),
 			Provider: redis.String("GCP"),
 		},
 		{
+			ID:       redis.Int(2),
 			Name:     redis.String("eu-west-1"),
 			Provider: redis.String("AWS"),
 		},
