@@ -24,6 +24,7 @@ func TestFixedDatabase_Create(t *testing.T) {
 				`{
 					"name": "my-test-fixed-database",
 					"protocol": "memcached",
+					"redisVersion": "7.4",
 					"respVersion": "resp2",
 					"dataPersistence": "none",
 					"dataEvictionPolicy": "noeviction",
@@ -84,6 +85,7 @@ func TestFixedDatabase_Create(t *testing.T) {
 		fixedDatabases.CreateFixedDatabase{
 			Name:               redis.String("my-test-fixed-database"),
 			Protocol:           redis.String("memcached"),
+			RedisVersion:       redis.String("7.4"),
 			RespVersion:        redis.String("resp2"),
 			DataPersistence:    redis.String("none"),
 			DataEvictionPolicy: redis.String("noeviction"),
@@ -124,6 +126,7 @@ func TestFixedDatabase_List(t *testing.T) {
 								"protocol": "memcached",
 								"provider": "AWS",
 								"region": "us-west-1",
+								"redisVersion": "7.4",
 								"respVersion": "resp2",
 								"status": "draft",
 								"planMemoryLimit": 1,
@@ -228,6 +231,7 @@ func TestFixedDatabase_List(t *testing.T) {
 			Protocol:                            redis.String("memcached"),
 			Provider:                            redis.String("AWS"),
 			Region:                              redis.String("us-west-1"),
+			RedisVersion:                        redis.String("7.4"),
 			RespVersion:                         redis.String("resp2"),
 			Status:                              redis.String("draft"),
 			PlanMemoryLimit:                     redis.Float64(1),
@@ -286,6 +290,7 @@ func TestFixedDatabase_Get(t *testing.T) {
 					"protocol": "memcached",
 					"provider": "AWS",
 					"region": "us-west-1",
+					"redisVersion": "7.4",
 					"respVersion": "resp2",
 					"status": "draft",
 					"planMemoryLimit": 1,
@@ -354,6 +359,7 @@ func TestFixedDatabase_Get(t *testing.T) {
 		Protocol:                            redis.String("memcached"),
 		Provider:                            redis.String("AWS"),
 		Region:                              redis.String("us-west-1"),
+		RedisVersion:                        redis.String("7.4"),
 		RespVersion:                         redis.String("resp2"),
 		Status:                              redis.String("draft"),
 		PlanMemoryLimit:                     redis.Float64(1),
@@ -545,4 +551,75 @@ func TestFixedDatabase_Delete(t *testing.T) {
 	err = subject.FixedDatabases.Delete(context.TODO(), 112119, 51056892)
 	require.NoError(t, err)
 
+}
+
+func TestFixedDatabase_UpgradeRedisVersion(t *testing.T) {
+	server := httptest.NewServer(
+		testServer(
+			"apiKey",
+			"secret",
+			postRequest(
+				t,
+				"/fixed/subscriptions/111728/databases/51055029/upgrade",
+				`{
+					"targetRedisVersion": "7.4"
+				}`,
+				`{
+					"taskId": "a1b2c3d4-5678-90ab-cdef-1234567890ab",
+					"commandType": "fixedDatabaseUpgradeRedisVersionRequest",
+					"status": "received",
+					"description": "Task request received and is being queued for processing.",
+					"timestamp": "2024-05-10T14:14:14.736763484Z",
+					"links": [
+						{
+							"rel": "task",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/tasks/a1b2c3d4-5678-90ab-cdef-1234567890ab"
+						}
+					]
+				}`,
+			),
+			getRequest(
+				t,
+				"/tasks/a1b2c3d4-5678-90ab-cdef-1234567890ab",
+				`{
+					"taskId": "a1b2c3d4-5678-90ab-cdef-1234567890ab",
+					"commandType": "fixedDatabaseUpgradeRedisVersionRequest",
+					"status": "processing-completed",
+					"description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+					"timestamp": "2024-05-10T14:14:34.153537279Z",
+					"response": {
+						"resourceId": 51055029,
+						"additionalResourceId": 111728
+					},
+					"links": [
+						{
+							"rel": "resource",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/fixed/subscriptions/111728/databases/51055029"
+						},
+						{
+							"rel": "self",
+							"type": "GET",
+							"href": "https://api-staging.qa.redislabs.com/v1/tasks/a1b2c3d4-5678-90ab-cdef-1234567890ab"
+						}
+					]
+				}`,
+			),
+		),
+	)
+
+	subject, err := clientFromTestServer(server, "apiKey", "secret")
+	require.NoError(t, err)
+
+	err = subject.FixedDatabases.UpgradeRedisVersion(
+		context.TODO(),
+		111728,
+		51055029,
+		fixedDatabases.UpgradeRedisVersion{
+			TargetRedisVersion: redis.String("7.4"),
+		},
+	)
+
+	require.NoError(t, err)
 }
