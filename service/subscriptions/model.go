@@ -136,6 +136,8 @@ type Subscription struct {
 	StorageEncryption               *bool                            `json:"storageEncryption,omitempty"`
 	NumberOfDatabases               *int                             `json:"numberOfDatabases,omitempty"`
 	CloudDetails                    []*CloudDetail                   `json:"cloudDetails,omitempty"`
+	PersistentStorageEncryptionType *string                          `json:"persistentStorageEncryptionType,omitempty"`
+	DeletionGracePeriod             *string                          `json:"deletionGracePeriod,omitempty"`
 	CustomerManagedKeyAccessDetails *CustomerManagedKeyAccessDetails `json:"customerManagedKeyAccessDetails,omitempty"`
 	PublicEndpointAccess            *bool                            `json:"publicEndpointAccess,omitempty"`
 }

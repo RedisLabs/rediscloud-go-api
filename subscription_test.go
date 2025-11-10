@@ -647,7 +647,9 @@ func TestSubscription_Get(t *testing.T) {
 	}, actual)
 }
 
-func TestSubscription_Get_PublicEndpointAccess(t *testing.T) {
+// TestSubscription_Get_OptionalFields tests that optional fields like publicEndpointAccess,
+// persistentStorageEncryptionType, and deletionGracePeriod are properly unmarshaled from the API response
+func TestSubscription_Get_OptionalFields(t *testing.T) {
 	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/subscriptions/98766", `{
   "id": 2,
   "name": "Get-test-public-endpoint",
@@ -657,6 +659,8 @@ func TestSubscription_Get_PublicEndpointAccess(t *testing.T) {
   "memoryStorage": "ram",
   "storageEncryption": false,
   "publicEndpointAccess": false,
+  "persistentStorageEncryptionType": "customer-managed-key",
+  "deletionGracePeriod": "15-minutes",
   "numberOfDatabases": 1,
   "cloudDetails": [
     {
@@ -696,15 +700,17 @@ func TestSubscription_Get_PublicEndpointAccess(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, &subscriptions.Subscription{
-		ID:                   redis.Int(2),
-		Name:                 redis.String("Get-test-public-endpoint"),
-		Status:               redis.String("active"),
-		PaymentMethod:        redis.String("credit-card"),
-		PaymentMethodID:      redis.Int(2),
-		MemoryStorage:        redis.String("ram"),
-		StorageEncryption:    redis.Bool(false),
-		PublicEndpointAccess: redis.Bool(false),
-		NumberOfDatabases:    redis.Int(1),
+		ID:                              redis.Int(2),
+		Name:                            redis.String("Get-test-public-endpoint"),
+		Status:                          redis.String("active"),
+		PaymentMethod:                   redis.String("credit-card"),
+		PaymentMethodID:                 redis.Int(2),
+		MemoryStorage:                   redis.String("ram"),
+		StorageEncryption:               redis.Bool(false),
+		PublicEndpointAccess:            redis.Bool(false),
+		PersistentStorageEncryptionType: redis.String("customer-managed-key"),
+		DeletionGracePeriod:             redis.String("15-minutes"),
+		NumberOfDatabases:               redis.Int(1),
 		CloudDetails: []*subscriptions.CloudDetail{
 			{
 				Provider:       redis.String("AWS"),
