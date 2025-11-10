@@ -31,6 +31,7 @@ func (o regions) String() string {
 }
 
 type Region struct {
+	ID       *int    `json:"id,omitempty"`
 	Name     *string `json:"name,omitempty"`
 	Provider *string `json:"provider,omitempty"`
 }

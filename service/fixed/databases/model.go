@@ -29,6 +29,7 @@ type CreateFixedDatabase struct {
 	Password                            *string                `json:"password,omitempty"`
 	Alerts                              *[]*databases.Alert    `json:"alerts,omitempty"`
 	Modules                             *[]*databases.Module   `json:"modules,omitempty"`
+	RedisVersion                        *string                `json:"redisVersion,omitempty"`
 }
 
 type UpdateFixedDatabase struct {
@@ -61,6 +62,7 @@ type FixedDatabase struct {
 	Provider                            *string    `json:"provider,omitempty"`
 	Region                              *string    `json:"region,omitempty"`
 	RedisVersionCompliance              *string    `json:"redisVersionCompliance,omitempty"`
+	RedisVersion                        *string    `json:"redisVersion,omitempty"`
 	RespVersion                         *string    `json:"respVersion,omitempty"`
 	Status                              *string    `json:"status,omitempty"`
 	PlanMemoryLimit                     *float64   `json:"planMemoryLimit,omitempty"`
@@ -157,6 +159,14 @@ type Import struct {
 }
 
 func (o Import) String() string {
+	return internal.ToString(o)
+}
+
+type UpgradeRedisVersion struct {
+	TargetRedisVersion *string `json:"targetRedisVersion,omitempty"`
+}
+
+func (o UpgradeRedisVersion) String() string {
 	return internal.ToString(o)
 }
 
