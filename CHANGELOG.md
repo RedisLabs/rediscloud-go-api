@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased
+
+### Added:
+* Added `PersistentStorageEncryptionType` and `DeletionGracePeriod` fields to `Subscription` model for customer-managed key support
+
 ## 0.42.0 (10th November 2025)
 
 ### Added:
