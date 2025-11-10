@@ -278,3 +278,5 @@ CLAUDE.md
 
 coverage.out
 swagger-redis-api.json
+
+.vscode
