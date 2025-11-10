@@ -4,6 +4,8 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
 ## 0.42.0 (10th November 2025)
 
+### Added:
+
 * Added `ID` field to `Region` struct in account model
 * Added Redis version support for Essentials databases: `RedisVersion` field and `UpgradeRedisVersion()` method
 
