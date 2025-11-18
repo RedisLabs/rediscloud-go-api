@@ -114,7 +114,7 @@ func (a *API) DeleteActiveActive(ctx context.Context, subscription int, regionId
 	return nil
 }
 
-func (a *API) ListInvitations(ctx context.Context, subscription int) (*InvitationsResponse, error) {
+func (a *API) ListInvitations(ctx context.Context, subscription int) ([]*TransitGatewayInvitation, error) {
 	message := fmt.Sprintf("list TGw invitations for subscription %d", subscription)
 	address := fmt.Sprintf("/subscriptions/%d/transitGateways/invitations", subscription)
 	invitations, err := a.listInvitations(ctx, message, address)
@@ -124,7 +124,7 @@ func (a *API) ListInvitations(ctx context.Context, subscription int) (*Invitatio
 	return invitations, nil
 }
 
-func (a *API) ListInvitationsActiveActive(ctx context.Context, subscription int, regionId int) (*InvitationsResponse, error) {
+func (a *API) ListInvitationsActiveActive(ctx context.Context, subscription int, regionId int) ([]*TransitGatewayInvitation, error) {
 	message := fmt.Sprintf("list TGw invitations for subscription %d in region %d", subscription, regionId)
 	address := fmt.Sprintf("/subscriptions/%d/regions/%d/transitGateways/invitations", subscription, regionId)
 	invitations, err := a.listInvitations(ctx, message, address)
@@ -254,7 +254,7 @@ func (a *API) delete(ctx context.Context, message string, address string) error 
 	return nil
 }
 
-func (a *API) listInvitations(ctx context.Context, message string, address string) (*InvitationsResponse, error) {
+func (a *API) listInvitations(ctx context.Context, message string, address string) ([]*TransitGatewayInvitation, error) {
 	var task internal.TaskResponse
 	err := a.client.Get(ctx, message, address, &task)
 	if err != nil {
@@ -278,7 +278,7 @@ func (a *API) listInvitations(ctx context.Context, message string, address strin
 		return nil, fmt.Errorf("failed to retrieve completed tgwListInvitationsRequest %d: %w", task.ID, err)
 	}
 
-	return invitationsResponse, nil
+	return invitationsResponse.Response.Resource.Invitations, nil
 }
 
 func (a *API) acceptInvitation(ctx context.Context, message string, address string) error {
