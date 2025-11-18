@@ -114,6 +114,66 @@ func (a *API) DeleteActiveActive(ctx context.Context, subscription int, regionId
 	return nil
 }
 
+func (a *API) ListInvitations(ctx context.Context, subscription int) (*InvitationsResponse, error) {
+	message := fmt.Sprintf("list TGw invitations for subscription %d", subscription)
+	address := fmt.Sprintf("/subscriptions/%d/transitGateways/invitations", subscription)
+	invitations, err := a.listInvitations(ctx, message, address)
+	if err != nil {
+		return nil, wrap404Error(subscription, err)
+	}
+	return invitations, nil
+}
+
+func (a *API) ListInvitationsActiveActive(ctx context.Context, subscription int, regionId int) (*InvitationsResponse, error) {
+	message := fmt.Sprintf("list TGw invitations for subscription %d in region %d", subscription, regionId)
+	address := fmt.Sprintf("/subscriptions/%d/regions/%d/transitGateways/invitations", subscription, regionId)
+	invitations, err := a.listInvitations(ctx, message, address)
+	if err != nil {
+		return nil, wrap404ErrorActiveActive(subscription, regionId, err)
+	}
+	return invitations, nil
+}
+
+func (a *API) AcceptInvitation(ctx context.Context, subscription int, tgwInvitationId int) error {
+	message := fmt.Sprintf("accept TGw invitation %d for subscription %d", tgwInvitationId, subscription)
+	address := fmt.Sprintf("/subscriptions/%d/transitGateways/invitations/%d/accept", subscription, tgwInvitationId)
+	err := a.acceptInvitation(ctx, message, address)
+	if err != nil {
+		return wrap404Error(subscription, err)
+	}
+	return nil
+}
+
+func (a *API) AcceptInvitationActiveActive(ctx context.Context, subscription int, regionId int, tgwInvitationId int) error {
+	message := fmt.Sprintf("accept TGw invitation %d for subscription %d in region %d", tgwInvitationId, subscription, regionId)
+	address := fmt.Sprintf("/subscriptions/%d/regions/%d/transitGateways/invitations/%d/accept", subscription, regionId, tgwInvitationId)
+	err := a.acceptInvitation(ctx, message, address)
+	if err != nil {
+		return wrap404ErrorActiveActive(subscription, regionId, err)
+	}
+	return nil
+}
+
+func (a *API) RejectInvitation(ctx context.Context, subscription int, tgwInvitationId int) error {
+	message := fmt.Sprintf("reject TGw invitation %d for subscription %d", tgwInvitationId, subscription)
+	address := fmt.Sprintf("/subscriptions/%d/transitGateways/invitations/%d/reject", subscription, tgwInvitationId)
+	err := a.rejectInvitation(ctx, message, address)
+	if err != nil {
+		return wrap404Error(subscription, err)
+	}
+	return nil
+}
+
+func (a *API) RejectInvitationActiveActive(ctx context.Context, subscription int, regionId int, tgwInvitationId int) error {
+	message := fmt.Sprintf("reject TGw invitation %d for subscription %d in region %d", tgwInvitationId, subscription, regionId)
+	address := fmt.Sprintf("/subscriptions/%d/regions/%d/transitGateways/invitations/%d/reject", subscription, regionId, tgwInvitationId)
+	err := a.rejectInvitation(ctx, message, address)
+	if err != nil {
+		return wrap404ErrorActiveActive(subscription, regionId, err)
+	}
+	return nil
+}
+
 func (a *API) get(ctx context.Context, message string, address string) (*GetAttachmentsTask, error) {
 	var task internal.TaskResponse
 	err := a.client.Get(ctx, message, address, &task)
@@ -189,6 +249,67 @@ func (a *API) delete(ctx context.Context, message string, address string) error 
 	err = a.taskWaiter.Wait(ctx, *task.ID)
 	if err != nil {
 		return fmt.Errorf("failed when deleting TGw attachment %w", err)
+	}
+
+	return nil
+}
+
+func (a *API) listInvitations(ctx context.Context, message string, address string) (*InvitationsResponse, error) {
+	var task internal.TaskResponse
+	err := a.client.Get(ctx, message, address, &task)
+	if err != nil {
+		return nil, err
+	}
+
+	a.logger.Printf("Waiting for tgwListInvitationsRequest %d to complete", task.ID)
+
+	err = a.taskWaiter.Wait(ctx, *task.ID)
+
+	a.logger.Printf("tgwListInvitationsRequest %d completed, possibly with error", task.ID, err)
+
+	var invitationsResponse *InvitationsResponse
+	err = a.client.Get(ctx,
+		fmt.Sprintf("retrieve completed tgwListInvitationsRequest task %d", task.ID),
+		"/tasks/"+*task.ID,
+		&invitationsResponse,
+	)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve completed tgwListInvitationsRequest %d: %w", task.ID, err)
+	}
+
+	return invitationsResponse, nil
+}
+
+func (a *API) acceptInvitation(ctx context.Context, message string, address string) error {
+	var task internal.TaskResponse
+	err := a.client.Put(ctx, message, address, nil, &task)
+	if err != nil {
+		return err
+	}
+
+	a.logger.Printf("Waiting for task %s to finish accepting the TGw invitation", task)
+
+	err = a.taskWaiter.Wait(ctx, *task.ID)
+	if err != nil {
+		return fmt.Errorf("failed when accepting TGw invitation %w", err)
+	}
+
+	return nil
+}
+
+func (a *API) rejectInvitation(ctx context.Context, message string, address string) error {
+	var task internal.TaskResponse
+	err := a.client.Put(ctx, message, address, nil, &task)
+	if err != nil {
+		return err
+	}
+
+	a.logger.Printf("Waiting for task %s to finish rejecting the TGw invitation", task)
+
+	err = a.taskWaiter.Wait(ctx, *task.ID)
+	if err != nil {
+		return fmt.Errorf("failed when rejecting TGw invitation %w", err)
 	}
 
 	return nil
