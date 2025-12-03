@@ -679,7 +679,7 @@ func TestListInvitations(t *testing.T) {
 				"/subscriptions/114019/transitGateways/invitations",
 				`{
 				  "taskId": "a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
-				  "commandType": "tgwListInvitationsRequest",
+				  "commandType": "tgwInvitationsGetRequest",
 				  "status": "received",
 				  "description": "Task request received and is being queued for processing.",
 				  "timestamp": "2024-07-16T09:26:40.929904847Z",
@@ -697,27 +697,29 @@ func TestListInvitations(t *testing.T) {
 				"/tasks/a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
 				`{
 				  "taskId": "a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
-				  "commandType": "tgwListInvitationsRequest",
+				  "commandType": "tgwInvitationsGetRequest",
 				  "status": "processing-completed",
 				  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
 				  "timestamp": "2024-07-16T09:26:49.847808891Z",
 				  "response": {
 					"resourceId": 114019,
 					"resource": {
-					  "invitations": [
+					  "resources": [
 						{
 						  "id": 1,
-						  "tgwId": 36,
-						  "awsTgwUid": "tgw-0b92afdae97faaef8",
+						  "name": "tf-test-invitation-1",
+						  "resourceShareUid": "arn:aws:ram:us-east-1:620187402834:resource-share/abc123",
+						  "awsAccountId": "620187402834",
 						  "status": "pending",
-						  "awsAccountId": "620187402834"
+						  "sharedDate": "2024-07-16T00:00:00.000+00:00"
 						},
 						{
 						  "id": 2,
-						  "tgwId": 37,
-						  "awsTgwUid": "tgw-0c93bfeaf98gbbfg9",
-						  "status": "pending",
-						  "awsAccountId": "620187402834"
+						  "name": "tf-test-invitation-2",
+						  "resourceShareUid": "arn:aws:ram:us-east-1:620187402834:resource-share/def456",
+						  "awsAccountId": "620187402834",
+						  "status": "accepted",
+						  "sharedDate": "2024-07-15T00:00:00.000+00:00"
 						}
 					  ]
 					}
@@ -736,27 +738,29 @@ func TestListInvitations(t *testing.T) {
 				"/tasks/a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
 				`{
 				  "taskId": "a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
-				  "commandType": "tgwListInvitationsRequest",
+				  "commandType": "tgwInvitationsGetRequest",
 				  "status": "processing-completed",
 				  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
 				  "timestamp": "2024-07-16T09:26:49.847808891Z",
 				  "response": {
 					"resourceId": 114019,
 					"resource": {
-					  "invitations": [
+					  "resources": [
 						{
 						  "id": 1,
-						  "tgwId": 36,
-						  "awsTgwUid": "tgw-0b92afdae97faaef8",
+						  "name": "tf-test-invitation-1",
+						  "resourceShareUid": "arn:aws:ram:us-east-1:620187402834:resource-share/abc123",
+						  "awsAccountId": "620187402834",
 						  "status": "pending",
-						  "awsAccountId": "620187402834"
+						  "sharedDate": "2024-07-16T00:00:00.000+00:00"
 						},
 						{
 						  "id": 2,
-						  "tgwId": 37,
-						  "awsTgwUid": "tgw-0c93bfeaf98gbbfg9",
-						  "status": "pending",
-						  "awsAccountId": "620187402834"
+						  "name": "tf-test-invitation-2",
+						  "resourceShareUid": "arn:aws:ram:us-east-1:620187402834:resource-share/def456",
+						  "awsAccountId": "620187402834",
+						  "status": "accepted",
+						  "sharedDate": "2024-07-15T00:00:00.000+00:00"
 						}
 					  ]
 					}
@@ -778,31 +782,22 @@ func TestListInvitations(t *testing.T) {
 	actual, err := subject.TransitGatewayAttachments.ListInvitations(context.TODO(), 114019)
 	require.NoError(t, err)
 
-	assert.Equal(t, &attachments.InvitationsResponse{
-		CommandType: redis.String("tgwListInvitationsRequest"),
-		Description: redis.String("Request processing completed successfully and its resources are now being provisioned / de-provisioned."),
-		Status:      redis.String("processing-completed"),
-		ID:          redis.String("a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d"),
-		Response: &attachments.InvitationResponseData{
-			ResourceId: redis.Int(114019),
-			Resource: &attachments.InvitationsResource{
-				Invitations: []*attachments.TransitGatewayInvitation{
-					{
-						Id:           redis.Int(1),
-						TgwId:        redis.Int(36),
-						AwsTgwUid:    redis.String("tgw-0b92afdae97faaef8"),
-						Status:       redis.String("pending"),
-						AwsAccountId: redis.String("620187402834"),
-					},
-					{
-						Id:           redis.Int(2),
-						TgwId:        redis.Int(37),
-						AwsTgwUid:    redis.String("tgw-0c93bfeaf98gbbfg9"),
-						Status:       redis.String("pending"),
-						AwsAccountId: redis.String("620187402834"),
-					},
-				},
-			},
+	assert.Equal(t, []*attachments.TransitGatewayInvitation{
+		{
+			Id:               redis.Int(1),
+			Name:             redis.String("tf-test-invitation-1"),
+			ResourceShareUid: redis.String("arn:aws:ram:us-east-1:620187402834:resource-share/abc123"),
+			AwsAccountId:     redis.String("620187402834"),
+			Status:           redis.String("pending"),
+			SharedDate:       redis.String("2024-07-16T00:00:00.000+00:00"),
+		},
+		{
+			Id:               redis.Int(2),
+			Name:             redis.String("tf-test-invitation-2"),
+			ResourceShareUid: redis.String("arn:aws:ram:us-east-1:620187402834:resource-share/def456"),
+			AwsAccountId:     redis.String("620187402834"),
+			Status:           redis.String("accepted"),
+			SharedDate:       redis.String("2024-07-15T00:00:00.000+00:00"),
 		},
 	}, actual)
 }
@@ -817,7 +812,7 @@ func TestListInvitationsActiveActive(t *testing.T) {
 				"/subscriptions/114019/regions/1/transitGateways/invitations",
 				`{
 				  "taskId": "b2c3d4e5-6f7a-8b9c-0d1e-2f3a4b5c6d7e",
-				  "commandType": "tgwListInvitationsRequest",
+				  "commandType": "tgwInvitationsGetRequest",
 				  "status": "received",
 				  "description": "Task request received and is being queued for processing.",
 				  "timestamp": "2024-07-16T09:26:40.929904847Z",
@@ -835,20 +830,21 @@ func TestListInvitationsActiveActive(t *testing.T) {
 				"/tasks/b2c3d4e5-6f7a-8b9c-0d1e-2f3a4b5c6d7e",
 				`{
 				  "taskId": "b2c3d4e5-6f7a-8b9c-0d1e-2f3a4b5c6d7e",
-				  "commandType": "tgwListInvitationsRequest",
+				  "commandType": "tgwInvitationsGetRequest",
 				  "status": "processing-completed",
 				  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
 				  "timestamp": "2024-07-16T09:26:49.847808891Z",
 				  "response": {
 					"resourceId": 114019,
 					"resource": {
-					  "invitations": [
+					  "resources": [
 						{
 						  "id": 3,
-						  "tgwId": 38,
-						  "awsTgwUid": "tgw-0d94cgfbg09hcchh0",
+						  "name": "tf-test-invitation-3",
+						  "resourceShareUid": "arn:aws:ram:us-east-1:620187402834:resource-share/ghi789",
+						  "awsAccountId": "620187402834",
 						  "status": "pending",
-						  "awsAccountId": "620187402834"
+						  "sharedDate": "2024-07-16T00:00:00.000+00:00"
 						}
 					  ]
 					}
@@ -867,20 +863,21 @@ func TestListInvitationsActiveActive(t *testing.T) {
 				"/tasks/b2c3d4e5-6f7a-8b9c-0d1e-2f3a4b5c6d7e",
 				`{
 				  "taskId": "b2c3d4e5-6f7a-8b9c-0d1e-2f3a4b5c6d7e",
-				  "commandType": "tgwListInvitationsRequest",
+				  "commandType": "tgwInvitationsGetRequest",
 				  "status": "processing-completed",
 				  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
 				  "timestamp": "2024-07-16T09:26:49.847808891Z",
 				  "response": {
 					"resourceId": 114019,
 					"resource": {
-					  "invitations": [
+					  "resources": [
 						{
 						  "id": 3,
-						  "tgwId": 38,
-						  "awsTgwUid": "tgw-0d94cgfbg09hcchh0",
+						  "name": "tf-test-invitation-3",
+						  "resourceShareUid": "arn:aws:ram:us-east-1:620187402834:resource-share/ghi789",
+						  "awsAccountId": "620187402834",
 						  "status": "pending",
-						  "awsAccountId": "620187402834"
+						  "sharedDate": "2024-07-16T00:00:00.000+00:00"
 						}
 					  ]
 					}
@@ -902,24 +899,14 @@ func TestListInvitationsActiveActive(t *testing.T) {
 	actual, err := subject.TransitGatewayAttachments.ListInvitationsActiveActive(context.TODO(), 114019, 1)
 	require.NoError(t, err)
 
-	assert.Equal(t, &attachments.InvitationsResponse{
-		CommandType: redis.String("tgwListInvitationsRequest"),
-		Description: redis.String("Request processing completed successfully and its resources are now being provisioned / de-provisioned."),
-		Status:      redis.String("processing-completed"),
-		ID:          redis.String("b2c3d4e5-6f7a-8b9c-0d1e-2f3a4b5c6d7e"),
-		Response: &attachments.InvitationResponseData{
-			ResourceId: redis.Int(114019),
-			Resource: &attachments.InvitationsResource{
-				Invitations: []*attachments.TransitGatewayInvitation{
-					{
-						Id:           redis.Int(3),
-						TgwId:        redis.Int(38),
-						AwsTgwUid:    redis.String("tgw-0d94cgfbg09hcchh0"),
-						Status:       redis.String("pending"),
-						AwsAccountId: redis.String("620187402834"),
-					},
-				},
-			},
+	assert.Equal(t, []*attachments.TransitGatewayInvitation{
+		{
+			Id:               redis.Int(3),
+			Name:             redis.String("tf-test-invitation-3"),
+			ResourceShareUid: redis.String("arn:aws:ram:us-east-1:620187402834:resource-share/ghi789"),
+			AwsAccountId:     redis.String("620187402834"),
+			Status:           redis.String("pending"),
+			SharedDate:       redis.String("2024-07-16T00:00:00.000+00:00"),
 		},
 	}, actual)
 }

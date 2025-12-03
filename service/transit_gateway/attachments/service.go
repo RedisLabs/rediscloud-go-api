@@ -278,7 +278,7 @@ func (a *API) listInvitations(ctx context.Context, message string, address strin
 		return nil, fmt.Errorf("failed to retrieve completed tgwListInvitationsRequest %d: %w", task.ID, err)
 	}
 
-	return invitationsResponse.Response.Resource.Invitations, nil
+	return invitationsResponse.Response.Resource.Resources, nil
 }
 
 func (a *API) acceptInvitation(ctx context.Context, message string, address string) error {

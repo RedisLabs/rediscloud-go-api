@@ -39,15 +39,16 @@ type updateCidrs struct {
 }
 
 type TransitGatewayInvitation struct {
-	Id           *int    `json:"id,omitempty"`
-	TgwId        *int    `json:"tgwId,omitempty"`
-	AwsTgwUid    *string `json:"awsTgwUid,omitempty"`
-	Status       *string `json:"status,omitempty"`
-	AwsAccountId *string `json:"awsAccountId,omitempty"`
+	Id               *int    `json:"id,omitempty"`
+	Name             *string `json:"name,omitempty"`
+	ResourceShareUid *string `json:"resourceShareUid,omitempty"`
+	AwsAccountId     *string `json:"awsAccountId,omitempty"`
+	Status           *string `json:"status,omitempty"`
+	SharedDate       *string `json:"sharedDate,omitempty"`
 }
 
 type InvitationsResource struct {
-	Invitations []*TransitGatewayInvitation `json:"invitations,omitempty"`
+	Resources []*TransitGatewayInvitation `json:"resources,omitempty"`
 }
 
 type InvitationsResponse struct {
