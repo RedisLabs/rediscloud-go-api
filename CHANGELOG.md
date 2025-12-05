@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
-## 0.44.0 (18th November 2025)
+## 0.44.0 (5th December 2025)
 
 ### Added:
 * Added Transit Gateway invitation support: `ListInvitations()`, `AcceptInvitation()`, and `RejectInvitation()` methods for both Pro and Active-Active subscriptions
