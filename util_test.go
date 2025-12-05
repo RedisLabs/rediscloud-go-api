@@ -186,6 +186,16 @@ func putRequest(t *testing.T, path string, request string, body string) endpoint
 	}
 }
 
+func putRequestWithNoRequest(t *testing.T, path string, body string) endpointRequest {
+	return endpointRequest{
+		method: http.MethodPut,
+		path:   path,
+		body:   body,
+		status: http.StatusOK,
+		t:      t,
+	}
+}
+
 // taskFlow returns the two endpointRequests needed for a "POST/PUT/DELETE -> GET /tasks/{id}" flow
 func taskFlow(t *testing.T, method, path, requestBody, taskID, commandType string) []endpointRequest {
 	now := time.Now().UTC().Format(time.RFC3339) // e.g. "2025-08-11T14:33:21Z"

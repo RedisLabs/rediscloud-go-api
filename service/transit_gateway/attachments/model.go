@@ -38,6 +38,32 @@ type updateCidrs struct {
 	Cidrs *[]*string `json:"cidrs,omitempty"`
 }
 
+type TransitGatewayInvitation struct {
+	Id               *int    `json:"id,omitempty"`
+	Name             *string `json:"name,omitempty"`
+	ResourceShareUid *string `json:"resourceShareUid,omitempty"`
+	AwsAccountId     *string `json:"awsAccountId,omitempty"`
+	Status           *string `json:"status,omitempty"`
+	SharedDate       *string `json:"sharedDate,omitempty"`
+}
+
+type InvitationsResource struct {
+	Resources []*TransitGatewayInvitation `json:"resources,omitempty"`
+}
+
+type InvitationsResponse struct {
+	CommandType *string                 `json:"commandType,omitempty"`
+	Description *string                 `json:"description,omitempty"`
+	Status      *string                 `json:"status,omitempty"`
+	ID          *string                 `json:"taskId,omitempty"`
+	Response    *InvitationResponseData `json:"response,omitempty"`
+}
+
+type InvitationResponseData struct {
+	ResourceId *int                 `json:"resourceId,omitempty"`
+	Resource   *InvitationsResource `json:"resource,omitempty"`
+}
+
 type NotFound struct {
 	subId int
 }
