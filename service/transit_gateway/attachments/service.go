@@ -184,8 +184,11 @@ func (a *API) get(ctx context.Context, message string, address string) (*GetAtta
 	a.logger.Printf("Waiting for tgwGetRequest %d to complete", task.ID)
 
 	err = a.taskWaiter.Wait(ctx, *task.ID)
+	if err != nil {
+		return nil, err
+	}
 
-	a.logger.Printf("tgwGetRequest %d completed, possibly with error", task.ID, err)
+	a.logger.Printf("tgwGetRequest %d completed", task.ID)
 
 	var getAttachmentsTask *GetAttachmentsTask
 	err = a.client.Get(ctx,
@@ -264,8 +267,11 @@ func (a *API) listInvitations(ctx context.Context, message string, address strin
 	a.logger.Printf("Waiting for tgwListInvitationsRequest %d to complete", task.ID)
 
 	err = a.taskWaiter.Wait(ctx, *task.ID)
+	if err != nil {
+		return nil, err
+	}
 
-	a.logger.Printf("tgwListInvitationsRequest %d completed, possibly with error", task.ID, err)
+	a.logger.Printf("tgwListInvitationsRequest %d completed", task.ID)
 
 	var invitationsResponse *InvitationsResponse
 	err = a.client.Get(ctx,
