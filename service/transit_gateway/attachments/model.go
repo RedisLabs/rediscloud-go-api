@@ -52,10 +52,10 @@ type InvitationsResource struct {
 }
 
 type InvitationsResponse struct {
-	CommandType *string              `json:"commandType,omitempty"`
-	Description *string              `json:"description,omitempty"`
-	Status      *string              `json:"status,omitempty"`
-	ID          *string              `json:"taskId,omitempty"`
+	CommandType *string                 `json:"commandType,omitempty"`
+	Description *string                 `json:"description,omitempty"`
+	Status      *string                 `json:"status,omitempty"`
+	ID          *string                 `json:"taskId,omitempty"`
 	Response    *InvitationResponseData `json:"response,omitempty"`
 }
 
