@@ -126,13 +126,12 @@ func (c *HttpClient) connection(ctx context.Context, method, name, path string, 
 	}
 
 	request, err := http.NewRequestWithContext(ctx, method, u, body)
-
-	// The API expects this entry in the header in all requests.
-	request.Header.Set("Content-Type", "application/json")
-
 	if err != nil {
 		return fmt.Errorf("failed to create request to %s: %w", name, err)
 	}
+
+	// The API expects this entry in the header in all requests.
+	request.Header.Set("Content-Type", "application/json")
 
 	response, err := c.client.Do(request)
 	if err != nil {
