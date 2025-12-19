@@ -27,23 +27,44 @@ linters:
     - noctx           # HTTP requests without context
     - unconvert       # unnecessary type conversions
 
-linters-settings:
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - performance
-    disabled-checks:
-      - whyNoLint
-      - hugeParam       # too noisy for this codebase
+    # Code quality
+    - copyloopvar     # detects loop variable capture bugs (Go 1.22+)
+    - dupword         # duplicate words in comments/strings
+    - intrange        # suggests using integer range loops (Go 1.22+)
+    - makezero        # finds slice bugs from non-zero initial length
+    - perfsprint      # suggests more efficient string formatting
+    - prealloc        # suggests slice preallocation
+    - usestdlibvars   # use stdlib constants (http.StatusOK, etc.)
+    - wastedassign    # finds wasted assignments
 
-  errorlint:
-    errorf: true
-    asserts: true
-    comparison: true
+    # Security
+    - gosec           # security checker
 
-issues:
-  exclude-dirs:
-    - vendor
+  settings:
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - performance
+      disabled-checks:
+        - hugeParam       # too noisy for this codebase
 
-  max-issues-per-linter: 0
-  max-same-issues: 0
+    errorlint:
+      errorf: true
+      asserts: true
+      comparison: true
+
+    gosec:
+      excludes:
+        - G101  # false positives on env var names like "SECRET_KEY"
+
+    dupword:
+      ignore:
+        - "active"  # "active active" is intentional Redis terminology
+
+  exclusions:
+    paths:
+      - vendor
+    rules:
+      - linters:
+          - gosec
+        text: "G101"  # additional rule-based exclusion for credential false positives

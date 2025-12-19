@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
@@ -81,7 +82,7 @@ func (a *api) waitForTaskToComplete(ctx context.Context, id string) (*Task, erro
 			task, err = a.get(ctx, id)
 			if err != nil {
 				var status *HTTPError
-				if errors.As(err, &status) && status.StatusCode == 404 {
+				if errors.As(err, &status) && status.StatusCode == http.StatusNotFound {
 					return &taskNotFoundError{err}
 				}
 				return retry.Unrecoverable(err)
@@ -130,7 +131,7 @@ func (a *api) WaitForTask(ctx context.Context, id string) (*Task, error) {
 
 func (a *api) get(ctx context.Context, id string) (*Task, error) {
 	var task Task
-	if err := a.client.Get(ctx, fmt.Sprintf("retrieve Task %s", id), "/tasks/"+url.PathEscape(id), &task); err != nil {
+	if err := a.client.Get(ctx, "retrieve Task "+id, "/tasks/"+url.PathEscape(id), &task); err != nil {
 		return nil, err
 	}
 

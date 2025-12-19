@@ -58,7 +58,7 @@ func TimeValue(d *time.Time) time.Time {
 }
 
 func StringSlice(ss ...string) []*string {
-	var ret []*string
+	ret := make([]*string, 0, len(ss))
 	for _, s := range ss {
 		ret = append(ret, String(s))
 	}

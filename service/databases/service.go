@@ -225,7 +225,7 @@ func (d *ListDatabase) nextPage() error {
 	}
 
 	if len(list.Subscription) != 1 || redis.IntValue(list.Subscription[0].ID) != d.subscription {
-		return fmt.Errorf("server didn't respond with just a single subscription")
+		return errors.New("server didn't respond with just a single subscription")
 	}
 
 	d.page = list.Subscription[0].Databases
