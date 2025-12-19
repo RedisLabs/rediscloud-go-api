@@ -71,8 +71,8 @@ func (c *HttpClient) Delete(ctx context.Context, name, path string, requestBody 
 	return c.connectionWithRetries(ctx, http.MethodDelete, name, path, nil, requestBody, responseBody)
 }
 
-func (c *HttpClient) DeleteWithQuery(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error {
-	return c.connectionWithRetries(ctx, http.MethodDelete, name, path, nil, requestBody, responseBody)
+func (c *HttpClient) DeleteWithQuery(ctx context.Context, name, path string, query url.Values, requestBody interface{}, responseBody interface{}) error {
+	return c.connectionWithRetries(ctx, http.MethodDelete, name, path, query, requestBody, responseBody)
 }
 
 func (c *HttpClient) connectionWithRetries(ctx context.Context, method, name, path string, query url.Values, requestBody interface{}, responseBody interface{}) error {

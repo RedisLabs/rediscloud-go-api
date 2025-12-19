@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/RedisLabs/rediscloud-go-api/service/subscriptions"
 
@@ -17,7 +18,7 @@ type Log interface {
 type HttpClient interface {
 	Get(ctx context.Context, name, path string, responseBody interface{}) error
 	Post(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
-	DeleteWithQuery(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error
+	DeleteWithQuery(ctx context.Context, name, path string, query url.Values, requestBody interface{}, responseBody interface{}) error
 }
 
 type TaskWaiter interface {
@@ -67,7 +68,7 @@ func (a API) List(ctx context.Context, subId int) (*Regions, error) {
 
 func (a *API) DeleteWithQuery(ctx context.Context, id int, regions DeleteRegions) error {
 	var task internal.TaskResponse
-	err := a.client.DeleteWithQuery(ctx, fmt.Sprintf("delete region %d", id), fmt.Sprintf("/subscriptions/%d/regions/", id), regions, &task)
+	err := a.client.DeleteWithQuery(ctx, fmt.Sprintf("delete region %d", id), fmt.Sprintf("/subscriptions/%d/regions/", id), nil, regions, &task)
 	if err != nil {
 		return wrap404Error(id, err)
 	}
