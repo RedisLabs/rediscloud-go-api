@@ -88,7 +88,7 @@ func (c *HttpClient) connectionWithRetries(ctx context.Context, method, name, pa
 			}
 			var target *HTTPError
 			if errors.As(err, &target) && target.StatusCode == http.StatusTooManyRequests {
-				c.logger.Println(fmt.Sprintf("status code 429 received, request will be retried"))
+				c.logger.Println("status code 429 received, request will be retried")
 				return true
 			}
 			return false
@@ -148,7 +148,7 @@ func (c *HttpClient) connection(ctx context.Context, method, name, path string, 
 		}
 	}
 
-	defer response.Body.Close()
+	defer func() { _ = response.Body.Close() }()
 
 	if response.StatusCode > 299 {
 		body, _ := io.ReadAll(response.Body)

@@ -59,7 +59,7 @@ func (rl *fixedWindowCountRateLimiter) Wait(ctx context.Context) error {
 	}
 
 	if rl.count >= rl.limit {
-		delay := windowEnd.Sub(time.Now())
+		delay := time.Until(windowEnd)
 		rl.mu.Unlock()
 		err := sleepWithContext(ctx, delay)
 		rl.mu.Lock()

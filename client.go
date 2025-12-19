@@ -260,8 +260,8 @@ func redactPasswords(data string) string {
 }
 
 func escapePath(path string) string {
-	escapedPath := strings.Replace(path, "\n", "", -1)
-	escapedPath = strings.Replace(escapedPath, "\r", "", -1)
+	escapedPath := strings.ReplaceAll(path, "\n", "")
+	escapedPath = strings.ReplaceAll(escapedPath, "\r", "")
 	return escapedPath
 }
 
