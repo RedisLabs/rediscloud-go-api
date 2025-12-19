@@ -1,0 +1,49 @@
+version: "2"
+
+run:
+  timeout: 5m
+  tests: false
+
+formatters:
+  enable:
+    - goimports
+
+linters:
+  enable:
+    # Default linters
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+
+    # High-value additional linters
+    - bodyclose       # HTTP response body not closed
+    - durationcheck   # suspicious duration multiplications
+    - errorlint       # proper error wrapping/comparison
+    - gocritic        # opinionated but useful checks
+    - misspell        # spelling mistakes
+    - nilerr          # returning nil with non-nil error
+    - noctx           # HTTP requests without context
+    - unconvert       # unnecessary type conversions
+
+linters-settings:
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - performance
+    disabled-checks:
+      - whyNoLint
+      - hugeParam       # too noisy for this codebase
+
+  errorlint:
+    errorf: true
+    asserts: true
+    comparison: true
+
+issues:
+  exclude-dirs:
+    - vendor
+
+  max-issues-per-linter: 0
+  max-same-issues: 0

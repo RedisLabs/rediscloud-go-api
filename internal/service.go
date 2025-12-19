@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"net/url"
@@ -79,7 +80,8 @@ func (a *api) waitForTaskToComplete(ctx context.Context, id string) (*Task, erro
 			var err error
 			task, err = a.get(ctx, id)
 			if err != nil {
-				if status, ok := err.(*HTTPError); ok && status.StatusCode == 404 {
+				var status *HTTPError
+				if errors.As(err, &status) && status.StatusCode == 404 {
 					return &taskNotFoundError{err}
 				}
 				return retry.Unrecoverable(err)
@@ -103,7 +105,8 @@ func (a *api) waitForTaskToComplete(ctx context.Context, id string) (*Task, erro
 			if !retry.IsRecoverable(err) {
 				return false
 			}
-			if _, ok := err.(*taskNotFoundError); ok {
+			var notFoundErr *taskNotFoundError
+			if errors.As(err, &notFoundErr) {
 				notFoundCount++
 				if notFoundCount > max404Errors {
 					return false

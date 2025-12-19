@@ -2,13 +2,13 @@ package regions
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 
-	"github.com/RedisLabs/rediscloud-go-api/service/subscriptions"
-
 	"github.com/RedisLabs/rediscloud-go-api/internal"
+	"github.com/RedisLabs/rediscloud-go-api/service/subscriptions"
 )
 
 type Log interface {
@@ -79,7 +79,8 @@ func (a *API) DeleteWithQuery(ctx context.Context, id int, regions DeleteRegions
 }
 
 func wrap404Error(id int, err error) error {
-	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
+	var httpErr *internal.HTTPError
+	if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
 		return &subscriptions.NotFound{ID: id}
 	}
 	return err

@@ -2,6 +2,7 @@ package databases
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -239,7 +240,8 @@ func (d *ListDatabase) updateValue() {
 }
 
 func (d *ListDatabase) setError(err error) {
-	if httpErr, ok := err.(*internal.HTTPError); ok && httpErr.StatusCode == http.StatusNotFound {
+	var httpErr *internal.HTTPError
+	if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
 		d.fin = true
 	} else {
 		d.err = err
@@ -250,7 +252,8 @@ func (d *ListDatabase) setError(err error) {
 }
 
 func wrap404Error(subId int, dbId int, err error) error {
-	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
+	var httpErr *internal.HTTPError
+	if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
 		return &NotFound{subId: subId, dbId: dbId}
 	}
 	return err

@@ -2,6 +2,7 @@ package tags
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -76,7 +77,8 @@ func (a *API) put(ctx context.Context, message string, address string, tags AllT
 }
 
 func wrap404Error(subId int, dbId int, err error) error {
-	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
+	var httpErr *internal.HTTPError
+	if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
 		return &NotFound{subId: subId, dbId: dbId}
 	}
 	return err
