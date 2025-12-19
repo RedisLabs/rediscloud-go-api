@@ -2,7 +2,6 @@ package internal
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 )
@@ -59,11 +58,20 @@ func (rl *fixedWindowCountRateLimiter) Wait(ctx context.Context) error {
 		windowEnd = rl.windowStart.Add(rl.period)
 	}
 
-	if rl.count == rl.limit {
-		delay := windowEnd.Sub(time.Now())
+	if rl.count >= rl.limit {
+		delay := time.Until(windowEnd)
+		rl.mu.Unlock()
 		err := sleepWithContext(ctx, delay)
+		rl.mu.Lock()
 		if err != nil {
 			return err
+		}
+		// After sleeping, the window may have reset - recheck and reset count if needed
+		now := time.Now()
+		windowEnd = rl.windowStart.Add(rl.period)
+		if now.After(windowEnd) {
+			rl.count = 0
+			rl.windowStart = &windowEnd
 		}
 	}
 	rl.count++
@@ -82,11 +90,12 @@ func sleepWithContext(ctx context.Context, d time.Duration) error {
 	select {
 	case <-ctx.Done():
 		if !timer.Stop() {
-			return fmt.Errorf("context expired before timer stopped")
+			<-timer.C // Drain the timer channel to prevent leaks
 		}
+		return ctx.Err()
 	case <-timer.C:
+		return nil
 	}
-	return nil
 }
 
 var _ RateLimiter = &fixedWindowCountRateLimiter{}

@@ -3,7 +3,7 @@ package rediscloud_api
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -71,7 +71,7 @@ func TestCredentialTripper_LogsRequestAndResponseBodies(t *testing.T) {
 		ProtoMajor:    1,
 		ProtoMinor:    1,
 		Header:        map[string][]string{},
-		Body:          ioutil.NopCloser(bytes.NewBufferString(`{"Here":"Value"}`)),
+		Body:          io.NopCloser(bytes.NewBufferString(`{"Here":"Value"}`)),
 		ContentLength: 16,
 		Host:          "example.org",
 	}
@@ -81,7 +81,7 @@ func TestCredentialTripper_LogsRequestAndResponseBodies(t *testing.T) {
 		ProtoMajor: 1,
 		ProtoMinor: 1,
 		Header:     map[string][]string{},
-		Body:       ioutil.NopCloser(bytes.NewBufferString(`{"Response":"Value"}`)),
+		Body:       io.NopCloser(bytes.NewBufferString(`{"Response":"Value"}`)),
 	}
 
 	mockTripper.On("RoundTrip", request).Return(expected, nil)
@@ -195,7 +195,7 @@ func TestCredentialTripper_RedactPasswordFromBody(t *testing.T) {
 		ProtoMajor:    1,
 		ProtoMinor:    1,
 		Header:        map[string][]string{},
-		Body:          ioutil.NopCloser(bytes.NewBufferString(`{"password":"pass"}`)),
+		Body:          io.NopCloser(bytes.NewBufferString(`{"password":"pass"}`)),
 		ContentLength: 19,
 		Host:          "example.org",
 	}
@@ -205,7 +205,7 @@ func TestCredentialTripper_RedactPasswordFromBody(t *testing.T) {
 		ProtoMajor: 1,
 		ProtoMinor: 1,
 		Header:     map[string][]string{},
-		Body:       ioutil.NopCloser(bytes.NewBufferString(`{"password":"REDACTED"}`)),
+		Body:       io.NopCloser(bytes.NewBufferString(`{"password":"REDACTED"}`)),
 	}
 
 	mockTripper.On("RoundTrip", request).Return(expected, nil)
@@ -252,7 +252,7 @@ func TestCredentialTripper_RedactPasswordFromNestedBody(t *testing.T) {
 		ProtoMajor:    1,
 		ProtoMinor:    1,
 		Header:        map[string][]string{},
-		Body:          ioutil.NopCloser(bytes.NewBufferString(`{"security": {"password":"pass", "global_password":"globalpass"}}`)),
+		Body:          io.NopCloser(bytes.NewBufferString(`{"security": {"password":"pass", "global_password":"globalpass"}}`)),
 		ContentLength: 65,
 		Host:          "example.org",
 	}
@@ -262,7 +262,7 @@ func TestCredentialTripper_RedactPasswordFromNestedBody(t *testing.T) {
 		ProtoMajor: 1,
 		ProtoMinor: 1,
 		Header:     map[string][]string{},
-		Body:       ioutil.NopCloser(bytes.NewBufferString(`{"security": {"password":"REDACTED", "global_password":"REDACTED"}}`)),
+		Body:       io.NopCloser(bytes.NewBufferString(`{"security": {"password":"REDACTED", "global_password":"REDACTED"}}`)),
 	}
 
 	mockTripper.On("RoundTrip", request).Return(expected, nil)

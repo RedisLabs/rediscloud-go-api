@@ -2,6 +2,7 @@ package subscriptions
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -107,7 +108,8 @@ func (a *API) Delete(ctx context.Context, id int) error {
 }
 
 func wrap404Error(id int, err error) error {
-	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
+	var httpErr *internal.HTTPError
+	if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
 		return &NotFound{ID: id}
 	}
 	return err

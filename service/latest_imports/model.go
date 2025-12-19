@@ -73,7 +73,7 @@ func (e *Error) Error() string {
 	return fmt.Sprintf("%s - %s: %s", redis.StringValue(e.Status), redis.StringValue(e.Type), redis.StringValue(e.Description))
 }
 
-var errorStatusCode = regexp.MustCompile("^(\\d*).*$")
+var errorStatusCode = regexp.MustCompile(`^(\d*).*$`)
 
 type NotFound struct {
 	subId int

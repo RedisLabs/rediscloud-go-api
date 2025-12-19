@@ -2,7 +2,7 @@ package rediscloud_api
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -58,7 +58,7 @@ type endpointRequest struct {
 
 func (e endpointRequest) matches(r *http.Request) bool {
 	if e.requestBody != nil {
-		request, err := ioutil.ReadAll(r.Body)
+		request, err := io.ReadAll(r.Body)
 		require.NoError(e.t, err)
 		if !assert.JSONEq(e.t, *e.requestBody, string(request)) {
 			return false

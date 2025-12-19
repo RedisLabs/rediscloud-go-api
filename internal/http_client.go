@@ -71,8 +71,8 @@ func (c *HttpClient) Delete(ctx context.Context, name, path string, requestBody 
 	return c.connectionWithRetries(ctx, http.MethodDelete, name, path, nil, requestBody, responseBody)
 }
 
-func (c *HttpClient) DeleteWithQuery(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error {
-	return c.connectionWithRetries(ctx, http.MethodDelete, name, path, nil, requestBody, responseBody)
+func (c *HttpClient) DeleteWithQuery(ctx context.Context, name, path string, query url.Values, requestBody interface{}, responseBody interface{}) error {
+	return c.connectionWithRetries(ctx, http.MethodDelete, name, path, query, requestBody, responseBody)
 }
 
 func (c *HttpClient) connectionWithRetries(ctx context.Context, method, name, path string, query url.Values, requestBody interface{}, responseBody interface{}) error {
@@ -88,7 +88,7 @@ func (c *HttpClient) connectionWithRetries(ctx context.Context, method, name, pa
 			}
 			var target *HTTPError
 			if errors.As(err, &target) && target.StatusCode == http.StatusTooManyRequests {
-				c.logger.Println(fmt.Sprintf("status code 429 received, request will be retried"))
+				c.logger.Println("status code 429 received, request will be retried")
 				return true
 			}
 			return false
@@ -126,13 +126,12 @@ func (c *HttpClient) connection(ctx context.Context, method, name, path string, 
 	}
 
 	request, err := http.NewRequestWithContext(ctx, method, u, body)
-
-	// The API expects this entry in the header in all requests.
-	request.Header.Set("Content-Type", "application/json")
-
 	if err != nil {
 		return fmt.Errorf("failed to create request to %s: %w", name, err)
 	}
+
+	// The API expects this entry in the header in all requests.
+	request.Header.Set("Content-Type", "application/json")
 
 	response, err := c.client.Do(request)
 	if err != nil {
@@ -149,7 +148,7 @@ func (c *HttpClient) connection(ctx context.Context, method, name, path string, 
 		}
 	}
 
-	defer response.Body.Close()
+	defer func() { _ = response.Body.Close() }()
 
 	if response.StatusCode > 299 {
 		body, _ := io.ReadAll(response.Body)

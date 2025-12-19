@@ -113,14 +113,16 @@ func (a *API) get(ctx context.Context, message string, address string) (*LatestB
 }
 
 func wrap404Error(subId int, dbId int, err error) error {
-	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
+	var httpErr *internal.HTTPError
+	if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
 		return &NotFound{subId: subId, dbId: dbId}
 	}
 	return err
 }
 
 func wrap404ErrorActiveActive(subId int, dbId int, region string, err error) error {
-	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
+	var httpErr *internal.HTTPError
+	if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
 		return &NotFoundActiveActive{subId: subId, dbId: dbId, region: region}
 	}
 	return err
