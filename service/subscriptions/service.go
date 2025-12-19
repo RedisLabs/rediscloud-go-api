@@ -54,7 +54,7 @@ func (a *API) Create(ctx context.Context, subscription CreateSubscription) (int,
 }
 
 // List will list all of the current account's subscriptions.
-func (a API) List(ctx context.Context) ([]*Subscription, error) {
+func (a *API) List(ctx context.Context) ([]*Subscription, error) {
 	var response listSubscriptionResponse
 	err := a.client.Get(ctx, "list subscriptions", "/subscriptions", &response)
 	if err != nil {
