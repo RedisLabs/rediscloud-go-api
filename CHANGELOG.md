@@ -2,6 +2,22 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.44.1 (Unreleased)
+
+### Fixed:
+* Fixed nil pointer dereference when setting request headers before error check
+* Fixed race condition in rate limiter - mutex now released during sleep
+* Fixed context cancellation not being returned from rate limiter sleep
+* Fixed panic when database list page is empty
+* Fixed inconsistent receiver type in subscriptions List method
+* Fixed many other linting errors raised by new golangci-lint checks
+
+### Changed:
+* `DeleteWithQuery` now accepts a query parameter instead of always passing nil
+
+### Added:
+* Added golangci-lint to CI pipeline with comprehensive linting configuration
+
 ## 0.44.0 (5th December 2025)
 
 ### Added:
