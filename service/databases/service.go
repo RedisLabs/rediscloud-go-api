@@ -189,6 +189,10 @@ func (d *ListDatabase) Next() bool {
 			d.setError(err)
 			return false
 		}
+		// If the page is still empty after fetching, we're done
+		if len(d.page) == 0 {
+			return false
+		}
 	}
 
 	d.updateValue()
