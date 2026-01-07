@@ -2,6 +2,7 @@ package databases
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -189,6 +190,10 @@ func (d *ListDatabase) Next() bool {
 			d.setError(err)
 			return false
 		}
+		// If the page is still empty after fetching, we're done
+		if len(d.page) == 0 {
+			return false
+		}
 	}
 
 	d.updateValue()
@@ -220,7 +225,7 @@ func (d *ListDatabase) nextPage() error {
 	}
 
 	if len(list.Subscription) != 1 || redis.IntValue(list.Subscription[0].ID) != d.subscription {
-		return fmt.Errorf("server didn't respond with just a single subscription")
+		return errors.New("server didn't respond with just a single subscription")
 	}
 
 	d.page = list.Subscription[0].Databases
@@ -235,7 +240,8 @@ func (d *ListDatabase) updateValue() {
 }
 
 func (d *ListDatabase) setError(err error) {
-	if httpErr, ok := err.(*internal.HTTPError); ok && httpErr.StatusCode == http.StatusNotFound {
+	var httpErr *internal.HTTPError
+	if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
 		d.fin = true
 	} else {
 		d.err = err
@@ -246,7 +252,8 @@ func (d *ListDatabase) setError(err error) {
 }
 
 func wrap404Error(subId int, dbId int, err error) error {
-	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
+	var httpErr *internal.HTTPError
+	if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
 		return &NotFound{subId: subId, dbId: dbId}
 	}
 	return err

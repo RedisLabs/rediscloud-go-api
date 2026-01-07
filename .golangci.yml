@@ -1,0 +1,72 @@
+version: "2"
+
+run:
+  timeout: 5m
+  tests: false
+  # Use go.mod version, not toolchain version, to avoid mismatch with golangci-lint build
+  go: '1.24'
+
+formatters:
+  enable:
+    - goimports
+
+linters:
+  enable:
+    # Default linters
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+
+    # High-value additional linters
+    - bodyclose       # HTTP response body not closed
+    - durationcheck   # suspicious duration multiplications
+    - errorlint       # proper error wrapping/comparison
+    - gocritic        # opinionated but useful checks
+    - misspell        # spelling mistakes
+    - nilerr          # returning nil with non-nil error
+    - noctx           # HTTP requests without context
+    - unconvert       # unnecessary type conversions
+
+    # Code quality
+    - copyloopvar     # detects loop variable capture bugs (Go 1.22+)
+    - dupword         # duplicate words in comments/strings
+    - intrange        # suggests using integer range loops (Go 1.22+)
+    - makezero        # finds slice bugs from non-zero initial length
+    - perfsprint      # suggests more efficient string formatting
+    - prealloc        # suggests slice preallocation
+    - usestdlibvars   # use stdlib constants (http.StatusOK, etc.)
+    - wastedassign    # finds wasted assignments
+
+    # Security
+    - gosec           # security checker
+
+  settings:
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - performance
+      disabled-checks:
+        - hugeParam       # too noisy for this codebase
+
+    errorlint:
+      errorf: true
+      asserts: true
+      comparison: true
+
+    gosec:
+      excludes:
+        - G101  # false positives on env var names like "SECRET_KEY"
+
+    dupword:
+      ignore:
+        - "active"  # "active active" is intentional Redis terminology
+
+  exclusions:
+    paths:
+      - vendor
+    rules:
+      - linters:
+          - gosec
+        text: "G101"  # additional rule-based exclusion for credential false positives

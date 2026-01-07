@@ -2,6 +2,7 @@ package redis_rules
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -124,7 +125,8 @@ func (f *NotFound) Error() string {
 }
 
 func wrap404Error(id int, err error) error {
-	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
+	var httpErr *internal.HTTPError
+	if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
 		return &NotFound{ID: id}
 	}
 	return err

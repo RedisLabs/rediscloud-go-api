@@ -2,6 +2,7 @@ package subscriptions
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -54,7 +55,7 @@ func (a *API) Create(ctx context.Context, subscription CreateSubscription) (int,
 }
 
 // List will list all of the current account's subscriptions.
-func (a API) List(ctx context.Context) ([]*Subscription, error) {
+func (a *API) List(ctx context.Context) ([]*Subscription, error) {
 	var response listSubscriptionResponse
 	err := a.client.Get(ctx, "list subscriptions", "/subscriptions", &response)
 	if err != nil {
@@ -287,7 +288,8 @@ func (a *API) GetRedisVersions(ctx context.Context, subscription int) (*RedisVer
 }
 
 func wrap404Error(id int, err error) error {
-	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
+	var httpErr *internal.HTTPError
+	if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
 		return &NotFound{ID: id}
 	}
 	return err

@@ -3,8 +3,10 @@ package internal
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
@@ -79,7 +81,8 @@ func (a *api) waitForTaskToComplete(ctx context.Context, id string) (*Task, erro
 			var err error
 			task, err = a.get(ctx, id)
 			if err != nil {
-				if status, ok := err.(*HTTPError); ok && status.StatusCode == 404 {
+				var status *HTTPError
+				if errors.As(err, &status) && status.StatusCode == http.StatusNotFound {
 					return &taskNotFoundError{err}
 				}
 				return retry.Unrecoverable(err)
@@ -103,7 +106,8 @@ func (a *api) waitForTaskToComplete(ctx context.Context, id string) (*Task, erro
 			if !retry.IsRecoverable(err) {
 				return false
 			}
-			if _, ok := err.(*taskNotFoundError); ok {
+			var notFoundErr *taskNotFoundError
+			if errors.As(err, &notFoundErr) {
 				notFoundCount++
 				if notFoundCount > max404Errors {
 					return false
@@ -127,7 +131,7 @@ func (a *api) WaitForTask(ctx context.Context, id string) (*Task, error) {
 
 func (a *api) get(ctx context.Context, id string) (*Task, error) {
 	var task Task
-	if err := a.client.Get(ctx, fmt.Sprintf("retrieve Task %s", id), "/tasks/"+url.PathEscape(id), &task); err != nil {
+	if err := a.client.Get(ctx, "retrieve Task "+id, "/tasks/"+url.PathEscape(id), &task); err != nil {
 		return nil, err
 	}
 

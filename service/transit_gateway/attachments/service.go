@@ -2,6 +2,7 @@ package attachments
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -322,14 +323,16 @@ func (a *API) rejectInvitation(ctx context.Context, message string, address stri
 }
 
 func wrap404Error(subId int, err error) error {
-	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
+	var httpErr *internal.HTTPError
+	if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
 		return &NotFound{subId: subId}
 	}
 	return err
 }
 
 func wrap404ErrorActiveActive(subId int, regionId int, err error) error {
-	if v, ok := err.(*internal.HTTPError); ok && v.StatusCode == http.StatusNotFound {
+	var httpErr *internal.HTTPError
+	if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
 		return &NotFoundActiveActive{subId: subId, regionId: regionId}
 	}
 	return err

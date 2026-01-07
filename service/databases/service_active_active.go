@@ -2,6 +2,7 @@ package databases
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -91,6 +92,10 @@ func (d *ListActiveActiveDatabase) Next() bool {
 			d.setError(err)
 			return false
 		}
+		// If the page is still empty after fetching, we're done
+		if len(d.page) == 0 {
+			return false
+		}
 	}
 
 	d.updateValue()
@@ -122,7 +127,7 @@ func (d *ListActiveActiveDatabase) nextPage() error {
 	}
 
 	if len(list.Subscription) != 1 || redis.IntValue(list.Subscription[0].ID) != d.subscription {
-		return fmt.Errorf("server didn't respond with just a single subscription")
+		return errors.New("server didn't respond with just a single subscription")
 	}
 
 	d.page = list.Subscription[0].Databases
@@ -137,7 +142,8 @@ func (d *ListActiveActiveDatabase) updateValue() {
 }
 
 func (d *ListActiveActiveDatabase) setError(err error) {
-	if httpErr, ok := err.(*internal.HTTPError); ok && httpErr.StatusCode == http.StatusNotFound {
+	var httpErr *internal.HTTPError
+	if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
 		d.fin = true
 	} else {
 		d.err = err
