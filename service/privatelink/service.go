@@ -100,6 +100,19 @@ func (a *API) DeletePrincipal(ctx context.Context, subscriptionId int, principal
 	return nil
 }
 
+// DeletePrivateLink will delete a PrivateLink for a subscription.
+// This marks the PrivateLink record as deleted but does not remove the actual AWS RL resources.
+func (a *API) DeletePrivateLink(ctx context.Context, subscriptionId int) error {
+	message := fmt.Sprintf("delete privatelink for subscription %d", subscriptionId)
+	path := fmt.Sprintf("/subscriptions/%d/private-link", subscriptionId)
+
+	err := a.delete(ctx, message, path, nil, nil)
+	if err != nil {
+		return wrap404Error(subscriptionId, err)
+	}
+	return nil
+}
+
 // CreateActiveActivePrivateLink will create a new active active PrivateLink.
 func (a *API) CreateActiveActivePrivateLink(ctx context.Context, subscriptionId int, regionId int, privateLink CreatePrivateLink) error {
 	message := fmt.Sprintf("create active active PrivateLink for subscription %d", subscriptionId)
@@ -155,6 +168,19 @@ func (a *API) DeleteActiveActivePrincipal(ctx context.Context, subscriptionId in
 	}
 
 	err := a.delete(ctx, message, path, requestBody, nil)
+	if err != nil {
+		return wrap404Error(subscriptionId, err)
+	}
+	return nil
+}
+
+// DeleteActiveActivePrivateLink will delete an Active-Active PrivateLink for a subscription region.
+// This marks the PrivateLink record as deleted but does not remove the actual AWS RL resources.
+func (a *API) DeleteActiveActivePrivateLink(ctx context.Context, subscriptionId int, regionId int) error {
+	message := fmt.Sprintf("delete active active privatelink for subscription %d region %d", subscriptionId, regionId)
+	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link", subscriptionId, regionId)
+
+	err := a.delete(ctx, message, path, nil, nil)
 	if err != nil {
 		return wrap404Error(subscriptionId, err)
 	}
