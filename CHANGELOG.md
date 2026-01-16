@@ -2,7 +2,12 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
-## 0.44.1 (Unreleased)
+## 0.45.0 (January 2026)
+
+### Added:
+* Added `DeletePrivateLink()` and `DeleteActiveActivePrivateLink()` methods to delete PrivateLink resources (marks records as deleted status without removing AWS resources)
+
+## 0.44.1 (7th January 2026)
 
 ### Fixed:
 * Fixed nil pointer dereference when setting request headers before error check
