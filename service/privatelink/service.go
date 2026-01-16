@@ -56,6 +56,9 @@ func (a *API) GetPrivateLink(ctx context.Context, subscription int) (*PrivateLin
 	path := fmt.Sprintf("/subscriptions/%d/private-link", subscription)
 	task, err := a.get(ctx, message, path)
 	if err != nil {
+		if errors.Is(err, errEmptyResponse) {
+			return nil, &NotFound{subscriptionID: subscription}
+		}
 		return nil, wrap404Error(subscription, err)
 	}
 	return task, nil
@@ -130,6 +133,9 @@ func (a *API) GetActiveActivePrivateLink(ctx context.Context, subscription int, 
 	path := fmt.Sprintf("/subscriptions/%d/regions/%d/private-link", subscription, regionId)
 	task, err := a.get(ctx, message, path)
 	if err != nil {
+		if errors.Is(err, errEmptyResponse) {
+			return nil, &NotFoundActiveActive{subscriptionID: subscription, regionID: regionId}
+		}
 		return nil, wrap404Error(subscription, err)
 	}
 	return task, nil
@@ -217,6 +223,12 @@ func (a *API) get(ctx context.Context, message string, path string) (*PrivateLin
 	err = a.taskWaiter.WaitForResource(ctx, *task.ID, &response)
 	if err != nil {
 		return nil, err
+	}
+
+	// API returns empty resource (e.g., {"links": []}) when privatelink doesn't exist
+	// instead of a proper 404. Detect this and return sentinel error for callers to handle.
+	if response.Status == nil && response.ShareName == nil {
+		return nil, errEmptyResponse
 	}
 
 	return &response, nil

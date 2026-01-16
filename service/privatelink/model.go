@@ -79,6 +79,11 @@ func (f *NotFoundActiveActive) Error() string {
 	return fmt.Sprintf("privatelink resource not found - subscription %d, region %d", f.subscriptionID, f.regionID)
 }
 
+// errEmptyResponse is an internal sentinel error indicating the API returned an empty
+// privatelink resource (e.g., {"links": []}) instead of a 404. Callers should convert
+// this to the appropriate NotFound error with context.
+var errEmptyResponse = fmt.Errorf("privatelink response is empty")
+
 type PrivateLinkEndpointScript struct {
 	ResourceEndpointScript *string `json:"resourceEndpointScript,omitempty"`
 	TerraformAwsScript     *string `json:"terraformAwsScript,omitempty"`
