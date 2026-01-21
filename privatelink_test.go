@@ -193,6 +193,55 @@ func TestGetPrivateLink(t *testing.T) {
 			expectedError:   errors.New("privatelink resource not found - subscription 114019"),
 			expectedErrorAs: &pl.NotFound{},
 		},
+		{
+			description: "should fail when privatelink returns empty response",
+			mockedResponse: []endpointRequest{
+				getRequest(
+					t,
+					"/subscriptions/114019/private-link",
+					`{
+				  "taskId": "a357a65b-801c-43ec-9434-a52a4b9102c9",
+				  "commandType": "privateLinkGetRequest",
+				  "status": "received",
+				  "description": "Task request received and is being queued for processing.",
+				  "timestamp": "2026-01-16T13:39:40.929904847Z",
+				  "links": [
+					{
+					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/a357a65b-801c-43ec-9434-a52a4b9102c9",
+					  "rel": "task",
+					  "type": "GET"
+					}
+				  ]
+				}`,
+				),
+				getRequest(
+					t,
+					"/tasks/a357a65b-801c-43ec-9434-a52a4b9102c9",
+					`{
+				  "taskId": "a357a65b-801c-43ec-9434-a52a4b9102c9",
+				  "commandType": "privateLinkGetRequest",
+				  "status": "processing-completed",
+				  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+				  "timestamp": "2026-01-16T13:39:50.259963336Z",
+				  "response": {
+					"resourceId": 127352,
+					"resource": {
+					  "links": []
+					}
+				  },
+				  "links": [
+					{
+					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/a357a65b-801c-43ec-9434-a52a4b9102c9",
+					  "rel": "self",
+					  "type": "GET"
+					}
+				  ]
+				}`,
+				),
+			},
+			expectedError:   errors.New("privatelink resource not found - subscription 114019"),
+			expectedErrorAs: &pl.NotFound{},
+		},
 	}
 
 	for _, testCase := range tc {
@@ -398,6 +447,55 @@ func TestGetActiveActivePrivateLink(t *testing.T) {
 			expectedError:   errors.New("privatelink resource not found - subscription 114019"),
 			expectedErrorAs: &pl.NotFound{},
 		},
+		{
+			description: "should fail when active active privatelink returns empty response",
+			mockedResponse: []endpointRequest{
+				getRequest(
+					t,
+					"/subscriptions/114019/regions/1/private-link",
+					`{
+				  "taskId": "b468b76c-912d-54fd-a045-b63b5c213db0",
+				  "commandType": "activeActivePrivateLinkGetRequest",
+				  "status": "received",
+				  "description": "Task request received and is being queued for processing.",
+				  "timestamp": "2026-01-16T13:39:40.929904847Z",
+				  "links": [
+					{
+					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/b468b76c-912d-54fd-a045-b63b5c213db0",
+					  "rel": "task",
+					  "type": "GET"
+					}
+				  ]
+				}`,
+				),
+				getRequest(
+					t,
+					"/tasks/b468b76c-912d-54fd-a045-b63b5c213db0",
+					`{
+				  "taskId": "b468b76c-912d-54fd-a045-b63b5c213db0",
+				  "commandType": "activeActivePrivateLinkGetRequest",
+				  "status": "processing-completed",
+				  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+				  "timestamp": "2026-01-16T13:39:50.259963336Z",
+				  "response": {
+					"resourceId": 127352,
+					"resource": {
+					  "links": []
+					}
+				  },
+				  "links": [
+					{
+					  "href": "https://api-staging.qa.redislabs.com/v1/tasks/b468b76c-912d-54fd-a045-b63b5c213db0",
+					  "rel": "self",
+					  "type": "GET"
+					}
+				  ]
+				}`,
+				),
+			},
+			expectedError:   errors.New("privatelink resource not found - subscription 114019, region 1"),
+			expectedErrorAs: &pl.NotFoundActiveActive{},
+		},
 	}
 
 	for _, testCase := range tc {
@@ -494,6 +592,180 @@ func TestGetPrivateLinkScript(t *testing.T) {
 			if testCase.expectedError == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, testCase.expectedResult, actual)
+			} else {
+				assert.IsType(t, err, testCase.expectedErrorAs)
+				assert.EqualError(t, err, testCase.expectedError.Error())
+			}
+		})
+	}
+}
+
+func TestDeletePrivateLink(t *testing.T) {
+	tc := []struct {
+		description     string
+		mockedResponse  []endpointRequest
+		expectedError   error
+		expectedErrorAs error
+	}{
+		{
+			description: "should successfully delete a privatelink",
+			mockedResponse: []endpointRequest{
+				deleteRequest(
+					t,
+					"/subscriptions/114019/private-link",
+					`{
+					  "taskId": "612fd31f-fd44-4cb0-a429-07882309a972",
+					  "commandType": "privateLinkDeleteRequest",
+					  "status": "received",
+					  "description": "Task request received and is being queued for processing.",
+					  "timestamp": "2024-07-16T09:26:40.929904847Z",
+					  "links": [
+						{
+						  "href": "https://api-staging.qa.redislabs.com/v1/tasks/612fd31f-fd44-4cb0-a429-07882309a972",
+						  "rel": "task",
+						  "type": "GET"
+						}
+					  ]
+					}`,
+				),
+				getRequest(
+					t,
+					"/tasks/612fd31f-fd44-4cb0-a429-07882309a972",
+					`{
+					  "taskId": "612fd31f-fd44-4cb0-a429-07882309a972",
+					  "commandType": "privateLinkDeleteRequest",
+					  "status": "processing-completed",
+					  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+					  "timestamp": "2024-07-16T09:26:49.847808891Z",
+					  "links": [
+						{
+						  "href": "https://api-staging.qa.redislabs.com/v1/tasks/612fd31f-fd44-4cb0-a429-07882309a972",
+						  "rel": "self",
+						  "type": "GET"
+						}
+					  ]
+					}`,
+				),
+			},
+		},
+		{
+			description: "should fail when subscription is not found",
+			mockedResponse: []endpointRequest{
+				deleteRequestWithStatus(
+					t,
+					"/subscriptions/114019/private-link",
+					404,
+					`{
+					  "timestamp": "2025-01-17T09:34:25.803+00:00",
+					  "status": 404,
+					  "error": "Not Found",
+					  "path": "/v1/subscriptions/114019/private-link"
+					}`,
+				),
+			},
+			expectedError:   errors.New("privatelink resource not found - subscription 114019"),
+			expectedErrorAs: &pl.NotFound{},
+		},
+	}
+
+	for _, testCase := range tc {
+		t.Run(testCase.description, func(t *testing.T) {
+			server := httptest.NewServer(
+				testServer("key", "secret", testCase.mockedResponse...))
+
+			subject, err := clientFromTestServer(server, "key", "secret")
+			require.NoError(t, err)
+
+			err = subject.PrivateLink.DeletePrivateLink(context.TODO(), 114019)
+			if testCase.expectedError == nil {
+				assert.NoError(t, err)
+			} else {
+				assert.IsType(t, err, testCase.expectedErrorAs)
+				assert.EqualError(t, err, testCase.expectedError.Error())
+			}
+		})
+	}
+}
+
+func TestDeleteActiveActivePrivateLink(t *testing.T) {
+	tc := []struct {
+		description     string
+		mockedResponse  []endpointRequest
+		expectedError   error
+		expectedErrorAs error
+	}{
+		{
+			description: "should successfully delete an active active privatelink",
+			mockedResponse: []endpointRequest{
+				deleteRequest(
+					t,
+					"/subscriptions/114019/regions/1/private-link",
+					`{
+					  "taskId": "723ge42g-ge55-5dc1-b530-18993fb82083",
+					  "commandType": "activeActivePrivateLinkDeleteRequest",
+					  "status": "received",
+					  "description": "Task request received and is being queued for processing.",
+					  "timestamp": "2024-07-16T09:26:40.929904847Z",
+					  "links": [
+						{
+						  "href": "https://api-staging.qa.redislabs.com/v1/tasks/723ge42g-ge55-5dc1-b530-18993fb82083",
+						  "rel": "task",
+						  "type": "GET"
+						}
+					  ]
+					}`,
+				),
+				getRequest(
+					t,
+					"/tasks/723ge42g-ge55-5dc1-b530-18993fb82083",
+					`{
+					  "taskId": "723ge42g-ge55-5dc1-b530-18993fb82083",
+					  "commandType": "activeActivePrivateLinkDeleteRequest",
+					  "status": "processing-completed",
+					  "description": "Request processing completed successfully and its resources are now being provisioned / de-provisioned.",
+					  "timestamp": "2024-07-16T09:26:49.847808891Z",
+					  "links": [
+						{
+						  "href": "https://api-staging.qa.redislabs.com/v1/tasks/723ge42g-ge55-5dc1-b530-18993fb82083",
+						  "rel": "self",
+						  "type": "GET"
+						}
+					  ]
+					}`,
+				),
+			},
+		},
+		{
+			description: "should fail when subscription is not found",
+			mockedResponse: []endpointRequest{
+				deleteRequestWithStatus(
+					t,
+					"/subscriptions/114019/regions/1/private-link",
+					404,
+					`{
+					  "timestamp": "2025-01-17T09:34:25.803+00:00",
+					  "status": 404,
+					  "error": "Not Found",
+					  "path": "/v1/subscriptions/114019/regions/1/private-link"
+					}`,
+				),
+			},
+			expectedError:   errors.New("privatelink resource not found - subscription 114019"),
+			expectedErrorAs: &pl.NotFound{},
+		},
+	}
+
+	for _, testCase := range tc {
+		t.Run(testCase.description, func(t *testing.T) {
+			server := httptest.NewServer(
+				testServer("key", "secret", testCase.mockedResponse...))
+
+			subject, err := clientFromTestServer(server, "key", "secret")
+			require.NoError(t, err)
+
+			err = subject.PrivateLink.DeleteActiveActivePrivateLink(context.TODO(), 114019, 1)
+			if testCase.expectedError == nil {
+				assert.NoError(t, err)
 			} else {
 				assert.IsType(t, err, testCase.expectedErrorAs)
 				assert.EqualError(t, err, testCase.expectedError.Error())
