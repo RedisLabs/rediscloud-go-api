@@ -183,6 +183,7 @@ type UpdateDatabase struct {
 	EnableDefaultUser       *bool                 `json:"enableDefaultUser,omitempty"`
 	QueryPerformanceFactor  *string               `json:"queryPerformanceFactor,omitempty"`
 	AutoMinorVersionUpgrade *bool                 `json:"autoMinorVersionUpgrade,omitempty"`
+	RamPercentage           *int                  `json:"ramPercentage,omitempty"`
 }
 
 func (o UpdateDatabase) String() string {
