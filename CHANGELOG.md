@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.46.0 (January 2026)
+
+### Added:
+* Added `RamPercentage` field to `Database`, `CreateDatabase` and `UpdateDatabase` structs in database model and to `CreateDatabase` struct in subscription model
+
+
 ## 0.45.0 (January 2026)
 
 ### Added:
