@@ -34,6 +34,7 @@ func TestDatabase_Create(t *testing.T) {
     "value": 1000
   },
   "averageItemSizeInBytes": 1,
+  "ramPercentage": 20,
   "replicaOf": [
     "another"
   ],
@@ -106,6 +107,7 @@ func TestDatabase_Create(t *testing.T) {
 			Value: redis.Int(1000),
 		},
 		AverageItemSizeInBytes: redis.Int(1),
+		RamPercentage:          redis.Int(20),
 		ReplicaOf:              redis.StringSlice("another"),
 		SourceIP:               redis.StringSlice("10.0.0.1"),
 		ClientSSLCertificate:   redis.String("something"),
@@ -144,7 +146,8 @@ func TestDatabase_List(t *testing.T) {
           "provider": "AWS",
           "region": "eu-west-1",
 		  "queryPerformanceFactor": "Standard",
-          "redisVersion": "6.0.5"
+          "redisVersion": "6.0.5",
+		  "ramPercentage": 20
         },
         {
           "databaseId": 43,
@@ -153,7 +156,8 @@ func TestDatabase_List(t *testing.T) {
           "provider": "AWS",
           "region": "eu-west-1",
 		  "queryPerformanceFactor": "Standard",
-          "redisVersion": "6.0.5"
+          "redisVersion": "6.0.5",
+  		  "ramPercentage": 30
         }
       ]
     }
@@ -186,6 +190,7 @@ func TestDatabase_List(t *testing.T) {
 			Region:                 redis.String("eu-west-1"),
 			QueryPerformanceFactor: redis.String("Standard"),
 			RedisVersion:           redis.String("6.0.5"),
+			RamPercentage:          redis.Int(20),
 		},
 		{
 			ID:                     redis.Int(43),
@@ -195,6 +200,7 @@ func TestDatabase_List(t *testing.T) {
 			Region:                 redis.String("eu-west-1"),
 			QueryPerformanceFactor: redis.String("Standard"),
 			RedisVersion:           redis.String("6.0.5"),
+			RamPercentage:          redis.Int(30),
 		},
 	}, actual)
 
@@ -213,6 +219,7 @@ func TestDatabase_Get(t *testing.T) {
   "status": "active",
   "memoryLimitInGb": 7,
   "datasetSizeInGb": 7,
+  "ramPercentage": 20,
   "memoryUsedInMb": 5,
   "memoryStorage": "ram",
   "supportOSSClusterApi": true,
@@ -282,6 +289,7 @@ func TestDatabase_Get(t *testing.T) {
 		Status:               redis.String("active"),
 		MemoryLimitInGB:      redis.Float64(7),
 		DatasetSizeInGB:      redis.Float64(7),
+		RamPercentage:        redis.Int(20),
 		MemoryUsedInMB:       redis.Float64(5),
 		SupportOSSClusterAPI: redis.Bool(true),
 		RespVersion:          redis.String("resp2"),
@@ -350,6 +358,7 @@ func TestDatabase_Update(t *testing.T) {
 		  "dryRun": false,
 		  "name": "example",
 		  "datasetSizeInGb": 1,
+		  "ramPercentage": 40,
 		  "supportOSSClusterApi": false,
 		  "respVersion": "resp3",
 		  "useExternalEndpointForOSSClusterApi": false,
@@ -396,6 +405,7 @@ func TestDatabase_Update(t *testing.T) {
 		DryRun:                              redis.Bool(false),
 		Name:                                redis.String("example"),
 		DatasetSizeInGB:                     redis.Float64(1),
+		RamPercentage:                       redis.Int(40),
 		SupportOSSClusterAPI:                redis.Bool(false),
 		RespVersion:                         redis.String("resp3"),
 		UseExternalEndpointForOSSClusterAPI: redis.Bool(false),

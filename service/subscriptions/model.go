@@ -67,6 +67,7 @@ type CreateDatabase struct {
 	Modules                    []*CreateModules         `json:"modules,omitempty"`
 	Quantity                   *int                     `json:"quantity,omitempty"`
 	AverageItemSizeInBytes     *int                     `json:"averageItemSizeInBytes,omitempty"`
+	RamPercentage              *int                     `json:"ramPercentage,omitempty"`
 	QueryPerformanceFactor     *string                  `json:"queryPerformanceFactor,omitempty"`
 }
 

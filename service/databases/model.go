@@ -21,6 +21,7 @@ type CreateDatabase struct {
 	Replication                         *bool                        `json:"replication,omitempty"`
 	ThroughputMeasurement               *CreateThroughputMeasurement `json:"throughputMeasurement,omitempty"`
 	AverageItemSizeInBytes              *int                         `json:"averageItemSizeInBytes,omitempty"`
+	RamPercentage                       *int                         `json:"ramPercentage,omitempty"`
 	ReplicaOf                           []*string                    `json:"replicaOf,omitempty"`
 	// Deprecated: Use RemoteBackup instead
 	PeriodicBackupPath      *string               `json:"periodicBackupPath,omitempty"`
@@ -84,6 +85,7 @@ type Database struct {
 	QueryPerformanceFactor  *string     `json:"queryPerformanceFactor,omitempty"`
 	RedisVersion            *string     `json:"redisVersion,omitempty"`
 	AutoMinorVersionUpgrade *bool       `json:"autoMinorVersionUpgrade,omitempty"`
+	RamPercentage           *int        `json:"ramPercentage,omitempty"`
 }
 
 func (o Database) String() string {
@@ -181,6 +183,7 @@ type UpdateDatabase struct {
 	EnableDefaultUser       *bool                 `json:"enableDefaultUser,omitempty"`
 	QueryPerformanceFactor  *string               `json:"queryPerformanceFactor,omitempty"`
 	AutoMinorVersionUpgrade *bool                 `json:"autoMinorVersionUpgrade,omitempty"`
+	RamPercentage           *int                  `json:"ramPercentage,omitempty"`
 }
 
 func (o UpdateDatabase) String() string {
