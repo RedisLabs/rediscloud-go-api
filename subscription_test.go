@@ -144,9 +144,6 @@ func TestSubscription_Create(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-// TestSubscription_Create_WithResourceTags verifies that resource tags supplied
-// via CreateCloudProvider.ResourceTags are serialised inside cloudProviders[0]
-// using the documented `resourceTags` JSON shape (array of key/value objects).
 func TestSubscription_Create_WithResourceTags(t *testing.T) {
 	expected := 1237
 	s := httptest.NewServer(testServer("key", "secret", postRequest(t, "/subscriptions", `{
@@ -933,9 +930,6 @@ func TestSubscription_Get_OptionalFields(t *testing.T) {
 	}, actual)
 }
 
-// TestSubscription_Get_WithResourceTags verifies that `resourceTags` returned inside
-// `cloudDetails` are decoded onto CloudDetail.ResourceTags. The GET path for tags
-// was added after the initial BYOC tags feature shipped as write-only.
 func TestSubscription_Get_WithResourceTags(t *testing.T) {
 	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/subscriptions/98767", `{
   "id": 3,
@@ -1145,9 +1139,6 @@ func TestSubscription_Update_CMKs(t *testing.T) {
 	require.NoError(t, err)
 }
 
-// TestSubscription_UpdateResourceTags verifies that UpdateResourceTags PUTs the
-// expected body to /subscriptions/{id}/resource-tags and waits for the async
-// task to complete.
 func TestSubscription_UpdateResourceTags(t *testing.T) {
 	const request = `{
   "resourceTags": [
@@ -1170,7 +1161,6 @@ func TestSubscription_UpdateResourceTags(t *testing.T) {
   "response": {},
   "_links": {"self": {"href": "https://example.com", "type": "GET"}}
 }`)))
-	defer s.Close()
 
 	subject, err := clientFromTestServer(s, "key", "secret")
 	require.NoError(t, err)
@@ -1185,9 +1175,8 @@ func TestSubscription_UpdateResourceTags(t *testing.T) {
 	require.NoError(t, err)
 }
 
-// TestSubscription_UpdateResourceTags_ClearAll verifies the clear-all path:
-// an initialised empty slice serialises as `"resourceTags": []` (not null),
-// which is what the backend expects to remove every tag.
+// Empty slice must serialise as [] (not null) — the backend uses the value
+// to distinguish "clear all tags" from "no change".
 func TestSubscription_UpdateResourceTags_ClearAll(t *testing.T) {
 	const request = `{"resourceTags": []}`
 
@@ -1205,7 +1194,6 @@ func TestSubscription_UpdateResourceTags_ClearAll(t *testing.T) {
   "response": {},
   "_links": {"self": {"href": "https://example.com", "type": "GET"}}
 }`)))
-	defer s.Close()
 
 	subject, err := clientFromTestServer(s, "key", "secret")
 	require.NoError(t, err)
