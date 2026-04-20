@@ -144,6 +144,70 @@ func TestSubscription_Create(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+// TestSubscription_Create_WithResourceTags verifies that resource tags supplied
+// via CreateCloudProvider.ResourceTags are serialised inside cloudProviders[0]
+// using the documented `resourceTags` JSON shape (array of key/value objects).
+func TestSubscription_Create_WithResourceTags(t *testing.T) {
+	expected := 1237
+	s := httptest.NewServer(testServer("key", "secret", postRequest(t, "/subscriptions", `{
+  "name": "Test subscription with tags",
+  "paymentMethodId": 2,
+  "paymentMethod": "credit-card",
+  "memoryStorage": "ram",
+  "cloudProviders": [
+    {
+      "provider": "AWS",
+      "cloudAccountId": 1,
+      "regions": [
+        {
+          "region": "eu-west-1"
+        }
+      ],
+      "resourceTags": [
+        {"key": "environment", "value": "production"},
+        {"key": "team", "value": "platform"}
+      ]
+    }
+  ]
+}`, `{
+  "taskId": "task-id",
+  "commandType": "subscriptionCreateRequest",
+  "status": "received",
+  "_links": {"task": {"href": "https://example.org", "title": "getTaskStatusUpdates", "type": "GET"}}
+}`), getRequest(t, "/tasks/task-id", fmt.Sprintf(`{
+  "taskId": "task-id",
+  "commandType": "subscriptionCreateRequest",
+  "status": "processing-completed",
+  "response": {"resourceId": %d},
+  "_links": {"self": {"href": "https://example.com", "type": "GET"}}
+}`, expected))))
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Subscription.Create(context.TODO(), subscriptions.CreateSubscription{
+		Name:            redis.String("Test subscription with tags"),
+		PaymentMethodID: redis.Int(2),
+		PaymentMethod:   redis.String("credit-card"),
+		MemoryStorage:   redis.String("ram"),
+		CloudProviders: []*subscriptions.CreateCloudProvider{
+			{
+				Provider:       redis.String("AWS"),
+				CloudAccountID: redis.Int(1),
+				Regions: []*subscriptions.CreateRegion{
+					{Region: redis.String("eu-west-1")},
+				},
+				ResourceTags: []*subscriptions.ResourceTag{
+					{Key: redis.String("environment"), Value: redis.String("production")},
+					{Key: redis.String("team"), Value: redis.String("platform")},
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+	assert.Equal(t, expected, actual)
+}
+
 func TestSubscription_Create_PublicEndpointAccess(t *testing.T) {
 	expected := 1236
 	s := httptest.NewServer(testServer("key", "secret", postRequest(t, "/subscriptions", `{
@@ -869,6 +933,59 @@ func TestSubscription_Get_OptionalFields(t *testing.T) {
 	}, actual)
 }
 
+// TestSubscription_Get_WithResourceTags verifies that `resourceTags` returned inside
+// `cloudDetails` are decoded onto CloudDetail.ResourceTags. The GET path for tags
+// was added after the initial BYOC tags feature shipped as write-only.
+func TestSubscription_Get_WithResourceTags(t *testing.T) {
+	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/subscriptions/98767", `{
+  "id": 3,
+  "name": "Get-with-tags",
+  "status": "active",
+  "paymentMethodType": "credit-card",
+  "paymentMethodId": 2,
+  "memoryStorage": "ram",
+  "storageEncryption": false,
+  "numberOfDatabases": 1,
+  "cloudDetails": [
+    {
+      "provider": "AWS",
+      "cloudAccountId": 3,
+      "awsAccountId": "987654321098",
+      "totalSizeInGb": 4,
+      "regions": [
+        {
+          "region": "eu-west-1",
+          "networking": [
+            {
+              "deploymentCIDR": "10.0.0.0/24",
+              "subnetId": "subnet-123456"
+            }
+          ],
+          "preferredAvailabilityZones": ["eu-west-1a"],
+          "multipleAvailabilityZones": false
+        }
+      ],
+      "resourceTags": [
+        {"key": "environment", "value": "production"},
+        {"key": "team", "value": "platform"}
+      ]
+    }
+  ]
+}`)))
+
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Subscription.Get(context.TODO(), 98767)
+	require.NoError(t, err)
+
+	require.Len(t, actual.CloudDetails, 1)
+	assert.ElementsMatch(t, []*subscriptions.ResourceTag{
+		{Key: redis.String("environment"), Value: redis.String("production")},
+		{Key: redis.String("team"), Value: redis.String("platform")},
+	}, actual.CloudDetails[0].ResourceTags)
+}
+
 func TestSubscription_Get_wraps404Error(t *testing.T) {
 	s := httptest.NewServer(testServer("apiKey", "secret", getRequestWithStatus(t, "/subscriptions/123", 404, "")))
 
@@ -1023,6 +1140,78 @@ func TestSubscription_Update_CMKs(t *testing.T) {
 				Region:       redis.String("us-east-1"),
 			},
 		},
+	})
+
+	require.NoError(t, err)
+}
+
+// TestSubscription_UpdateResourceTags verifies that UpdateResourceTags PUTs the
+// expected body to /subscriptions/{id}/resource-tags and waits for the async
+// task to complete.
+func TestSubscription_UpdateResourceTags(t *testing.T) {
+	const request = `{
+  "resourceTags": [
+    {"key": "environment", "value": "production"},
+    {"key": "team", "value": "platform"}
+  ]
+}`
+
+	const taskResponse = `{
+  "taskId": "task",
+  "commandType": "subscriptionUpdateRequest",
+  "status": "received",
+  "_links": {"task": {"href": "https://example.org", "title": "getTaskStatusUpdates", "type": "GET"}}
+}`
+
+	s := httptest.NewServer(testServer("key", "secret", putRequest(t, "/subscriptions/1234/resource-tags", request, taskResponse), getRequest(t, "/tasks/task", `{
+  "taskId": "e02b40d6-1395-4861-a3b9-ecf829d835fd",
+  "commandType": "subscriptionUpdateRequest",
+  "status": "processing-completed",
+  "response": {},
+  "_links": {"self": {"href": "https://example.com", "type": "GET"}}
+}`)))
+	defer s.Close()
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	err = subject.Subscription.UpdateResourceTags(context.TODO(), 1234, subscriptions.UpdateResourceTags{
+		ResourceTags: []*subscriptions.ResourceTag{
+			{Key: redis.String("environment"), Value: redis.String("production")},
+			{Key: redis.String("team"), Value: redis.String("platform")},
+		},
+	})
+
+	require.NoError(t, err)
+}
+
+// TestSubscription_UpdateResourceTags_ClearAll verifies the clear-all path:
+// an initialised empty slice serialises as `"resourceTags": []` (not null),
+// which is what the backend expects to remove every tag.
+func TestSubscription_UpdateResourceTags_ClearAll(t *testing.T) {
+	const request = `{"resourceTags": []}`
+
+	const taskResponse = `{
+  "taskId": "task",
+  "commandType": "subscriptionUpdateRequest",
+  "status": "received",
+  "_links": {"task": {"href": "https://example.org", "title": "getTaskStatusUpdates", "type": "GET"}}
+}`
+
+	s := httptest.NewServer(testServer("key", "secret", putRequest(t, "/subscriptions/1234/resource-tags", request, taskResponse), getRequest(t, "/tasks/task", `{
+  "taskId": "e02b40d6-1395-4861-a3b9-ecf829d835fd",
+  "commandType": "subscriptionUpdateRequest",
+  "status": "processing-completed",
+  "response": {},
+  "_links": {"self": {"href": "https://example.com", "type": "GET"}}
+}`)))
+	defer s.Close()
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	err = subject.Subscription.UpdateResourceTags(context.TODO(), 1234, subscriptions.UpdateResourceTags{
+		ResourceTags: []*subscriptions.ResourceTag{},
 	})
 
 	require.NoError(t, err)
