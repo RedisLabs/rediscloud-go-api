@@ -166,6 +166,8 @@ type CustomerManagedKeyAccessDetails struct {
 	RedisServiceAccount     *string   `json:"redisServiceAccount,omitempty"`
 	GooglePredefinedRoles   []*string `json:"googlePredefinedRoles,omitempty"`
 	GoogleCustomPermissions []*string `json:"googleCustomPermissions,omitempty"`
+	AwsRoleArn              *string   `json:"awsRoleArn,omitempty"`
+	AwsRequiredPermissions  []*string `json:"awsRequiredPermissions,omitempty"`
 }
 
 func (o Subscription) String() string {
