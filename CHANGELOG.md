@@ -2,11 +2,11 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## 0.47.0 (20th April 2026)
 
 ### Added:
-* Added `ResourceTag` and `UpdateResourceTags` types to the subscriptions service, and a `ResourceTags` field on `CreateCloudProvider` and `CloudDetail`, enabling read/write of BYOC resource tags via `POST /subscriptions` and `PUT /subscriptions/{id}/resource-tags`
-* Added `UpdateResourceTags` method on the subscriptions service
+* Added `ResourceTag` type and a `ResourceTags` field on `CreateCloudProvider` and `CloudDetail`, exposing BYOC resource tags on subscription create and read.
+* Added `UpdateResourceTags` type and `Subscription.UpdateResourceTags` method, targeting `PUT /subscriptions/{id}/resource-tags` (replace-all semantics).
 
 ## 0.46.0 (2nd February 2026)
 
