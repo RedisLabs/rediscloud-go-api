@@ -8,6 +8,9 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 * Added `ResourceTag` type and a `ResourceTags` field on `CreateCloudProvider` and `CloudDetail`, exposing BYOC resource tags on subscription create and read.
 * Added `UpdateResourceTags` type and `Subscription.UpdateResourceTags` method, targeting `PUT /subscriptions/{id}/resource-tags` (replace-all semantics).
 
+### Changed:
+* Updated Go toolchain and dependencies.
+
 ## 0.46.0 (2nd February 2026)
 
 ### Added:
