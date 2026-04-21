@@ -46,8 +46,10 @@ func (o CreateRegion) String() string {
 }
 
 type CreateNetworking struct {
-	DeploymentCIDR *string `json:"deploymentCIDR,omitempty"`
-	VPCId          *string `json:"vpcId,omitempty"`
+	DeploymentCIDR  *string   `json:"deploymentCIDR,omitempty"`
+	VPCId           *string   `json:"vpcId,omitempty"`
+	SubnetIds       []*string `json:"subnetIds,omitempty"`
+	SecurityGroupId *string   `json:"securityGroupId,omitempty"`
 }
 
 func (o CreateNetworking) String() string {
@@ -141,6 +143,31 @@ type Subscription struct {
 	DeletionGracePeriod             *string                          `json:"deletionGracePeriod,omitempty"`
 	CustomerManagedKeyAccessDetails *CustomerManagedKeyAccessDetails `json:"customerManagedKeyAccessDetails,omitempty"`
 	PublicEndpointAccess            *bool                            `json:"publicEndpointAccess,omitempty"`
+}
+
+type ActiveActiveSubscription struct {
+	ID                              *int                             `json:"id,omitempty"`
+	Name                            *string                          `json:"name,omitempty"`
+	Status                          *string                          `json:"status,omitempty"`
+	DeploymentType                  *string                          `json:"deploymentType,omitempty"`
+	PaymentMethod                   *string                          `json:"paymentMethodType,omitempty"`
+	PaymentMethodID                 *int                             `json:"paymentMethodId,omitempty"`
+	MemoryStorage                   *string                          `json:"memoryStorage,omitempty"`
+	StorageEncryption               *bool                            `json:"storageEncryption,omitempty"`
+	NumberOfDatabases               *int                             `json:"numberOfDatabases,omitempty"`
+	CloudDetails                    []*ActiveActiveCloudDetail       `json:"cloudDetails,omitempty"`
+	PersistentStorageEncryptionType *string                          `json:"persistentStorageEncryptionType,omitempty"`
+	DeletionGracePeriod             *string                          `json:"deletionGracePeriod,omitempty"`
+	CustomerManagedKeyAccessDetails *CustomerManagedKeyAccessDetails `json:"customerManagedKeyAccessDetails,omitempty"`
+	PublicEndpointAccess            *bool                            `json:"publicEndpointAccess,omitempty"`
+}
+
+type ActiveActiveCloudDetail struct {
+	Provider       *string               `json:"provider,omitempty"`
+	CloudAccountID *int                  `json:"cloudAccountId,omitempty"`
+	AWSAccountID   *string               `json:"awsAccountId,omitempty"`
+	TotalSizeInGB  *float64              `json:"totalSizeInGb,omitempty"`
+	Regions        []*ActiveActiveRegion `json:"regions,omitempty"`
 }
 
 type CustomerManagedKeyAccessDetails struct {
@@ -305,6 +332,10 @@ func (o CIDR) String() string {
 
 type listSubscriptionResponse struct {
 	Subscriptions []*Subscription `json:"subscriptions"`
+}
+
+type listActiveActiveSubscriptionResponse struct {
+	Subscriptions []*ActiveActiveSubscription `json:"subscriptions"`
 }
 
 type ListAASubscriptionRegionsResponse struct {
