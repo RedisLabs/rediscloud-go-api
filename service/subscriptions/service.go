@@ -112,6 +112,27 @@ func (a *API) UpdateCMKs(ctx context.Context, id int, subscriptionCMKs UpdateSub
 	return nil
 }
 
+// UpdateResourceTags replaces all resource tags on a subscription.
+func (a *API) UpdateResourceTags(ctx context.Context, id int, body UpdateResourceTags) error {
+	var task internal.TaskResponse
+	err := a.client.Put(ctx,
+		fmt.Sprintf("update resource tags for subscription %d", id),
+		fmt.Sprintf("/subscriptions/%d/resource-tags", id),
+		body, &task)
+	if err != nil {
+		return wrap404Error(id, err)
+	}
+
+	a.logger.Printf("Waiting for task %s to finish updating resource tags for subscription %d", task, id)
+
+	err = a.taskWaiter.Wait(ctx, *task.ID)
+	if err != nil {
+		return fmt.Errorf("failed when updating resource tags for subscription %d: %w", id, err)
+	}
+
+	return nil
+}
+
 // Delete will destroy an existing subscription. All existing databases within the subscription should already be
 // deleted, otherwise this function will fail.
 func (a *API) Delete(ctx context.Context, id int) error {

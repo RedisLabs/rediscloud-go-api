@@ -28,6 +28,7 @@ type CreateCloudProvider struct {
 	Provider       *string         `json:"provider,omitempty"`
 	CloudAccountID *int            `json:"cloudAccountId,omitempty"`
 	Regions        []*CreateRegion `json:"regions,omitempty"`
+	ResourceTags   []*ResourceTag  `json:"resourceTags,omitempty"`
 }
 
 func (o CreateCloudProvider) String() string {
@@ -51,6 +52,15 @@ type CreateNetworking struct {
 }
 
 func (o CreateNetworking) String() string {
+	return internal.ToString(o)
+}
+
+type ResourceTag struct {
+	Key   *string `json:"key,omitempty"`
+	Value *string `json:"value,omitempty"`
+}
+
+func (o ResourceTag) String() string {
 	return internal.ToString(o)
 }
 
@@ -112,6 +122,14 @@ func (o UpdateSubscription) String() string {
 	return internal.ToString(o)
 }
 
+type UpdateResourceTags struct {
+	ResourceTags []*ResourceTag `json:"resourceTags"`
+}
+
+func (o UpdateResourceTags) String() string {
+	return internal.ToString(o)
+}
+
 type UpdateSubscriptionCMKs struct {
 	DeletionGracePeriod *string               `json:"deletionGracePeriod,omitempty"`
 	CustomerManagedKeys *[]CustomerManagedKey `json:"customerManagedKeys,omitempty"`
@@ -154,11 +172,12 @@ func (o Subscription) String() string {
 }
 
 type CloudDetail struct {
-	Provider       *string   `json:"provider,omitempty"`
-	CloudAccountID *int      `json:"cloudAccountId,omitempty"`
-	AWSAccountID   *string   `json:"awsAccountId,omitempty"`
-	TotalSizeInGB  *float64  `json:"totalSizeInGb,omitempty"`
-	Regions        []*Region `json:"regions,omitempty"`
+	Provider       *string        `json:"provider,omitempty"`
+	CloudAccountID *int           `json:"cloudAccountId,omitempty"`
+	AWSAccountID   *string        `json:"awsAccountId,omitempty"`
+	TotalSizeInGB  *float64       `json:"totalSizeInGb,omitempty"`
+	Regions        []*Region      `json:"regions,omitempty"`
+	ResourceTags   []*ResourceTag `json:"resourceTags,omitempty"`
 }
 
 func (o CloudDetail) String() string {
