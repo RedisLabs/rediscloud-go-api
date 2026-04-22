@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
-## 0.47.0 (20th April 2026)
+## 0.47.0 (22nd April 2026)
 
 ### Added:
 * Added `ResourceTag` type and a `ResourceTags` field on `CreateCloudProvider` and `CloudDetail`, exposing BYOC resource tags on subscription create and read.
