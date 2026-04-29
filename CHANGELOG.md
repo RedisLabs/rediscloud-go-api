@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.48.0 (29th April 2026)
+
+### Added:
+* Added `PrometheusEndpoint` field to `Subscription`, exposing the Prometheus metrics endpoint URL returned on `GET /subscriptions/{id}`.
+
 ## 0.47.0 (22nd April 2026)
 
 ### Added:
