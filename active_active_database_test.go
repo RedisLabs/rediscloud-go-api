@@ -143,6 +143,7 @@ func TestAADatabase_Update(t *testing.T) {
 		"/subscriptions/111478/databases/1466/regions",
 		`{
   "dryRun": false,
+  "name": "active-active-db-rename",
   "memoryLimitInGb": 2,
   "datasetSizeInGb": 2,
   "supportOSSClusterApi": false,
@@ -206,6 +207,7 @@ func TestAADatabase_Update(t *testing.T) {
 
 	err = subject.Database.ActiveActiveUpdate(context.TODO(), 111478, 1466, databases.UpdateActiveActiveDatabase{
 		DryRun:                              redis.Bool(false),
+		Name:                                redis.String("active-active-db-rename"),
 		MemoryLimitInGB:                     redis.Float64(2),
 		DatasetSizeInGB:                     redis.Float64(2),
 		SupportOSSClusterAPI:                redis.Bool(false),
