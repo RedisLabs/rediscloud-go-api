@@ -107,6 +107,7 @@ func (o LocalThroughput) String() string {
 // Uses pointers for slices to allow empty slices to be serialised/sent
 type UpdateActiveActiveDatabase struct {
 	DryRun                              *bool                    `json:"dryRun,omitempty"`
+	Name                                *string                  `json:"name,omitempty"`
 	MemoryLimitInGB                     *float64                 `json:"memoryLimitInGb,omitempty"`
 	DatasetSizeInGB                     *float64                 `json:"datasetSizeInGb,omitempty"`
 	SupportOSSClusterAPI                *bool                    `json:"supportOSSClusterApi,omitempty"`
