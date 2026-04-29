@@ -159,6 +159,7 @@ type Subscription struct {
 	DeletionGracePeriod             *string                          `json:"deletionGracePeriod,omitempty"`
 	CustomerManagedKeyAccessDetails *CustomerManagedKeyAccessDetails `json:"customerManagedKeyAccessDetails,omitempty"`
 	PublicEndpointAccess            *bool                            `json:"publicEndpointAccess,omitempty"`
+	PrometheusEndpoint              *string                          `json:"prometheusEndpoint,omitempty"`
 }
 
 type CustomerManagedKeyAccessDetails struct {
