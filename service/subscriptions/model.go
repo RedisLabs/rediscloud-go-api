@@ -334,11 +334,12 @@ type ListAASubscriptionRegionsResponse struct {
 
 // have to redeclare these here (copied from regions model) to avoid an import cycle
 type ActiveActiveRegion struct {
-	RegionId       *int                   `json:"regionId,omitempty"`
-	Region         *string                `json:"region,omitempty"`
-	DeploymentCIDR *string                `json:"deploymentCidr,omitempty"`
-	VpcId          *string                `json:"vpcId,omitempty"`
-	Databases      []ActiveActiveDatabase `json:"databases,omitempty"`
+	RegionId           *int                   `json:"regionId,omitempty"`
+	Region             *string                `json:"region,omitempty"`
+	DeploymentCIDR     *string                `json:"deploymentCidr,omitempty"`
+	VpcId              *string                `json:"vpcId,omitempty"`
+	Databases          []ActiveActiveDatabase `json:"databases,omitempty"`
+	PrometheusEndpoint *string                `json:"prometheusEndpoint,omitempty"`
 }
 type ActiveActiveDatabase struct {
 	DatabaseId               *int    `json:"databaseId,omitempty"`

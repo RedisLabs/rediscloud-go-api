@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.50.0 (30th April 2026)
+* Added `PrometheusEndpoint` field to `ActiveActiveRegion`, exposing the per-region Prometheus metrics endpoint URL returned on `GET /subscriptions/{id}/regions`.
+
 ## 0.49.0 (29th April 2026)
 * Added `Name` field to `UpdateActiveActiveDatabase`, allowing for Active-Active database name change.
 

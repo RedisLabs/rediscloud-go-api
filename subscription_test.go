@@ -1564,6 +1564,7 @@ func TestSubscription_ListActiveActiveRegions(t *testing.T) {
 			  "links": []
 			}
 		  ],
+		  "prometheusEndpoint": "redis-19836.c1.us-east-1-prometheus.cloud.redislabs.com:8070",
 		  "links": []
 		},
 		{
@@ -1580,6 +1581,7 @@ func TestSubscription_ListActiveActiveRegions(t *testing.T) {
 			  "links": []
 			}
 		  ],
+		  "prometheusEndpoint": "redis-19836.c1.us-east-2-prometheus.cloud.redislabs.com:8070",
 		  "links": []
 		}
 	  ],
@@ -1669,17 +1671,19 @@ func listRegionsExpected() []*subscriptions.ActiveActiveRegion {
 
 	// Initialize regions
 	region1Struct := &subscriptions.ActiveActiveRegion{
-		Region:         redis.String("us-east-1"),
-		DeploymentCIDR: redis.String("192.169.0.0/24"),
-		VpcId:          redis.String("vpc-0e828cd5c0c580389"),
-		Databases:      []subscriptions.ActiveActiveDatabase{database},
+		Region:             redis.String("us-east-1"),
+		DeploymentCIDR:     redis.String("192.169.0.0/24"),
+		VpcId:              redis.String("vpc-0e828cd5c0c580389"),
+		Databases:          []subscriptions.ActiveActiveDatabase{database},
+		PrometheusEndpoint: redis.String("redis-19836.c1.us-east-1-prometheus.cloud.redislabs.com:8070"),
 	}
 
 	region2Struct := &subscriptions.ActiveActiveRegion{
-		Region:         redis.String("us-east-2"),
-		DeploymentCIDR: redis.String("11.0.1.0/24"),
-		VpcId:          redis.String("vpc-0aecab539b31057a5"),
-		Databases:      []subscriptions.ActiveActiveDatabase{database},
+		Region:             redis.String("us-east-2"),
+		DeploymentCIDR:     redis.String("11.0.1.0/24"),
+		VpcId:              redis.String("vpc-0aecab539b31057a5"),
+		Databases:          []subscriptions.ActiveActiveDatabase{database},
+		PrometheusEndpoint: redis.String("redis-19836.c1.us-east-2-prometheus.cloud.redislabs.com:8070"),
 	}
 
 	return []*subscriptions.ActiveActiveRegion{region1Struct, region2Struct}
