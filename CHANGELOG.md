@@ -2,8 +2,9 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
-## 0.50.0 (7th May 2026)
-* Added `AwsRoleArn` field to `CustomerManagedKeyAccessDetails`, mapped to the `redisIamRole` API response, exposing the IAM role for AWS CMK subscriptions.
+## 0.50.0 (12th May 2026)
+* Added `AwsRoleArn` field to `CustomerManagedKeyAccessDetails`.
+* Bumped Go toolchain to `go1.25.10`.
 
 ## 0.49.0 (29th April 2026)
 * Added `Name` field to `UpdateActiveActiveDatabase`, allowing for Active-Active database name change.
