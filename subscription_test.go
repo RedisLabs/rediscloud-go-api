@@ -982,6 +982,42 @@ func TestSubscription_Get_WithResourceTags(t *testing.T) {
 	}, actual.CloudDetails[0].ResourceTags)
 }
 
+// TestSubscription_Get_WithCMKAccessDetails locks down the JSON tag mapping for
+// every field on CustomerManagedKeyAccessDetails — in particular, that
+// `redisIamRole` populates AwsRoleArn.
+func TestSubscription_Get_WithCMKAccessDetails(t *testing.T) {
+	s := httptest.NewServer(testServer("apiKey", "secret", getRequest(t, "/subscriptions/98768", `{
+  "id": 4,
+  "name": "Get-cmk-access-details",
+  "status": "active",
+  "paymentMethodType": "credit-card",
+  "paymentMethodId": 2,
+  "memoryStorage": "ram",
+  "storageEncryption": false,
+  "persistentStorageEncryptionType": "customer-managed-key",
+  "numberOfDatabases": 1,
+  "customerManagedKeyAccessDetails": {
+    "redisServiceAccount": "redis-cmk@redislabs.iam.gserviceaccount.com",
+    "googlePredefinedRoles": ["roles/cloudkms.cryptoKeyEncrypterDecrypter"],
+    "googleCustomPermissions": ["cloudkms.cryptoKeyVersions.useToEncrypt"],
+    "redisIamRole": "arn:aws:iam::123456789012:role/redis-cmk"
+  }
+}`)))
+
+	subject, err := clientFromTestServer(s, "apiKey", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.Subscription.Get(context.TODO(), 98768)
+	require.NoError(t, err)
+
+	assert.Equal(t, &subscriptions.CustomerManagedKeyAccessDetails{
+		RedisServiceAccount:     redis.String("redis-cmk@redislabs.iam.gserviceaccount.com"),
+		GooglePredefinedRoles:   redis.StringSlice("roles/cloudkms.cryptoKeyEncrypterDecrypter"),
+		GoogleCustomPermissions: redis.StringSlice("cloudkms.cryptoKeyVersions.useToEncrypt"),
+		AwsRoleArn:              redis.String("arn:aws:iam::123456789012:role/redis-cmk"),
+	}, actual.CustomerManagedKeyAccessDetails)
+}
+
 func TestSubscription_Get_wraps404Error(t *testing.T) {
 	s := httptest.NewServer(testServer("apiKey", "secret", getRequestWithStatus(t, "/subscriptions/123", 404, "")))
 
