@@ -99,10 +99,14 @@ func TestDatabaseFixtures(t *testing.T) {
 }
 
 func TestCloudAccountFixtures(t *testing.T) {
-	assert.Equal(t, "active", cloud_accounts.StatusActive)
 	assert.Equal(t, "draft", cloud_accounts.StatusDraft)
+	assert.Equal(t, "pending", cloud_accounts.StatusPending)
+	assert.Equal(t, "active", cloud_accounts.StatusActive)
 	assert.Equal(t, "change-draft", cloud_accounts.StatusChangeDraft)
-	assert.Equal(t, "error", cloud_accounts.StatusError)
+	assert.Equal(t, "change-pending", cloud_accounts.StatusChangePending)
+	assert.Equal(t, "delete-draft", cloud_accounts.StatusDeleteDraft)
+	assert.Equal(t, "deleted", cloud_accounts.StatusDeleted)
+	assert.Equal(t, "active-error", cloud_accounts.StatusActiveError)
 	assert.Equal(t, []string{"AWS", "GCP"}, cloud_accounts.ProviderValues())
 }
 
