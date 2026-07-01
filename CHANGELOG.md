@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.51.0 (30th June 2026)
+
+### Added:
+* Added `StatusPending`, `StatusChangePending`, `StatusDeleteDraft`, `StatusDeleted` and `StatusActiveError` constants for the `Status` field in `CloudAccount`.
+
 ## 0.50.0 (12th May 2026)
 * Added `AwsRoleArn` field to `CustomerManagedKeyAccessDetails`.
 * Bumped Go toolchain to `go1.25.10`.

@@ -58,14 +58,22 @@ func (o CloudAccount) String() string {
 }
 
 const (
-	// StatusActive is the active value of the `Status` field in `CloudAccount`
-	StatusActive = "active"
 	// StatusDraft is the draft value of the `Status` field in `CloudAccount`
 	StatusDraft = "draft"
+	// StatusPending is the pending value of the `Status` field in `CloudAccount`
+	StatusPending = "pending"
+	// StatusActive is the active value of the `Status` field in `CloudAccount`
+	StatusActive = "active"
 	// StatusChangeDraft is the change draft value of the `Status` field in `CloudAccount`
 	StatusChangeDraft = "change-draft"
-	// StatusError is the error value of the `Status` field in `CloudAccount`
-	StatusError = "error"
+	// StatusChangePending is the change pending value of the `Status` field in `CloudAccount`
+	StatusChangePending = "change-pending"
+	// StatusDeleteDraft is the delete draft value of the `Status` field in `CloudAccount`
+	StatusDeleteDraft = "delete-draft"
+	// StatusDeleted is the deleted value of the `Status` field in `CloudAccount`
+	StatusDeleted = "deleted"
+	// StatusActiveError is the active error value of the `Status` field in `CloudAccount`
+	StatusActiveError = "active-error"
 )
 
 func ProviderValues() []string {
