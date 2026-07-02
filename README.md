@@ -41,3 +41,16 @@ func main() {
 	fmt.Printf("Created subscription: %d", id)
 }
 ```
+
+## Releasing
+
+Releases are published as Git tags of the form `vX.Y.Z`, so Go consumers pull a
+specific release with `go get github.com/RedisLabs/rediscloud-go-api@vX.Y.Z`.
+
+Tagging is automated on merge to `main`, using the [Tag Release workflow](.github/workflows/tag-release.yml). The `Version` constant in [`version.go`](version.go) is
+the single source of truth for the release number.
+
+To cut a release:
+1. Bump `Version` in [`version.go`](version.go) (e.g. `0.51.0` → `0.52.0`).
+2. Make sure there is a matching entry in [`CHANGELOG.md`](CHANGELOG.md).
+3. Open a PR and merge it into `main`.
