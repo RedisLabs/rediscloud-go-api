@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.52.0 (1st July 2026)
+
+### Changed:
+* Releases are now tagged automatically: on merge to `main`, a GitHub Actions workflow publishes a `vX.Y.Z` Git tag derived from the `Version` constant in `version.go`.
+
 ## 0.51.0 (30th June 2026)
 
 ### Added:
