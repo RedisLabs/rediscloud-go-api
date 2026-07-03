@@ -12,6 +12,8 @@ const (
 
 	// SecretKeyEnvVar is the environment variable that will be used for the secret key by default.
 	SecretKeyEnvVar = "REDISCLOUD_SECRET_KEY"
+
+	RedisCloudUrlEnvVar = "REDISCLOUD_URL"
 )
 
 var userAgent = buildUserAgent("rediscloud-go-api", Version, runtime.Version(), runtime.GOOS, runtime.GOARCH)
