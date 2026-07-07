@@ -3,8 +3,6 @@ version: "2"
 run:
   timeout: 5m
   tests: false
-  # Use go.mod version, not toolchain version, to avoid mismatch with golangci-lint build
-  go: '1.24'
 
 formatters:
   enable:
