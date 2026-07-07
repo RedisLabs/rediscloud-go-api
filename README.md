@@ -42,6 +42,22 @@ func main() {
 }
 ```
 
+## Development
+
+The repo ships a [Nix flake](flake.nix) that pins the toolchain (Go, `golangci-lint`, `gotools`, `govulncheck`, GNU `make`) so local development matches CI. Combined with [direnv](https://direnv.net/), your shell automatically enters that environment when you `cd` into the repo.
+
+### Setup
+
+1. Install Nix with flakes enabled — the [Determinate Nix Installer](https://determinate.systems/nix-installer/) is the easiest option; the [official Nix installer](https://nixos.org/download/) works too but requires [enabling flakes manually](https://nixos.wiki/wiki/Flakes#Enable_flakes_permanently_in_NixOS).
+2. Install [direnv](https://direnv.net/docs/installation.html) and hook it into your shell.
+3. Install [nix-direnv](https://github.com/nix-community/nix-direnv) so direnv can load the flake's dev shell.
+4. From the repo root, activate the environment:
+   ```shell
+   direnv allow
+   ```
+
+Every subsequent `cd` into the repo brings up a shell with the pinned toolchain on `PATH`. Run `make` to execute the same checks CI runs.
+
 ## Releasing
 
 Releases are published as Git tags of the form `vX.Y.Z`, so Go consumers pull a
