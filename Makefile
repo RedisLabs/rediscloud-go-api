@@ -21,7 +21,7 @@ bin/.generate: $(go_files) bin/.vendor
 
 fmt: bin/.generate $(go_files)
 	# Formatting files...
-	@go run golang.org/x/tools/cmd/goimports -w $(go_files)
+	@goimports -w $(go_files)
 
 bin/.vet: bin/.generate $(go_files)
 	go vet ./...
@@ -29,9 +29,9 @@ bin/.vet: bin/.generate $(go_files)
 
 bin/.fmtcheck: bin/.generate $(go_files)
 	# Checking format of Go files...
-	@GOIMPORTS=$$(go run golang.org/x/tools/cmd/goimports -l $(go_files)) && \
+	@GOIMPORTS=$$(goimports -l $(go_files)) && \
 	if [ "$$GOIMPORTS" != "" ]; then \
-		go run golang.org/x/tools/cmd/goimports -d $(go_files); \
+		goimports -d $(go_files); \
 		exit 1; \
 	fi
 	@touch bin/.fmtcheck
