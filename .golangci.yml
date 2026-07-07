@@ -58,6 +58,7 @@ linters:
     gosec:
       excludes:
         - G101  # false positives on env var names like "SECRET_KEY"
+        - G117  # false positives on SDK request payload fields named "password"
 
     dupword:
       ignore:

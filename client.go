@@ -186,7 +186,7 @@ type Log interface {
 type defaultLogger struct{}
 
 func (d *defaultLogger) Printf(format string, v ...interface{}) {
-	log.Printf(format, v...)
+	log.Printf(format, v...) //nolint:gosec // G706: logger passthrough, format from SDK caller
 }
 
 func (d *defaultLogger) Println(v ...interface{}) {
