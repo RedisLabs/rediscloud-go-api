@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := ci
-.PHONY: fmt lint test ci
+.PHONY: fmt lint vulncheck test ci
 
 fmt:
 	golangci-lint fmt
@@ -7,7 +7,10 @@ fmt:
 lint:
 	golangci-lint run
 
+vulncheck:
+	govulncheck ./...
+
 test:
 	go test -v ./...
 
-ci: lint test
+ci: vulncheck lint test

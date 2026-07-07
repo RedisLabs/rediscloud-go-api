@@ -21,8 +21,5 @@ jobs:
       - name: Setup Nix
         uses: ./.github/actions/setup-nix
 
-      - name: Check for vulnerabilities
-        run: nix develop --command govulncheck ./...
-
       - name: Build and Test
         run: nix develop --command make
