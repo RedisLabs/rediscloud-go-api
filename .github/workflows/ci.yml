@@ -18,14 +18,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7.0.0
 
-      - name: Install Go
-        uses: actions/setup-go@v6.5.0
-        with:
-          go-version-file: go.mod
-          cache: true
+      - name: Setup Nix
+        uses: ./.github/actions/setup-nix
 
       - name: Check for vulnerabilities
-        run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+        run: nix develop --command govulncheck ./...
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
@@ -33,4 +30,4 @@ jobs:
           version: v2.12.2
 
       - name: Build and Test
-        run: make
+        run: nix develop --command make
