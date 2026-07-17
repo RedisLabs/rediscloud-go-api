@@ -65,9 +65,36 @@ func (a *API) List(ctx context.Context) ([]*Subscription, error) {
 	return response.Subscriptions, nil
 }
 
+// ListActiveActive will list all of the current account's active-active subscriptions.
+func (a *API) ListActiveActive(ctx context.Context) ([]*ActiveActiveSubscription, error) {
+	var response listActiveActiveSubscriptionResponse
+	err := a.client.Get(ctx, "list subscriptions", "/subscriptions", &response)
+	if err != nil {
+		return nil, err
+	}
+	var activeActiveSubscriptions []*ActiveActiveSubscription
+	for _, sub := range response.Subscriptions {
+		if *sub.DeploymentType == "active-active" {
+			activeActiveSubscriptions = append(activeActiveSubscriptions, sub)
+		}
+	}
+	return activeActiveSubscriptions, nil
+}
+
 // Get will retrieve an existing subscription.
 func (a *API) Get(ctx context.Context, id int) (*Subscription, error) {
 	var response Subscription
+	err := a.client.Get(ctx, fmt.Sprintf("retrieve subscription %d", id), fmt.Sprintf("/subscriptions/%d", id), &response)
+	if err != nil {
+		return nil, wrap404Error(id, err)
+	}
+
+	return &response, nil
+}
+
+// GetActiveActive will retrieve an existing active-active subscription.
+func (a *API) GetActiveActive(ctx context.Context, id int) (*ActiveActiveSubscription, error) {
+	var response ActiveActiveSubscription
 	err := a.client.Get(ctx, fmt.Sprintf("retrieve subscription %d", id), fmt.Sprintf("/subscriptions/%d", id), &response)
 	if err != nil {
 		return nil, wrap404Error(id, err)
