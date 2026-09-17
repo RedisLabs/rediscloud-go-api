@@ -21,6 +21,7 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/service/fixed/plans"
 	"github.com/RedisLabs/rediscloud-go-api/service/fixed/plans/plan_subscriptions"
 	fixedSubscriptions "github.com/RedisLabs/rediscloud-go-api/service/fixed/subscriptions"
+	"github.com/RedisLabs/rediscloud-go-api/service/langcache"
 	"github.com/RedisLabs/rediscloud-go-api/service/latest_backups"
 	"github.com/RedisLabs/rediscloud-go-api/service/latest_imports"
 	"github.com/RedisLabs/rediscloud-go-api/service/maintenance"
@@ -41,6 +42,7 @@ type Client struct {
 	Regions                   *regions.API
 	LatestBackup              *latest_backups.API
 	LatestImport              *latest_imports.API
+	LangCache                 *langcache.API
 	Maintenance               *maintenance.API
 	Pricing                   *pricing.API
 	TransitGatewayAttachments *attachments.API
@@ -91,6 +93,7 @@ func NewClient(configs ...Option) (*Client, error) {
 		Regions:                   regions.NewAPI(client, t, config.logger),
 		LatestBackup:              latest_backups.NewAPI(client, t, config.logger),
 		LatestImport:              latest_imports.NewAPI(client, t, config.logger),
+		LangCache:                 langcache.NewAPI(client),
 		Maintenance:               maintenance.NewAPI(client, t, config.logger),
 		Pricing:                   pricing.NewAPI(client),
 		TransitGatewayAttachments: attachments.NewAPI(client, t, config.logger),

@@ -22,6 +22,20 @@ func TestHttpClient_Get_failsFor4xx(t *testing.T) {
 	require.Error(t, err)
 }
 
+func TestHttpClient_Delete_acceptsEmptySuccessBody(t *testing.T) {
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodDelete, r.Method)
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer s.Close()
+
+	subject, err := NewHttpClient(s.Client(), s.URL, &testLogger{t: t})
+	require.NoError(t, err)
+
+	err = subject.Delete(context.Background(), "delete test resource", "/resource", nil, nil)
+	require.NoError(t, err)
+}
+
 func TestHttpClient_Retry(t *testing.T) {
 	testCase := []struct {
 		description   string
