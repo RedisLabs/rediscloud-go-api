@@ -67,6 +67,10 @@ func (c *HttpClient) Post(ctx context.Context, name, path string, requestBody in
 	return c.connectionWithRetries(ctx, http.MethodPost, name, path, nil, requestBody, responseBody)
 }
 
+func (c *HttpClient) Patch(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error {
+	return c.connectionWithRetries(ctx, http.MethodPatch, name, path, nil, requestBody, responseBody)
+}
+
 func (c *HttpClient) Delete(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error {
 	return c.connectionWithRetries(ctx, http.MethodDelete, name, path, nil, requestBody, responseBody)
 }
@@ -159,7 +163,7 @@ func (c *HttpClient) connection(ctx context.Context, method, name, path string, 
 		}
 	}
 
-	if err := json.NewDecoder(response.Body).Decode(&responseBody); err != nil {
+	if err := json.NewDecoder(response.Body).Decode(&responseBody); err != nil && !errors.Is(err, io.EOF) {
 		return fmt.Errorf("failed to decode response to %s: %w", name, err)
 	}
 
