@@ -187,15 +187,15 @@ func (a *API) DeleteAPIKey(ctx context.Context, storeID, apiKeyID string) error 
 }
 
 func storePath(storeID string) string {
-	return fmt.Sprintf("%s/%s", memoryStoresPath, url.PathEscape(storeID))
+	return memoryStoresPath + "/" + url.PathEscape(storeID)
 }
 
 func storeAPIKeysPath(storeID string) string {
-	return fmt.Sprintf("%s/api-keys", storePath(storeID))
+	return storePath(storeID) + "/api-keys"
 }
 
 func storeAPIKeyPath(storeID, apiKeyID string) string {
-	return fmt.Sprintf("%s/%s", storeAPIKeysPath(storeID), url.PathEscape(apiKeyID))
+	return storeAPIKeysPath(storeID) + "/" + url.PathEscape(apiKeyID)
 }
 
 func requireTaskID(task internal.TaskResponse, operation string) (string, error) {
