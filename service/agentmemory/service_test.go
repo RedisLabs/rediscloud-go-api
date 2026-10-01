@@ -221,6 +221,38 @@ func TestAPI_CreateAPIKey_errorsWhenAPIKeyIsMissing(t *testing.T) {
 	assert.EqualError(t, err, "create Agent Memory API key response did not contain an API key")
 }
 
+func TestAPI_CreateAPIKey_errorsWhenCreatedKeyIDIsAmbiguous(t *testing.T) {
+	listCalls := 0
+	client := &fakeHTTPClient{
+		getFunc: func(ctx context.Context, name, path string, responseBody interface{}) error {
+			listCalls++
+			response, ok := responseBody.(*ListAPIKeysResponse)
+			require.True(t, ok)
+			response.APIKeys = []APIKeyInfo{{APIKeyID: "existing-id", KeyName: "existing"}}
+			if listCalls == 2 {
+				response.APIKeys = append(response.APIKeys,
+					APIKeyInfo{APIKeyID: "new-id-1", KeyName: "terraform"},
+					APIKeyInfo{APIKeyID: "new-id-2", KeyName: "terraform"},
+				)
+			}
+			return nil
+		},
+		postFunc: func(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error {
+			response, ok := responseBody.(*CreateAPIKeyResponse)
+			require.True(t, ok)
+			response.APIKey = "secret-token"
+			return nil
+		},
+	}
+
+	subject := NewAPI(client, &fakeTaskWaiter{}, &fakeLogger{})
+
+	created, err := subject.CreateAPIKey(context.TODO(), "store-1", "terraform")
+
+	assert.Nil(t, created)
+	assert.EqualError(t, err, `created Agent Memory API key "terraform" for store "store-1" but found 2 possible key IDs`)
+}
+
 func TestAPI_GetAPIKey(t *testing.T) {
 	client := &fakeHTTPClient{
 		getFunc: func(ctx context.Context, name, path string, responseBody interface{}) error {

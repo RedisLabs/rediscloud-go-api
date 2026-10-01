@@ -150,10 +150,17 @@ func (a *API) CreateAPIKey(ctx context.Context, storeID, keyName string) (*Creat
 	if err != nil {
 		return nil, err
 	}
+	var candidates []APIKeyInfo
 	for _, key := range keys {
 		if _, existed := existingIDs[key.APIKeyID]; !existed && key.KeyName == keyName {
-			return &CreatedAPIKey{APIKey: response.APIKey, Info: key}, nil
+			candidates = append(candidates, key)
 		}
+	}
+	if len(candidates) == 1 {
+		return &CreatedAPIKey{APIKey: response.APIKey, Info: candidates[0]}, nil
+	}
+	if len(candidates) > 1 {
+		return nil, fmt.Errorf("created Agent Memory API key %q for store %q but found %d possible key IDs", keyName, storeID, len(candidates))
 	}
 
 	return nil, fmt.Errorf("created Agent Memory API key %q for store %q but could not resolve its ID", keyName, storeID)
