@@ -58,6 +58,78 @@ func TestAgentMemory_Create(t *testing.T) {
 	assert.Equal(t, "store-1", actual)
 }
 
+func TestAgentMemory_CreateWithModelConfig(t *testing.T) {
+	s := httptest.NewServer(testServer("key", "secret", postRequest(t, "/memory-stores", `{
+  "name": "store",
+  "databaseId": 123,
+  "longTermMemory": {
+    "ttlSeconds": 31536000,
+    "embedding": {
+      "provider": "openai",
+      "model": "text-embedding-3-small",
+      "credentials": {
+        "type": "apiKey",
+        "apiKey": "embedding-secret"
+      }
+    }
+  },
+  "llm": {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "credentials": {
+      "type": "apiKey",
+      "apiKey": "llm-secret"
+    }
+  },
+  "extractionStrategy": "INSTRUCT"
+}`, `{
+  "taskId": "task",
+  "commandType": "memoryStoreCreateRequest",
+  "status": "received"
+}`), getRequest(t, "/tasks/task", `{
+  "taskId": "task",
+  "commandType": "memoryStoreCreateRequest",
+  "status": "processing-completed",
+  "response": {
+    "resource": {
+      "storeId": "store-1"
+    }
+  }
+}`)))
+	defer s.Close()
+
+	subject, err := clientFromTestServer(s, "key", "secret")
+	require.NoError(t, err)
+
+	actual, err := subject.AgentMemory.Create(context.TODO(), agentmemory.CreateStore{
+		Name:       "store",
+		DatabaseID: 123,
+		LongTermMemory: &agentmemory.LongTermMemoryConfig{
+			TTLSeconds: 31536000,
+			Embedding: &agentmemory.ModelConfig{
+				Provider: "openai",
+				Model:    "text-embedding-3-small",
+				Credentials: &agentmemory.ModelCredentials{
+					Type:   "apiKey",
+					APIKey: "embedding-secret",
+				},
+			},
+		},
+		LLM: &agentmemory.ModelConfig{
+			Provider: "openai",
+			Model:    "gpt-4o-mini",
+			Credentials: &agentmemory.ModelCredentials{
+				Type:   "apiKey",
+				APIKey: "llm-secret",
+			},
+		},
+		ExtractionStrategy: agentmemory.ExtractionStrategyInstruct,
+	})
+
+	require.NoError(t, err)
+	assert.Equal(t, "store-1", actual)
+}
+
 func TestAgentMemory_Get(t *testing.T) {
 	s := httptest.NewServer(testServer("key", "secret", getRequest(t, "/memory-stores/store-1", `{
   "storeId": "store-1",
