@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -20,6 +21,49 @@ func TestHttpClient_Get_failsFor4xx(t *testing.T) {
 
 	err = subject.Get(context.TODO(), "testing", "/", nil)
 	require.Error(t, err)
+}
+
+func TestHttpClient_Patch(t *testing.T) {
+	type requestBody struct {
+		Name string `json:"name"`
+	}
+	type responseBody struct {
+		ID string `json:"id"`
+	}
+
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPatch, r.Method)
+		assert.Equal(t, "/resource", r.URL.Path)
+
+		var request requestBody
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&request))
+		assert.Equal(t, "updated", request.Name)
+
+		w.WriteHeader(http.StatusOK)
+		_, err := w.Write([]byte(`{"id":"resource-id"}`))
+		require.NoError(t, err)
+	}))
+
+	subject, err := NewHttpClient(s.Client(), s.URL, &testLogger{t: t})
+	require.NoError(t, err)
+
+	var response responseBody
+	err = subject.Patch(context.TODO(), "patch resource", "/resource", requestBody{Name: "updated"}, &response)
+	require.NoError(t, err)
+	assert.Equal(t, "resource-id", response.ID)
+}
+
+func TestHttpClient_allowsEmptySuccessResponse(t *testing.T) {
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodDelete, r.Method)
+		w.WriteHeader(http.StatusNoContent)
+	}))
+
+	subject, err := NewHttpClient(s.Client(), s.URL, &testLogger{t: t})
+	require.NoError(t, err)
+
+	err = subject.Delete(context.TODO(), "delete resource", "/resource", nil, nil)
+	require.NoError(t, err)
 }
 
 func TestHttpClient_Retry(t *testing.T) {
