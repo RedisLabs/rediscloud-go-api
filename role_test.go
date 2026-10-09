@@ -2,7 +2,6 @@ package rediscloud_api
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http/httptest"
 	"testing"
@@ -300,11 +299,11 @@ func TestUpdateNonExistentRole(t *testing.T) {
 		},
 	})
 
-	assert.Equal(t, &internal.Error{
+	assertInternalError(t, err, &internal.Error{
 		Type:        redis.String("ACL_ROLE_NOT_FOUND"),
 		Description: redis.String("ACL role not found"),
 		Status:      redis.String("404 NOT_FOUND"),
-	}, errors.Unwrap(err))
+	})
 }
 
 func TestUpdateBadRole(t *testing.T) {
@@ -385,11 +384,11 @@ func TestUpdateBadRole(t *testing.T) {
 		},
 	})
 
-	assert.Equal(t, &internal.Error{
+	assertInternalError(t, err, &internal.Error{
 		Type:        redis.String("DATABASE_NOT_FOUND"),
 		Description: redis.String("Database was not found"),
 		Status:      redis.String("404 NOT_FOUND"),
-	}, errors.Unwrap(err))
+	})
 }
 
 func TestUpdateRole(t *testing.T) {
@@ -526,11 +525,11 @@ func TestDeleteNonExistentRole(t *testing.T) {
 
 	err = subject.Roles.Delete(context.TODO(), 40004)
 
-	assert.Equal(t, &internal.Error{
+	assertInternalError(t, err, &internal.Error{
 		Type:        redis.String("ACL_ROLE_NOT_FOUND"),
 		Description: redis.String("ACL role not found"),
 		Status:      redis.String("404 NOT_FOUND"),
-	}, errors.Unwrap(err))
+	})
 }
 
 func TestDeleteRole(t *testing.T) {
