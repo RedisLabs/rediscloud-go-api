@@ -2,7 +2,6 @@ package rediscloud_api
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http/httptest"
 	"testing"
@@ -211,11 +210,11 @@ func TestUpdateNonExistentUser(t *testing.T) {
 		Password: redis.String("someRandom.pa55word"),
 	})
 
-	assert.Equal(t, &internal.Error{
+	assertInternalError(t, err, &internal.Error{
 		Type:        redis.String("ACL_USER_NOT_FOUND"),
 		Description: redis.String("ACL user not found"),
 		Status:      redis.String("404 NOT_FOUND"),
-	}, errors.Unwrap(err))
+	})
 }
 
 func TestUpdateBadUser(t *testing.T) {
@@ -277,11 +276,11 @@ func TestUpdateBadUser(t *testing.T) {
 		Password: redis.String("I do not meet requirements"),
 	})
 
-	assert.Equal(t, &internal.Error{
+	assertInternalError(t, err, &internal.Error{
 		Type:        redis.String("ACL_USER_PASSWORD_NOT_VALID"),
 		Description: redis.String("ACL user password is not valid."),
 		Status:      redis.String("400 BAD_REQUEST"),
-	}, errors.Unwrap(err))
+	})
 }
 
 func TestUpdateUser(t *testing.T) {
@@ -397,11 +396,11 @@ func TestDeleteNonExistentUser(t *testing.T) {
 
 	err = subject.Users.Delete(context.TODO(), 40004)
 
-	assert.Equal(t, &internal.Error{
+	assertInternalError(t, err, &internal.Error{
 		Type:        redis.String("ACL_USER_NOT_FOUND"),
 		Description: redis.String("ACL user not found"),
 		Status:      redis.String("404 NOT_FOUND"),
-	}, errors.Unwrap(err))
+	})
 }
 
 func TestDeleteUser(t *testing.T) {

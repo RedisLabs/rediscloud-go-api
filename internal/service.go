@@ -136,7 +136,7 @@ func (a *api) get(ctx context.Context, id string) (*Task, error) {
 	}
 
 	if task.Response != nil && task.Response.Error != nil {
-		return &task, task.Response.Error
+		return &task, fmt.Errorf("task %s failed: %w", id, task.Response.Error)
 	}
 
 	return &task, nil
