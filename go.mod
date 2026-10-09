@@ -2,7 +2,7 @@ module github.com/RedisLabs/rediscloud-go-api
 
 go 1.25.0
 
-toolchain go1.25.12
+toolchain go1.25.13
 
 require (
 	github.com/avast/retry-go/v4 v4.7.0

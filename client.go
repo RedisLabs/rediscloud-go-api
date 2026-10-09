@@ -15,6 +15,7 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/roles"
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/users"
 	"github.com/RedisLabs/rediscloud-go-api/service/account"
+	"github.com/RedisLabs/rediscloud-go-api/service/agentmemory"
 	"github.com/RedisLabs/rediscloud-go-api/service/cloud_accounts"
 	"github.com/RedisLabs/rediscloud-go-api/service/databases"
 	fixedDatabases "github.com/RedisLabs/rediscloud-go-api/service/fixed/databases"
@@ -41,6 +42,7 @@ type Client struct {
 	Regions                   *regions.API
 	LatestBackup              *latest_backups.API
 	LatestImport              *latest_imports.API
+	AgentMemory               *agentmemory.API
 	Maintenance               *maintenance.API
 	Pricing                   *pricing.API
 	TransitGatewayAttachments *attachments.API
@@ -91,6 +93,7 @@ func NewClient(configs ...Option) (*Client, error) {
 		Regions:                   regions.NewAPI(client, t, config.logger),
 		LatestBackup:              latest_backups.NewAPI(client, t, config.logger),
 		LatestImport:              latest_imports.NewAPI(client, t, config.logger),
+		AgentMemory:               agentmemory.NewAPI(client, t, config.logger),
 		Maintenance:               maintenance.NewAPI(client, t, config.logger),
 		Pricing:                   pricing.NewAPI(client),
 		TransitGatewayAttachments: attachments.NewAPI(client, t, config.logger),
