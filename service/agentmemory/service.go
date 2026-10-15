@@ -121,6 +121,11 @@ func (a *API) ListAPIKeys(ctx context.Context, storeID string) ([]APIKeyInfo, er
 	if err := a.client.Get(ctx, "list Agent Memory API keys", path, &response); err != nil {
 		return nil, wrapNotFound(storeID, err)
 	}
+	for _, key := range response.APIKeys {
+		if key.APIKeyID == "" {
+			return nil, errors.New("agent memory API key listing contained metadata without an ID")
+		}
+	}
 
 	return response.APIKeys, nil
 }

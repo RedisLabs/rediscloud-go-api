@@ -3,9 +3,11 @@ package rediscloud_api
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"net/url"
 	"os"
 	"regexp"
 	"strings"
@@ -75,7 +77,8 @@ func NewClient(configs ...Option) (*Client, error) {
 	}
 
 	httpClient := &http.Client{
-		Transport: config.roundTripper(),
+		Transport:     config.roundTripper(),
+		CheckRedirect: checkAPIClientRedirect,
 	}
 
 	client, err := internal.NewHttpClient(httpClient, config.baseUrl, config.logger)
@@ -110,6 +113,36 @@ func NewClient(configs ...Option) (*Client, error) {
 		Roles:      roles.NewAPI(client, t, config.logger),
 		Users:      users.NewAPI(client, t, config.logger),
 	}, nil
+}
+
+// The credential transport authenticates every request. Reject cross-origin
+// redirects before it can forward API credentials or replay a sensitive body.
+func checkAPIClientRedirect(req *http.Request, via []*http.Request) error {
+	if len(via) >= 10 {
+		return errors.New("stopped after 10 Redis Cloud API redirects")
+	}
+	if len(via) == 0 {
+		return nil
+	}
+	original := via[0].URL
+	if req.URL.User != nil || !strings.EqualFold(req.URL.Scheme, original.Scheme) ||
+		!strings.EqualFold(req.URL.Hostname(), original.Hostname()) || apiURLPort(req.URL) != apiURLPort(original) {
+		return errors.New("redis cloud API redirect to a different origin or embedded credentials was refused")
+	}
+	return nil
+}
+
+func apiURLPort(u *url.URL) string {
+	if port := u.Port(); port != "" {
+		return port
+	}
+	if strings.EqualFold(u.Scheme, "https") {
+		return "443"
+	}
+	if strings.EqualFold(u.Scheme, "http") {
+		return "80"
+	}
+	return ""
 }
 
 type Options struct {

@@ -42,6 +42,12 @@ func main() {
 }
 ```
 
+Authenticated requests follow only same-origin redirects (the same scheme,
+hostname and effective port), with a maximum of ten redirects. Redirects to a
+different origin, HTTPS downgrades and embedded URL credentials are rejected
+before credentials or request bodies can be forwarded. Configure `BaseURL` to
+the intended final API endpoint when using a proxy or regional gateway.
+
 ## Development
 
 The repo ships a [Nix flake](flake.nix) that pins the toolchain (Go, `golangci-lint`, `gotools`, `govulncheck`, GNU `make`) so local development matches CI. Combined with [direnv](https://direnv.net/), your shell automatically enters that environment when you `cd` into the repo.
