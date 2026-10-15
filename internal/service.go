@@ -55,6 +55,9 @@ func (a *api) WaitForResourceId(ctx context.Context, id string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	if task == nil || task.Response == nil || task.Response.ID == nil {
+		return 0, errors.New("completed task response did not contain a resource ID")
+	}
 
 	return redis.IntValue(task.Response.ID), nil
 }
@@ -68,6 +71,9 @@ func (a *api) WaitForResource(ctx context.Context, id string, resource interface
 	task, err := a.waitForTaskToComplete(ctx, id)
 	if err != nil {
 		return err
+	}
+	if task == nil || task.Response == nil || task.Response.Resource == nil {
+		return errors.New("completed task response did not contain a resource")
 	}
 
 	return json.Unmarshal(*task.Response.Resource, resource)
