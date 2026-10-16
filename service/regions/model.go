@@ -34,11 +34,14 @@ type Database struct {
 }
 
 type CreateRegion struct {
-	Region         *string           `json:"region,omitempty"`
-	DeploymentCIDR *string           `json:"deploymentCIDR,omitempty"`
-	DryRun         *bool             `json:"dryRun,omitempty"`
-	RespVersion    *string           `json:"respVersion,omitempty"`
-	Databases      []*CreateDatabase `json:"databases,omitempty"`
+	Region          *string           `json:"region,omitempty"`
+	DeploymentCIDR  *string           `json:"deploymentCIDR,omitempty"`
+	DryRun          *bool             `json:"dryRun,omitempty"`
+	RespVersion     *string           `json:"respVersion,omitempty"`
+	VpcId           *string           `json:"vpcId,omitempty"`
+	SubnetIds       []*string         `json:"subnetIds,omitempty"`
+	SecurityGroupId *string           `json:"securityGroupId,omitempty"`
+	Databases       []*CreateDatabase `json:"databases,omitempty"`
 }
 
 type DeleteRegion struct {
