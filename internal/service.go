@@ -70,6 +70,11 @@ func (a *api) WaitForResource(ctx context.Context, id string, resource interface
 		return err
 	}
 
+	// A completed task may still omit the resource payload expected by its caller.
+	if task.Response == nil || task.Response.Resource == nil {
+		return errors.New("completed task response did not contain a resource")
+	}
+
 	return json.Unmarshal(*task.Response.Resource, resource)
 }
 
