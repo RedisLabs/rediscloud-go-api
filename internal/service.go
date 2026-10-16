@@ -56,6 +56,10 @@ func (a *api) WaitForResourceId(ctx context.Context, id string) (int, error) {
 		return 0, err
 	}
 
+	if task.Response == nil || task.Response.ID == nil {
+		return 0, errors.New("completed task response did not contain a resource ID")
+	}
+
 	return redis.IntValue(task.Response.ID), nil
 }
 
