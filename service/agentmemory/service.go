@@ -122,6 +122,13 @@ func (a *API) ListAPIKeys(ctx context.Context, storeID string) ([]APIKeyInfo, er
 		return nil, wrapNotFound(storeID, err)
 	}
 
+	// An incomplete list cannot establish absence or identify a newly created key.
+	for _, key := range response.APIKeys {
+		if key.APIKeyID == "" {
+			return nil, errors.New("agent memory API key listing contained metadata without an ID")
+		}
+	}
+
 	return response.APIKeys, nil
 }
 
