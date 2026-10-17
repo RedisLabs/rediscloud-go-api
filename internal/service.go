@@ -10,8 +10,9 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/RedisLabs/rediscloud-go-api/redis"
 	"github.com/avast/retry-go/v4"
+
+	"github.com/RedisLabs/rediscloud-go-api/redis"
 )
 
 type Api interface {
@@ -56,6 +57,10 @@ func (a *api) WaitForResourceId(ctx context.Context, id string) (int, error) {
 		return 0, err
 	}
 
+	if task.Response == nil || task.Response.ID == nil {
+		return 0, errors.New("completed task response did not contain a resource ID")
+	}
+
 	return redis.IntValue(task.Response.ID), nil
 }
 
@@ -68,6 +73,11 @@ func (a *api) WaitForResource(ctx context.Context, id string, resource interface
 	task, err := a.waitForTaskToComplete(ctx, id)
 	if err != nil {
 		return err
+	}
+
+	// A completed task may still omit the resource payload expected by its caller.
+	if task.Response == nil || task.Response.Resource == nil {
+		return errors.New("completed task response did not contain a resource")
 	}
 
 	return json.Unmarshal(*task.Response.Resource, resource)
@@ -136,7 +146,11 @@ func (a *api) get(ctx context.Context, id string) (*Task, error) {
 	}
 
 	if task.Response != nil && task.Response.Error != nil {
-		return &task, task.Response.Error
+		// CAPI puts downstream validation details beside the structured error.
+		if info := redis.StringValue(task.Response.AdditionalInfo); info != "" {
+			return &task, fmt.Errorf("task %s failed: %w: %s", id, task.Response.Error, info)
+		}
+		return &task, fmt.Errorf("task %s failed: %w", id, task.Response.Error)
 	}
 
 	return &task, nil
