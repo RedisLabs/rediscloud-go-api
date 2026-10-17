@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/RedisLabs/rediscloud-go-api/redis"
 	"github.com/RedisLabs/rediscloud-go-api/service/agentmemory"
 )
 
@@ -68,7 +69,7 @@ func TestAgentMemoryCreateTaskResource(t *testing.T) {
 					t.Error("Agent Memory Create panicked on a completed task without a resource")
 				}
 			}()
-			id, err := subject.AgentMemory.Create(ctx, agentmemory.CreateStore{Name: "task-resource-test", DatabaseID: 123})
+			id, err := subject.AgentMemory.Create(ctx, agentmemory.CreateStore{Name: redis.String("task-resource-test"), DatabaseID: redis.Int(123)})
 			if scenario.wantError != "" {
 				if err == nil || !strings.Contains(err.Error(), scenario.wantError) {
 					t.Errorf("expected error containing %q, got %v", scenario.wantError, err)

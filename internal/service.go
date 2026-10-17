@@ -10,8 +10,9 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/RedisLabs/rediscloud-go-api/redis"
 	"github.com/avast/retry-go/v4"
+
+	"github.com/RedisLabs/rediscloud-go-api/redis"
 )
 
 type Api interface {
@@ -145,6 +146,10 @@ func (a *api) get(ctx context.Context, id string) (*Task, error) {
 	}
 
 	if task.Response != nil && task.Response.Error != nil {
+		// CAPI puts downstream validation details beside the structured error.
+		if info := redis.StringValue(task.Response.AdditionalInfo); info != "" {
+			return &task, fmt.Errorf("task %s failed: %w: %s", id, task.Response.Error, info)
+		}
 		return &task, fmt.Errorf("task %s failed: %w", id, task.Response.Error)
 	}
 
