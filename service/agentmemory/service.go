@@ -8,6 +8,7 @@ import (
 	"net/url"
 
 	"github.com/RedisLabs/rediscloud-go-api/internal"
+	"github.com/RedisLabs/rediscloud-go-api/redis"
 )
 
 const memoryStoresPath = "/memory-stores"
@@ -55,11 +56,11 @@ func (a *API) Create(ctx context.Context, store CreateStore) (string, error) {
 	if err := a.taskWaiter.WaitForResource(ctx, taskID, &response); err != nil {
 		return "", err
 	}
-	if response.StoreID == "" {
+	if redis.StringValue(response.StoreID) == "" {
 		return "", errors.New("create Agent Memory store task response did not contain a store ID")
 	}
 
-	return response.StoreID, nil
+	return redis.StringValue(response.StoreID), nil
 }
 
 func (a *API) List(ctx context.Context) ([]StoreSummary, error) {
@@ -130,7 +131,7 @@ func (a *API) ListAPIKeys(ctx context.Context, storeID string) ([]APIKeyInfo, er
 
 	// An incomplete list cannot establish absence or identify a newly created key.
 	for _, key := range response.APIKeys {
-		if key.APIKeyID == "" {
+		if redis.StringValue(key.APIKeyID) == "" {
 			return nil, errors.New("agent memory API key listing contained metadata without an ID")
 		}
 	}
@@ -147,7 +148,7 @@ func (a *API) CreateAPIKey(ctx context.Context, storeID, keyName string) (*Creat
 	}
 	existingIDs := make(map[string]struct{}, len(existing))
 	for _, key := range existing {
-		existingIDs[key.APIKeyID] = struct{}{}
+		existingIDs[redis.StringValue(key.APIKeyID)] = struct{}{}
 	}
 
 	var response CreateAPIKeyResponse
@@ -155,7 +156,7 @@ func (a *API) CreateAPIKey(ctx context.Context, storeID, keyName string) (*Creat
 	if err := a.client.Post(ctx, "create Agent Memory API key", path, CreateAPIKeyRequest{KeyName: keyName}, &response); err != nil {
 		return nil, wrapNotFound(storeID, err)
 	}
-	if response.APIKey == "" {
+	if redis.StringValue(response.APIKey) == "" {
 		return nil, errors.New("create Agent Memory API key response did not contain an API key")
 	}
 
@@ -165,12 +166,12 @@ func (a *API) CreateAPIKey(ctx context.Context, storeID, keyName string) (*Creat
 	}
 	var candidates []APIKeyInfo
 	for _, key := range keys {
-		if _, existed := existingIDs[key.APIKeyID]; !existed && key.KeyName == keyName {
+		if _, existed := existingIDs[redis.StringValue(key.APIKeyID)]; !existed && redis.StringValue(key.KeyName) == keyName {
 			candidates = append(candidates, key)
 		}
 	}
 	if len(candidates) == 1 {
-		return &CreatedAPIKey{APIKey: response.APIKey, Info: candidates[0]}, nil
+		return &CreatedAPIKey{APIKey: redis.StringValue(response.APIKey), Info: candidates[0]}, nil
 	}
 	if len(candidates) > 1 {
 		return nil, fmt.Errorf("created Agent Memory API key %q for store %q but found %d possible key IDs", keyName, storeID, len(candidates))
@@ -185,7 +186,7 @@ func (a *API) GetAPIKey(ctx context.Context, storeID, apiKeyID string) (*APIKeyI
 		return nil, err
 	}
 	for i := range keys {
-		if keys[i].APIKeyID == apiKeyID {
+		if redis.StringValue(keys[i].APIKeyID) == apiKeyID {
 			return &keys[i], nil
 		}
 	}

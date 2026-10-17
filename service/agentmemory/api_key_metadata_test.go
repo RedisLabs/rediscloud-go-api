@@ -5,6 +5,8 @@ import (
 	"errors"
 	"strings"
 	"testing"
+
+	"github.com/RedisLabs/rediscloud-go-api/redis"
 )
 
 func TestAPI_RejectsKeyMetadataWithoutID(t *testing.T) {
@@ -12,8 +14,8 @@ func TestAPI_RejectsKeyMetadataWithoutID(t *testing.T) {
 		for _, layout := range []string{"missing-only", "missing-before-match", "missing-after-match"} {
 			t.Run(operation+"/"+layout, func(t *testing.T) {
 				listCalls, postCalls := 0, 0
-				metadata := APIKeyInfo{KeyName: "runtime", ObfuscatedToken: "FAKE-METADATA"}
-				matching := APIKeyInfo{APIKeyID: "key-1", KeyName: "runtime"}
+				metadata := APIKeyInfo{KeyName: redis.String("runtime"), ObfuscatedToken: redis.String("FAKE-METADATA")}
+				matching := APIKeyInfo{APIKeyID: redis.String("key-1"), KeyName: redis.String("runtime")}
 				bad := []APIKeyInfo{metadata}
 				switch layout {
 				case "missing-before-match":
@@ -33,7 +35,7 @@ func TestAPI_RejectsKeyMetadataWithoutID(t *testing.T) {
 					},
 					postFunc: func(_ context.Context, _, _ string, _, responseBody interface{}) error {
 						postCalls++
-						responseBody.(*CreateAPIKeyResponse).APIKey = "FAKE-CREATED-SECRET"
+						responseBody.(*CreateAPIKeyResponse).APIKey = redis.String("FAKE-CREATED-SECRET")
 						return nil
 					},
 				}
@@ -90,12 +92,12 @@ func TestAPI_ValidKeyMetadataControls(t *testing.T) {
 			keys := []APIKeyInfo{}
 			switch scenario {
 			case "other-key":
-				keys = []APIKeyInfo{{APIKeyID: "key-2", KeyName: "other"}}
+				keys = []APIKeyInfo{{APIKeyID: redis.String("key-2"), KeyName: redis.String("other")}}
 			case "matching-key":
-				keys = []APIKeyInfo{{APIKeyID: "key-1", KeyName: "runtime"}}
+				keys = []APIKeyInfo{{APIKeyID: redis.String("key-1"), KeyName: redis.String("runtime")}}
 			case "id-without-name":
 				// Name validation belongs to consumers; this check only establishes identity.
-				keys = []APIKeyInfo{{APIKeyID: "key-1"}}
+				keys = []APIKeyInfo{{APIKeyID: redis.String("key-1")}}
 			}
 			client := &fakeHTTPClient{getFunc: func(_ context.Context, _, _ string, responseBody interface{}) error {
 				responseBody.(*ListAPIKeysResponse).APIKeys = keys
@@ -112,7 +114,7 @@ func TestAPI_ValidKeyMetadataControls(t *testing.T) {
 				if !errors.As(err, &notFound) || key != nil {
 					t.Error("valid absence no longer returns APIKeyNotFound")
 				}
-			} else if err != nil || key == nil || key.APIKeyID != "key-1" {
+			} else if err != nil || key == nil || redis.StringValue(key.APIKeyID) != "key-1" {
 				t.Error("valid matching key was not returned")
 			}
 		})
