@@ -52,8 +52,8 @@ func TestAgentMemory_Create(t *testing.T) {
 	require.NoError(t, err)
 
 	actual, err := subject.AgentMemory.Create(context.TODO(), agentmemory.CreateStore{
-		Name:       "store",
-		DatabaseID: 123,
+		Name:       redis.String("store"),
+		DatabaseID: redis.Int(123),
 	})
 
 	require.NoError(t, err)
@@ -104,8 +104,8 @@ func TestAgentMemory_CreateWithModelConfig(t *testing.T) {
 	require.NoError(t, err)
 
 	actual, err := subject.AgentMemory.Create(context.TODO(), agentmemory.CreateStore{
-		Name:       "store",
-		DatabaseID: 123,
+		Name:       redis.String("store"),
+		DatabaseID: redis.Int(123),
 		LongTermMemory: &agentmemory.LongTermMemoryConfig{
 			TTLSeconds: redis.Int(31536000),
 			Embedding: &agentmemory.ModelConfig{

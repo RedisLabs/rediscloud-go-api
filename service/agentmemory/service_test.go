@@ -6,9 +6,11 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/RedisLabs/rediscloud-go-api/internal"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/RedisLabs/rediscloud-go-api/internal"
+	"github.com/RedisLabs/rediscloud-go-api/redis"
 )
 
 func TestAPI_Create(t *testing.T) {
@@ -16,7 +18,7 @@ func TestAPI_Create(t *testing.T) {
 		postFunc: func(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error {
 			assert.Equal(t, "create Agent Memory store", name)
 			assert.Equal(t, memoryStoresPath, path)
-			assert.Equal(t, CreateStore{Name: "store", DatabaseID: 123}, requestBody)
+			assert.Equal(t, CreateStore{Name: redis.String("store"), DatabaseID: redis.Int(123)}, requestBody)
 			setTaskID(t, responseBody, "task-1")
 			return nil
 		},
@@ -33,7 +35,7 @@ func TestAPI_Create(t *testing.T) {
 
 	subject := NewAPI(client, taskWaiter, &fakeLogger{})
 
-	actual, err := subject.Create(context.TODO(), CreateStore{Name: "store", DatabaseID: 123})
+	actual, err := subject.Create(context.TODO(), CreateStore{Name: redis.String("store"), DatabaseID: redis.Int(123)})
 
 	require.NoError(t, err)
 	assert.Equal(t, "store-1", actual)
@@ -153,7 +155,7 @@ func TestAPI_Create_errorsWhenTaskIDIsMissing(t *testing.T) {
 
 	subject := NewAPI(client, &fakeTaskWaiter{}, &fakeLogger{})
 
-	actual, err := subject.Create(context.TODO(), CreateStore{Name: "store", DatabaseID: 123})
+	actual, err := subject.Create(context.TODO(), CreateStore{Name: redis.String("store"), DatabaseID: redis.Int(123)})
 
 	assert.Empty(t, actual)
 	assert.EqualError(t, err, "create Agent Memory store response did not contain a task ID")
