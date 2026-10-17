@@ -5,9 +5,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/RedisLabs/rediscloud-go-api/service/agentmemory"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/RedisLabs/rediscloud-go-api/redis"
+	"github.com/RedisLabs/rediscloud-go-api/service/agentmemory"
 )
 
 func TestAgentMemory_Create(t *testing.T) {
@@ -105,7 +107,7 @@ func TestAgentMemory_CreateWithModelConfig(t *testing.T) {
 		Name:       "store",
 		DatabaseID: 123,
 		LongTermMemory: &agentmemory.LongTermMemoryConfig{
-			TTLSeconds: 31536000,
+			TTLSeconds: redis.Int(31536000),
 			Embedding: &agentmemory.ModelConfig{
 				Provider: "openai",
 				Model:    "text-embedding-3-small",
