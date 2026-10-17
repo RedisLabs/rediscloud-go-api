@@ -16,8 +16,8 @@ const (
 )
 
 type CreateStore struct {
-	Name                     string                    `json:"name"`
-	DatabaseID               int                       `json:"databaseId"`
+	Name                     *string                   `json:"name,omitempty"`
+	DatabaseID               *int                      `json:"databaseId,omitempty"`
 	ShortMemory              *ShortMemoryConfig        `json:"shortMemory,omitempty"`
 	LongTermMemory           *LongTermMemoryConfig     `json:"longTermMemory,omitempty"`
 	LLM                      *ModelConfig              `json:"llm,omitempty"`
@@ -164,8 +164,9 @@ type SemanticExclusion struct {
 }
 
 type BuiltInDetectorsConfig struct {
-	Enabled   bool                `json:"enabled"`
-	Detectors []DetectorSelection `json:"detectors,omitempty"`
+	Enabled bool `json:"enabled"`
+	// Empty selections clear the list; nil is sent as null and preserved by CAPI.
+	Detectors []DetectorSelection `json:"detectors"`
 }
 
 type DetectorSelection struct {
@@ -175,8 +176,9 @@ type DetectorSelection struct {
 }
 
 type CustomDetectorsConfig struct {
-	Enabled   bool             `json:"enabled"`
-	Detectors []CustomDetector `json:"detectors,omitempty"`
+	Enabled bool `json:"enabled"`
+	// Empty selections clear the list; nil is sent as null and preserved by CAPI.
+	Detectors []CustomDetector `json:"detectors"`
 }
 
 type CustomDetector struct {

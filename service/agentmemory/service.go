@@ -95,7 +95,10 @@ func (a *API) Update(ctx context.Context, storeID string, store UpdateStore) err
 
 	a.logger.Printf("Waiting for Agent Memory store %s to finish being updated", storeID)
 
-	return a.taskWaiter.Wait(ctx, taskID)
+	if err := a.taskWaiter.Wait(ctx, taskID); err != nil {
+		return fmt.Errorf("failed when updating Agent Memory store %s: %w", storeID, err)
+	}
+	return nil
 }
 
 func (a *API) Delete(ctx context.Context, storeID string) error {
@@ -112,7 +115,10 @@ func (a *API) Delete(ctx context.Context, storeID string) error {
 
 	a.logger.Printf("Waiting for Agent Memory store %s to finish being deleted", storeID)
 
-	return a.taskWaiter.Wait(ctx, taskID)
+	if err := a.taskWaiter.Wait(ctx, taskID); err != nil {
+		return fmt.Errorf("failed when deleting Agent Memory store %s: %w", storeID, err)
+	}
+	return nil
 }
 
 func (a *API) ListAPIKeys(ctx context.Context, storeID string) ([]APIKeyInfo, error) {
@@ -194,7 +200,7 @@ func (a *API) DeleteAPIKey(ctx context.Context, storeID, apiKeyID string) error 
 		if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
 			return &APIKeyNotFound{StoreID: storeID, APIKeyID: apiKeyID}
 		}
-		return wrapNotFound(storeID, err)
+		return err
 	}
 
 	return nil

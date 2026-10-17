@@ -163,7 +163,7 @@ func (c *HttpClient) connection(ctx context.Context, method, name, path string, 
 		}
 	}
 
-	if err := json.NewDecoder(response.Body).Decode(&responseBody); err != nil && !errors.Is(err, io.EOF) {
+	if err := json.NewDecoder(response.Body).Decode(&responseBody); err != nil && (!errors.Is(err, io.EOF) || responseBody != nil) {
 		return fmt.Errorf("failed to decode response to %s: %w", name, err)
 	}
 
