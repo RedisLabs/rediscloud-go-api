@@ -115,7 +115,7 @@ type ShortMemoryConfig struct {
 }
 
 type LongTermMemoryConfig struct {
-	TTLSeconds int          `json:"ttlSeconds,omitempty"`
+	TTLSeconds *int         `json:"ttlSeconds,omitempty"`
 	Embedding  *ModelConfig `json:"embedding,omitempty"`
 }
 
