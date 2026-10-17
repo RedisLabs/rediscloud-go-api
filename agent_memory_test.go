@@ -165,12 +165,12 @@ func TestAgentMemory_Get(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Len(t, actual.Endpoints, 2)
-	assert.Equal(t, "https://aws-us-east-1.memory.redis.io", actual.Endpoint)
-	assert.Equal(t, "AWS", actual.Endpoints[0].Provider)
+	assert.Equal(t, "https://aws-us-east-1.memory.redis.io", redis.StringValue(actual.Endpoint))
+	assert.Equal(t, "AWS", redis.StringValue(actual.Endpoints[0].Provider))
 	assert.Equal(t, []string{"10.0.0.1"}, actual.Endpoints[0].EgressIPs)
-	assert.Equal(t, "GCP", actual.Endpoints[1].Provider)
+	assert.Equal(t, "GCP", redis.StringValue(actual.Endpoints[1].Provider))
 	assert.Empty(t, actual.Endpoints[1].EgressIPs)
-	assert.False(t, actual.Endpoints[1].IsAccessible)
+	assert.False(t, redis.BoolValue(actual.Endpoints[1].IsAccessible))
 }
 
 func TestAgentMemory_CreateAPIKey(t *testing.T) {
@@ -212,5 +212,5 @@ func TestAgentMemory_CreateAPIKey(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.Equal(t, "secret-token", actual.APIKey)
-	assert.Equal(t, "new-id", actual.Info.APIKeyID)
+	assert.Equal(t, "new-id", redis.StringValue(actual.Info.APIKeyID))
 }
