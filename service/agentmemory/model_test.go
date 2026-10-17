@@ -74,10 +74,10 @@ func TestExclusionDetectorListPresence(t *testing.T) {
 		body any
 		want string
 	}{
-		{name: "builtin-nil", body: BuiltInDetectorsConfig{Enabled: true}, want: `{"enabled":true,"detectors":null}`},
-		{name: "builtin-empty", body: BuiltInDetectorsConfig{Enabled: true, Detectors: []DetectorSelection{}}, want: `{"enabled":true,"detectors":[]}`},
-		{name: "custom-nil", body: CustomDetectorsConfig{Enabled: true}, want: `{"enabled":true,"detectors":null}`},
-		{name: "custom-empty", body: CustomDetectorsConfig{Enabled: true, Detectors: []CustomDetector{}}, want: `{"enabled":true,"detectors":[]}`},
+		{name: "builtin-nil", body: BuiltInDetectorsConfig{Enabled: redis.Bool(true)}, want: `{"enabled":true,"detectors":null}`},
+		{name: "builtin-empty", body: BuiltInDetectorsConfig{Enabled: redis.Bool(true), Detectors: []DetectorSelection{}}, want: `{"enabled":true,"detectors":[]}`},
+		{name: "custom-nil", body: CustomDetectorsConfig{Enabled: redis.Bool(true)}, want: `{"enabled":true,"detectors":null}`},
+		{name: "custom-empty", body: CustomDetectorsConfig{Enabled: redis.Bool(true), Detectors: []CustomDetector{}}, want: `{"enabled":true,"detectors":[]}`},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			encoded, err := json.Marshal(tc.body)

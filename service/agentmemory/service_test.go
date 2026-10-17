@@ -28,7 +28,7 @@ func TestAPI_Create(t *testing.T) {
 			assert.Equal(t, "task-1", id)
 			response, ok := resource.(*CreateStoreResponse)
 			require.True(t, ok)
-			response.StoreID = "store-1"
+			response.StoreID = redis.String("store-1")
 			return nil
 		},
 	}
@@ -48,7 +48,7 @@ func TestAPI_List(t *testing.T) {
 			assert.Equal(t, memoryStoresPath, path)
 			response, ok := responseBody.(*ListStoresResponse)
 			require.True(t, ok)
-			response.Data = []StoreSummary{{StoreID: "store-1", Name: "store"}}
+			response.Data = []StoreSummary{{StoreID: redis.String("store-1"), Name: redis.String("store")}}
 			return nil
 		},
 	}
@@ -58,7 +58,7 @@ func TestAPI_List(t *testing.T) {
 	actual, err := subject.List(context.TODO())
 
 	require.NoError(t, err)
-	assert.Equal(t, []StoreSummary{{StoreID: "store-1", Name: "store"}}, actual)
+	assert.Equal(t, []StoreSummary{{StoreID: redis.String("store-1"), Name: redis.String("store")}}, actual)
 }
 
 func TestAPI_Get(t *testing.T) {
@@ -68,8 +68,8 @@ func TestAPI_Get(t *testing.T) {
 			assert.Equal(t, "/memory-stores/store-1", path)
 			response, ok := responseBody.(*Store)
 			require.True(t, ok)
-			response.StoreID = "store-1"
-			response.Name = "store"
+			response.StoreID = redis.String("store-1")
+			response.Name = redis.String("store")
 			return nil
 		},
 	}
@@ -79,7 +79,7 @@ func TestAPI_Get(t *testing.T) {
 	actual, err := subject.Get(context.TODO(), "store-1")
 
 	require.NoError(t, err)
-	assert.Equal(t, &Store{StoreID: "store-1", Name: "store"}, actual)
+	assert.Equal(t, &Store{StoreID: redis.String("store-1"), Name: redis.String("store")}, actual)
 }
 
 func TestAPI_Update(t *testing.T) {
@@ -168,13 +168,13 @@ func TestAPI_CreateAPIKeyResolvesNewKeyID(t *testing.T) {
 			assert.Equal(t, "list Agent Memory API keys", name)
 			assert.Equal(t, "/memory-stores/store-1/api-keys", path)
 			listCalls++
-			keys := []APIKeyInfo{{APIKeyID: "existing-id", KeyName: "existing"}}
+			keys := []APIKeyInfo{{APIKeyID: redis.String("existing-id"), KeyName: redis.String("existing")}}
 			if listCalls == 2 {
 				keys = append(keys, APIKeyInfo{
-					APIKeyID:        "new-id",
-					KeyName:         "terraform",
-					ObfuscatedToken: "mem1...abcd",
-					CreatedAt:       1234,
+					APIKeyID:        redis.String("new-id"),
+					KeyName:         redis.String("terraform"),
+					ObfuscatedToken: redis.String("mem1...abcd"),
+					CreatedAt:       redis.Int64(1234),
 				})
 			}
 			response, ok := responseBody.(*ListAPIKeysResponse)
@@ -188,7 +188,7 @@ func TestAPI_CreateAPIKeyResolvesNewKeyID(t *testing.T) {
 			assert.Equal(t, CreateAPIKeyRequest{KeyName: "terraform"}, requestBody)
 			response, ok := responseBody.(*CreateAPIKeyResponse)
 			require.True(t, ok)
-			response.APIKey = "secret-token"
+			response.APIKey = redis.String("secret-token")
 			return nil
 		},
 	}
@@ -199,7 +199,7 @@ func TestAPI_CreateAPIKeyResolvesNewKeyID(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.Equal(t, "secret-token", created.APIKey)
-	assert.Equal(t, "new-id", created.Info.APIKeyID)
+	assert.Equal(t, "new-id", redis.StringValue(created.Info.APIKeyID))
 }
 
 func TestAPI_CreateAPIKey_errorsWhenAPIKeyIsMissing(t *testing.T) {
@@ -230,11 +230,11 @@ func TestAPI_CreateAPIKey_errorsWhenCreatedKeyIDIsAmbiguous(t *testing.T) {
 			listCalls++
 			response, ok := responseBody.(*ListAPIKeysResponse)
 			require.True(t, ok)
-			response.APIKeys = []APIKeyInfo{{APIKeyID: "existing-id", KeyName: "existing"}}
+			response.APIKeys = []APIKeyInfo{{APIKeyID: redis.String("existing-id"), KeyName: redis.String("existing")}}
 			if listCalls == 2 {
 				response.APIKeys = append(response.APIKeys,
-					APIKeyInfo{APIKeyID: "new-id-1", KeyName: "terraform"},
-					APIKeyInfo{APIKeyID: "new-id-2", KeyName: "terraform"},
+					APIKeyInfo{APIKeyID: redis.String("new-id-1"), KeyName: redis.String("terraform")},
+					APIKeyInfo{APIKeyID: redis.String("new-id-2"), KeyName: redis.String("terraform")},
 				)
 			}
 			return nil
@@ -242,7 +242,7 @@ func TestAPI_CreateAPIKey_errorsWhenCreatedKeyIDIsAmbiguous(t *testing.T) {
 		postFunc: func(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error {
 			response, ok := responseBody.(*CreateAPIKeyResponse)
 			require.True(t, ok)
-			response.APIKey = "secret-token"
+			response.APIKey = redis.String("secret-token")
 			return nil
 		},
 	}
@@ -263,8 +263,8 @@ func TestAPI_GetAPIKey(t *testing.T) {
 			response, ok := responseBody.(*ListAPIKeysResponse)
 			require.True(t, ok)
 			response.APIKeys = []APIKeyInfo{
-				{APIKeyID: "first-id", KeyName: "first"},
-				{APIKeyID: "wanted-id", KeyName: "wanted"},
+				{APIKeyID: redis.String("first-id"), KeyName: redis.String("first")},
+				{APIKeyID: redis.String("wanted-id"), KeyName: redis.String("wanted")},
 			}
 			return nil
 		},
@@ -275,7 +275,7 @@ func TestAPI_GetAPIKey(t *testing.T) {
 	actual, err := subject.GetAPIKey(context.TODO(), "store-1", "wanted-id")
 
 	require.NoError(t, err)
-	assert.Equal(t, &APIKeyInfo{APIKeyID: "wanted-id", KeyName: "wanted"}, actual)
+	assert.Equal(t, &APIKeyInfo{APIKeyID: redis.String("wanted-id"), KeyName: redis.String("wanted")}, actual)
 }
 
 func TestAPI_GetAPIKey_returnsAPIKeyNotFound(t *testing.T) {
@@ -283,7 +283,7 @@ func TestAPI_GetAPIKey_returnsAPIKeyNotFound(t *testing.T) {
 		getFunc: func(ctx context.Context, name, path string, responseBody interface{}) error {
 			response, ok := responseBody.(*ListAPIKeysResponse)
 			require.True(t, ok)
-			response.APIKeys = []APIKeyInfo{{APIKeyID: "other-id", KeyName: "other"}}
+			response.APIKeys = []APIKeyInfo{{APIKeyID: redis.String("other-id"), KeyName: redis.String("other")}}
 			return nil
 		},
 	}
