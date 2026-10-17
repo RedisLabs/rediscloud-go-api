@@ -49,3 +49,40 @@ func TestLongTermMemoryTTLRequestPresence(t *testing.T) {
 		})
 	}
 }
+
+func TestCreateStoreRequestPresence(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		body CreateStore
+		want string
+	}{
+		{name: "omitted", want: `{}`},
+		{name: "explicit-empty-zero", body: CreateStore{Name: redis.String(""), DatabaseID: redis.Int(0)}, want: `{"name":"","databaseId":0}`},
+		{name: "configured", body: CreateStore{Name: redis.String("store"), DatabaseID: redis.Int(123)}, want: `{"name":"store","databaseId":123}`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			encoded, err := json.Marshal(tc.body)
+			require.NoError(t, err)
+			assert.JSONEq(t, tc.want, string(encoded))
+		})
+	}
+}
+
+func TestExclusionDetectorListPresence(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		body any
+		want string
+	}{
+		{name: "builtin-nil", body: BuiltInDetectorsConfig{Enabled: true}, want: `{"enabled":true,"detectors":null}`},
+		{name: "builtin-empty", body: BuiltInDetectorsConfig{Enabled: true, Detectors: []DetectorSelection{}}, want: `{"enabled":true,"detectors":[]}`},
+		{name: "custom-nil", body: CustomDetectorsConfig{Enabled: true}, want: `{"enabled":true,"detectors":null}`},
+		{name: "custom-empty", body: CustomDetectorsConfig{Enabled: true, Detectors: []CustomDetector{}}, want: `{"enabled":true,"detectors":[]}`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			encoded, err := json.Marshal(tc.body)
+			require.NoError(t, err)
+			assert.JSONEq(t, tc.want, string(encoded))
+		})
+	}
+}
