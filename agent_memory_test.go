@@ -109,23 +109,23 @@ func TestAgentMemory_CreateWithModelConfig(t *testing.T) {
 		LongTermMemory: &agentmemory.LongTermMemoryConfig{
 			TTLSeconds: redis.Int(31536000),
 			Embedding: &agentmemory.ModelConfig{
-				Provider: "openai",
-				Model:    "text-embedding-3-small",
+				Provider: redis.String("openai"),
+				Model:    redis.String("text-embedding-3-small"),
 				Credentials: &agentmemory.ModelCredentials{
-					Type:   "apiKey",
-					APIKey: "embedding-secret",
+					Type:   redis.String("apiKey"),
+					APIKey: redis.String("embedding-secret"),
 				},
 			},
 		},
 		LLM: &agentmemory.ModelConfig{
-			Provider: "openai",
-			Model:    "gpt-4o-mini",
+			Provider: redis.String("openai"),
+			Model:    redis.String("gpt-4o-mini"),
 			Credentials: &agentmemory.ModelCredentials{
-				Type:   "apiKey",
-				APIKey: "llm-secret",
+				Type:   redis.String("apiKey"),
+				APIKey: redis.String("llm-secret"),
 			},
 		},
-		ExtractionStrategy: agentmemory.ExtractionStrategyInstruct,
+		ExtractionStrategy: redis.String(agentmemory.ExtractionStrategyInstruct),
 	})
 
 	require.NoError(t, err)
@@ -211,6 +211,6 @@ func TestAgentMemory_CreateAPIKey(t *testing.T) {
 	actual, err := subject.AgentMemory.CreateAPIKey(context.TODO(), "store-1", "terraform")
 
 	require.NoError(t, err)
-	assert.Equal(t, "secret-token", actual.APIKey)
+	assert.Equal(t, "secret-token", redis.StringValue(actual.APIKey))
 	assert.Equal(t, "new-id", redis.StringValue(actual.Info.APIKeyID))
 }
