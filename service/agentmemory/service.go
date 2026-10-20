@@ -153,7 +153,7 @@ func (a *API) CreateAPIKey(ctx context.Context, storeID, keyName string) (*Creat
 
 	var response CreateAPIKeyResponse
 	path := storeAPIKeysPath(storeID)
-	if err := a.client.Post(ctx, "create Agent Memory API key", path, CreateAPIKeyRequest{KeyName: keyName}, &response); err != nil {
+	if err := a.client.Post(ctx, "create Agent Memory API key", path, CreateAPIKeyRequest{KeyName: redis.String(keyName)}, &response); err != nil {
 		return nil, wrapNotFound(storeID, err)
 	}
 	if redis.StringValue(response.APIKey) == "" {
@@ -171,7 +171,7 @@ func (a *API) CreateAPIKey(ctx context.Context, storeID, keyName string) (*Creat
 		}
 	}
 	if len(candidates) == 1 {
-		return &CreatedAPIKey{APIKey: redis.StringValue(response.APIKey), Info: candidates[0]}, nil
+		return &CreatedAPIKey{APIKey: response.APIKey, Info: &candidates[0]}, nil
 	}
 	if len(candidates) > 1 {
 		return nil, fmt.Errorf("created Agent Memory API key %q for store %q but found %d possible key IDs", keyName, storeID, len(candidates))

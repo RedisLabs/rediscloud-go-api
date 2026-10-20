@@ -185,7 +185,7 @@ func TestAPI_CreateAPIKeyResolvesNewKeyID(t *testing.T) {
 		postFunc: func(ctx context.Context, name, path string, requestBody interface{}, responseBody interface{}) error {
 			assert.Equal(t, "create Agent Memory API key", name)
 			assert.Equal(t, "/memory-stores/store-1/api-keys", path)
-			assert.Equal(t, CreateAPIKeyRequest{KeyName: "terraform"}, requestBody)
+			assert.Equal(t, CreateAPIKeyRequest{KeyName: redis.String("terraform")}, requestBody)
 			response, ok := responseBody.(*CreateAPIKeyResponse)
 			require.True(t, ok)
 			response.APIKey = redis.String("secret-token")
@@ -198,7 +198,7 @@ func TestAPI_CreateAPIKeyResolvesNewKeyID(t *testing.T) {
 	created, err := subject.CreateAPIKey(context.TODO(), "store-1", "terraform")
 
 	require.NoError(t, err)
-	assert.Equal(t, "secret-token", created.APIKey)
+	assert.Equal(t, "secret-token", redis.StringValue(created.APIKey))
 	assert.Equal(t, "new-id", redis.StringValue(created.Info.APIKeyID))
 }
 
