@@ -130,6 +130,9 @@ func (a *API) ListAPIKeys(ctx context.Context, storeID string) ([]APIKeyInfo, er
 	}
 
 	// An incomplete list cannot establish absence or identify a newly created key.
+	if response.APIKeys == nil {
+		return nil, errors.New("agent memory API key listing did not contain an apiKeys array")
+	}
 	for _, key := range response.APIKeys {
 		if redis.StringValue(key.APIKeyID) == "" {
 			return nil, errors.New("agent memory API key listing contained metadata without an ID")
