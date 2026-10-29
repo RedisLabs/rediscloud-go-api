@@ -254,12 +254,14 @@ func prettyPrint(data []byte) string {
 	return strings.Join(lines, "\n")
 }
 
-// redactPasswords: Redacts password values from a JSON message.
+// redactPasswords: Redacts password and API key values from a JSON message.
 func redactPasswords(data string) string {
 	m1 := regexp.MustCompile(`"password"\s*:\s*"(?:[^"\\]|\\.)*"`)
 	output := m1.ReplaceAllString(data, "\"password\": \"REDACTED\"")
 	m2 := regexp.MustCompile(`"global_password"\s*:\s*"(?:[^"\\]|\\.)*"`)
-	return m2.ReplaceAllString(output, "\"global_password\": \"REDACTED\"")
+	output = m2.ReplaceAllString(output, "\"global_password\": \"REDACTED\"")
+	m3 := regexp.MustCompile(`"apiKey"\s*:\s*"(?:[^"\\]|\\.)*"`)
+	return m3.ReplaceAllString(output, "\"apiKey\": \"REDACTED\"")
 }
 
 func escapePath(path string) string {
