@@ -50,11 +50,14 @@ func TestTaskErrorsGetUnwrapped(t *testing.T) {
 	require.NoError(t, err)
 
 	err = subject.CloudAccount.Delete(context.TODO(), 1)
-	assert.Equal(t, &internal.Error{
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "task task failed")
+	assert.Contains(t, err.Error(), "400 BAD_REQUEST - SUBSCRIPTION_PI_NOT_FOUND")
+	assertInternalError(t, err, &internal.Error{
 		Type:        redis.String("SUBSCRIPTION_PI_NOT_FOUND"),
 		Description: redis.String("Payment info was not found for subscription. Use 'GET /payment-methods' to lookup valid payment methods for current Account"),
 		Status:      redis.String("400 BAD_REQUEST"),
-	}, errors.Unwrap(err))
+	})
 }
 
 func TestTask_Handles404Eventually(t *testing.T) {

@@ -15,6 +15,7 @@ import (
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/roles"
 	"github.com/RedisLabs/rediscloud-go-api/service/access_control_lists/users"
 	"github.com/RedisLabs/rediscloud-go-api/service/account"
+	"github.com/RedisLabs/rediscloud-go-api/service/agentmemory"
 	"github.com/RedisLabs/rediscloud-go-api/service/cloud_accounts"
 	"github.com/RedisLabs/rediscloud-go-api/service/databases"
 	fixedDatabases "github.com/RedisLabs/rediscloud-go-api/service/fixed/databases"
@@ -41,6 +42,7 @@ type Client struct {
 	Regions                   *regions.API
 	LatestBackup              *latest_backups.API
 	LatestImport              *latest_imports.API
+	AgentMemory               *agentmemory.API
 	Maintenance               *maintenance.API
 	Pricing                   *pricing.API
 	TransitGatewayAttachments *attachments.API
@@ -91,6 +93,7 @@ func NewClient(configs ...Option) (*Client, error) {
 		Regions:                   regions.NewAPI(client, t, config.logger),
 		LatestBackup:              latest_backups.NewAPI(client, t, config.logger),
 		LatestImport:              latest_imports.NewAPI(client, t, config.logger),
+		AgentMemory:               agentmemory.NewAPI(client, t, config.logger),
 		Maintenance:               maintenance.NewAPI(client, t, config.logger),
 		Pricing:                   pricing.NewAPI(client),
 		TransitGatewayAttachments: attachments.NewAPI(client, t, config.logger),
@@ -251,12 +254,14 @@ func prettyPrint(data []byte) string {
 	return strings.Join(lines, "\n")
 }
 
-// redactPasswords: Redacts password values from a JSON message.
+// redactPasswords: Redacts password and API key values from a JSON message.
 func redactPasswords(data string) string {
 	m1 := regexp.MustCompile(`"password"\s*:\s*"(?:[^"\\]|\\.)*"`)
 	output := m1.ReplaceAllString(data, "\"password\": \"REDACTED\"")
 	m2 := regexp.MustCompile(`"global_password"\s*:\s*"(?:[^"\\]|\\.)*"`)
-	return m2.ReplaceAllString(output, "\"global_password\": \"REDACTED\"")
+	output = m2.ReplaceAllString(output, "\"global_password\": \"REDACTED\"")
+	m3 := regexp.MustCompile(`"apiKey"\s*:\s*"(?:[^"\\]|\\.)*"`)
+	return m3.ReplaceAllString(output, "\"apiKey\": \"REDACTED\"")
 }
 
 func escapePath(path string) string {
