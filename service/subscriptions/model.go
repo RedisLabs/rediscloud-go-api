@@ -378,6 +378,8 @@ const (
 	SubscriptionStatusError = "error"
 	// SubscriptionStatusDeleting is the deleting value of the `Status` field in `Subscription`
 	SubscriptionStatusDeleting = "deleting"
+	// SubscriptionStatusDeleted represents an absent subscription or an explicit deleted status.
+	SubscriptionStatusDeleted = "deleted"
 
 	// VPCPeeringStatusInitiatingRequest is the initiating request value of the `Status` field in `VPCPeering`
 	VPCPeeringStatusInitiatingRequest = "initiating-request"
