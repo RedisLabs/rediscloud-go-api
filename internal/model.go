@@ -21,9 +21,10 @@ func (o Task) String() string {
 }
 
 type response struct {
-	ID       *int             `json:"resourceId,omitempty"`
-	Resource *json.RawMessage `json:"resource,omitempty"`
-	Error    *Error           `json:"error,omitempty"`
+	ID             *int             `json:"resourceId,omitempty"`
+	Resource       *json.RawMessage `json:"resource,omitempty"`
+	Error          *Error           `json:"error,omitempty"`
+	AdditionalInfo *string          `json:"additionalInfo,omitempty"`
 }
 
 func (o response) String() string {

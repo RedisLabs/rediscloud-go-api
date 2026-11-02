@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
@@ -54,6 +55,57 @@ func TestCredentialTripper_DisabledLoggingLogsNothing(t *testing.T) {
 	assert.Empty(t, mockLogger.log)
 	assert.Equal(t, "KEY THAT SHOULD NOT BE LOGGED", request.Header.Get("X-Api-Key"))
 	assert.Equal(t, "SECRET KEY THAT SHOULD NOT BE LOGGED", request.Header.Get("X-Api-Secret-Key"))
+}
+
+func TestCredentialTripper_ModelKeysRedactedWithoutChangingPayloads(t *testing.T) {
+	const requestBody = `{"llm":{"credentials":{"type":"apiKey","apiKey":"FAKE-LLM-\"quoted\"-\\slash"}},"embedding":{"credentials":{"type":"apiKey","apiKey":"FAKE-EMBEDDING"}},"security":{"password":"FAKE-PASSWORD","global_password":"FAKE-GLOBAL-PASSWORD"},"keyName":"keep-name","apiKeyId":"keep-id"}`
+	const responseBody = `{"apiKey":"FAKE-GENERATED-\"quoted\"-\\slash","keyName":"keep-name","apiKeyId":"keep-id"}`
+	for _, enabled := range []bool{true, false} {
+		t.Run(fmt.Sprintf("logging=%t", enabled), func(t *testing.T) {
+			received := make(chan string, 1)
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				assert.NoError(t, err)
+				received <- string(body)
+				w.Header().Set("Content-Type", "application/json")
+				_, err = io.WriteString(w, responseBody)
+				assert.NoError(t, err)
+			}))
+			defer server.Close()
+
+			logger := &mockedLogger{}
+			httpClient := &http.Client{Transport: &credentialTripper{
+				apiKey: "fake-access", secretKey: "fake-secret",
+				wrapped: server.Client().Transport, logRequests: enabled,
+				logger: logger, userAgent: "test-user-agent",
+			}}
+			request, err := http.NewRequestWithContext(t.Context(), http.MethodPost, server.URL+"/memory-stores", strings.NewReader(requestBody))
+			require.NoError(t, err)
+			request.Header.Set("Content-Type", "application/json")
+			response, err := httpClient.Do(request)
+			require.NoError(t, err)
+			defer func() { assert.NoError(t, response.Body.Close()) }()
+			body, err := io.ReadAll(response.Body)
+			require.NoError(t, err)
+			assert.Equal(t, requestBody, <-received)
+			assert.Equal(t, responseBody, string(body))
+
+			if !enabled {
+				assert.Empty(t, logger.log)
+				return
+			}
+			require.Len(t, logger.log, 2)
+			_, requestJSON, found := strings.Cut(logger.log[0], "\n\n")
+			require.True(t, found, "request body was not logged")
+			_, responseJSON, found := strings.Cut(logger.log[1], "\n\n")
+			require.True(t, found, "response body was not logged")
+			assert.JSONEq(t, `{"llm":{"credentials":{"type":"apiKey","apiKey":"REDACTED"}},"embedding":{"credentials":{"type":"apiKey","apiKey":"REDACTED"}},"security":{"password":"REDACTED","global_password":"REDACTED"},"keyName":"keep-name","apiKeyId":"keep-id"}`, requestJSON)
+			assert.JSONEq(t, `{"apiKey":"REDACTED","keyName":"keep-name","apiKeyId":"keep-id"}`, responseJSON)
+			for _, secret := range []string{"FAKE-LLM", "FAKE-EMBEDDING", "FAKE-PASSWORD", "FAKE-GLOBAL-PASSWORD", "FAKE-GENERATED"} {
+				assert.NotContains(t, strings.Join(logger.log, "\n"), secret)
+			}
+		})
+	}
 }
 
 func TestCredentialTripper_LogsRequestAndResponseBodies(t *testing.T) {

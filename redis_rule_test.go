@@ -2,7 +2,6 @@ package rediscloud_api
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http/httptest"
 	"testing"
@@ -71,11 +70,11 @@ func TestCreateBadRedisRule(t *testing.T) {
 		RedisRule: redis.String("let-me-create-resources"),
 	})
 
-	assert.Equal(t, &internal.Error{
+	assertInternalError(t, err, &internal.Error{
 		Type:        redis.String("ACL_REDIS_RULE_PATTERN_NOT_VALID"),
 		Description: redis.String("Invalid ACL redis rule: commands must start with a + or - sign, categories must start with +@ or -@ characters and keys must start with the ~ symbol"),
 		Status:      redis.String("400 BAD_REQUEST"),
-	}, errors.Unwrap(err))
+	})
 }
 
 func TestCreateRedisRule(t *testing.T) {
@@ -231,11 +230,11 @@ func TestUpdateNonExistentRedisRule(t *testing.T) {
 		RedisRule: redis.String("+@let-me-update-resources"),
 	})
 
-	assert.Equal(t, &internal.Error{
+	assertInternalError(t, err, &internal.Error{
 		Type:        redis.String("ACL_REDIS_RULE_NOT_FOUND"),
 		Description: redis.String("ACL redis rule not found"),
 		Status:      redis.String("404 NOT_FOUND"),
-	}, errors.Unwrap(err))
+	})
 }
 
 func TestUpdateBadRedisRule(t *testing.T) {
@@ -294,11 +293,11 @@ func TestUpdateBadRedisRule(t *testing.T) {
 		RedisRule: redis.String("let-me-update-resources"),
 	})
 
-	assert.Equal(t, &internal.Error{
+	assertInternalError(t, err, &internal.Error{
 		Type:        redis.String("ACL_REDIS_RULE_PATTERN_NOT_VALID"),
 		Description: redis.String("Invalid ACL redis rule: commands must start with a + or - sign, categories must start with +@ or -@ characters and keys must start with the ~ symbol"),
 		Status:      redis.String("400 BAD_REQUEST"),
-	}, errors.Unwrap(err))
+	})
 }
 
 func TestUpdateRedisRule(t *testing.T) {
@@ -442,11 +441,11 @@ func TestDeleteNonExistentRedisRule(t *testing.T) {
 
 	err = subject.RedisRules.Delete(context.TODO(), 40004)
 
-	assert.Equal(t, &internal.Error{
+	assertInternalError(t, err, &internal.Error{
 		Type:        redis.String("ACL_REDIS_RULE_NOT_FOUND"),
 		Description: redis.String("ACL redis rule not found"),
 		Status:      redis.String("404 NOT_FOUND"),
-	}, errors.Unwrap(err))
+	})
 }
 
 func TestDeleteRedisRule(t *testing.T) {
