@@ -7,9 +7,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"strconv"
+	"syscall"
 	"time"
 
 	"github.com/avast/retry-go/v4"
@@ -95,6 +97,20 @@ func (c *HttpClient) connectionWithRetries(ctx context.Context, method, name, pa
 				c.logger.Println("status code 429 received, request will be retried")
 				return true
 			}
+			if method != http.MethodGet || ctx.Err() != nil {
+				return false
+			}
+			if target != nil {
+				if isTransientStatusCode(target.StatusCode) {
+					c.logger.Println(fmt.Sprintf("status code %d received, request will be retried", target.StatusCode))
+					return true
+				}
+				return false
+			}
+			if isTransientNetworkError(err) {
+				c.logger.Println(fmt.Sprintf("transient network error received, request will be retried: %s", err))
+				return true
+			}
 			return false
 		}),
 		retry.LastErrorOnly(true),
@@ -168,6 +184,38 @@ func (c *HttpClient) connection(ctx context.Context, method, name, path string, 
 	}
 
 	return nil
+}
+
+func isTransientStatusCode(statusCode int) bool {
+	switch statusCode {
+	case http.StatusBadGateway, http.StatusServiceUnavailable, http.StatusGatewayTimeout:
+		return true
+	}
+	// Cloudflare origin errors: 520 unknown, 521 down, 522 connection timed out, 523 unreachable, 524 timeout.
+	return statusCode >= 520 && statusCode <= 524
+}
+
+func isTransientNetworkError(err error) bool {
+	// Only errors from http.Client.Do are *url.Error; a decode io.EOF on a 2xx body must not be retried.
+	var urlErr *url.Error
+	if !errors.As(err, &urlErr) {
+		return false
+	}
+	err = urlErr.Err
+	if errors.Is(err, io.EOF) ||
+		errors.Is(err, io.ErrUnexpectedEOF) ||
+		errors.Is(err, syscall.ECONNRESET) ||
+		errors.Is(err, syscall.ECONNREFUSED) ||
+		errors.Is(err, syscall.ECONNABORTED) ||
+		errors.Is(err, syscall.EPIPE) {
+		return true
+	}
+	var opErr *net.OpError
+	if errors.As(err, &opErr) {
+		return true
+	}
+	var netErr net.Error
+	return errors.As(err, &netErr) && netErr.Timeout()
 }
 
 type HTTPError struct {
