@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## 0.53.1 (4th November 2026)
 
 ### Fixed:
 * `GET` requests are now retried on transient network errors (connection reset, EOF, timeouts) and on `502`, `503`, `504` and Cloudflare `520`-`524` responses, using the same backoff as `429`. Non-idempotent methods are not retried.
