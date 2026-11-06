@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.54.0 (Unreleased)
+
+### Added:
+* Added `databases.StatusBDBUpdatePending` for the `bdb-update-pending` database status.
+
 ## 0.53.1 (4th November 2026)
 
 ### Fixed:
