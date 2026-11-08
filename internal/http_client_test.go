@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"sync/atomic"
@@ -132,12 +133,15 @@ func TestHttpClient_Retry(t *testing.T) {
 }
 
 func TestHttpClient_RetryTransientErrors(t *testing.T) {
-	closeConnection := func(t *testing.T, w http.ResponseWriter) {
+	resetConnection := func(t *testing.T, w http.ResponseWriter) {
 		hijacker, ok := w.(http.Hijacker)
 		require.True(t, ok)
 		conn, _, err := hijacker.Hijack()
 		require.NoError(t, err)
-		require.NoError(t, conn.Close())
+		tcpConn, ok := conn.(*net.TCPConn)
+		require.True(t, ok)
+		require.NoError(t, tcpConn.SetLinger(0))
+		require.NoError(t, tcpConn.Close())
 	}
 
 	testCase := []struct {
@@ -148,9 +152,9 @@ func TestHttpClient_RetryTransientErrors(t *testing.T) {
 		expectedError string
 	}{
 		{
-			description:   "should retry GET on 503",
+			description:   "should retry GET on Cloudflare 520",
 			method:        http.MethodGet,
-			fail:          func(t *testing.T, w http.ResponseWriter) { w.WriteHeader(http.StatusServiceUnavailable) },
+			fail:          func(t *testing.T, w http.ResponseWriter) { w.WriteHeader(520) },
 			expectedCount: 3,
 		},
 		{
@@ -160,9 +164,9 @@ func TestHttpClient_RetryTransientErrors(t *testing.T) {
 			expectedCount: 3,
 		},
 		{
-			description:   "should retry GET when the server closes the connection",
+			description:   "should retry GET when the server resets the connection",
 			method:        http.MethodGet,
-			fail:          closeConnection,
+			fail:          resetConnection,
 			expectedCount: 3,
 		},
 		{
@@ -173,16 +177,23 @@ func TestHttpClient_RetryTransientErrors(t *testing.T) {
 			expectedError: "failed to test request: 500 - ",
 		},
 		{
-			description:   "should not retry POST on 503",
-			method:        http.MethodPost,
+			description:   "should not retry GET on 503",
+			method:        http.MethodGet,
 			fail:          func(t *testing.T, w http.ResponseWriter) { w.WriteHeader(http.StatusServiceUnavailable) },
 			expectedCount: 1,
 			expectedError: "failed to test request: 503 - ",
 		},
 		{
-			description:   "should not retry POST when the server closes the connection",
+			description:   "should not retry POST on Cloudflare 521",
 			method:        http.MethodPost,
-			fail:          closeConnection,
+			fail:          func(t *testing.T, w http.ResponseWriter) { w.WriteHeader(521) },
+			expectedCount: 1,
+			expectedError: "failed to test request: 521 - ",
+		},
+		{
+			description:   "should not retry POST when the server resets the connection",
+			method:        http.MethodPost,
+			fail:          resetConnection,
 			expectedCount: 1,
 		},
 	}
@@ -253,7 +264,7 @@ func TestHttpClient_RetryStopsOnContextCancel(t *testing.T) {
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		count.Add(1)
 		cancel()
-		w.WriteHeader(http.StatusServiceUnavailable)
+		w.WriteHeader(521)
 	}))
 	defer s.Close()
 
