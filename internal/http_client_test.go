@@ -3,9 +3,13 @@ package internal
 import (
 	"context"
 	"encoding/json"
+	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
+	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -126,6 +130,151 @@ func TestHttpClient_Retry(t *testing.T) {
 		})
 	}
 
+}
+
+func TestHttpClient_RetryTransientErrors(t *testing.T) {
+	resetConnection := func(t *testing.T, w http.ResponseWriter) {
+		hijacker, ok := w.(http.Hijacker)
+		require.True(t, ok)
+		conn, _, err := hijacker.Hijack()
+		require.NoError(t, err)
+		tcpConn, ok := conn.(*net.TCPConn)
+		require.True(t, ok)
+		require.NoError(t, tcpConn.SetLinger(0))
+		require.NoError(t, tcpConn.Close())
+	}
+
+	testCase := []struct {
+		description   string
+		method        string
+		fail          func(t *testing.T, w http.ResponseWriter)
+		expectedCount int32
+		expectedError string
+	}{
+		{
+			description:   "should retry GET on Cloudflare 520",
+			method:        http.MethodGet,
+			fail:          func(t *testing.T, w http.ResponseWriter) { w.WriteHeader(520) },
+			expectedCount: 3,
+		},
+		{
+			description:   "should retry GET on Cloudflare 521",
+			method:        http.MethodGet,
+			fail:          func(t *testing.T, w http.ResponseWriter) { w.WriteHeader(521) },
+			expectedCount: 3,
+		},
+		{
+			description:   "should retry GET when the server resets the connection",
+			method:        http.MethodGet,
+			fail:          resetConnection,
+			expectedCount: 3,
+		},
+		{
+			description:   "should not retry GET on 500",
+			method:        http.MethodGet,
+			fail:          func(t *testing.T, w http.ResponseWriter) { w.WriteHeader(http.StatusInternalServerError) },
+			expectedCount: 1,
+			expectedError: "failed to test request: 500 - ",
+		},
+		{
+			description:   "should not retry GET on 503",
+			method:        http.MethodGet,
+			fail:          func(t *testing.T, w http.ResponseWriter) { w.WriteHeader(http.StatusServiceUnavailable) },
+			expectedCount: 1,
+			expectedError: "failed to test request: 503 - ",
+		},
+		{
+			description:   "should not retry POST on Cloudflare 521",
+			method:        http.MethodPost,
+			fail:          func(t *testing.T, w http.ResponseWriter) { w.WriteHeader(521) },
+			expectedCount: 1,
+			expectedError: "failed to test request: 521 - ",
+		},
+		{
+			description:   "should not retry POST when the server resets the connection",
+			method:        http.MethodPost,
+			fail:          resetConnection,
+			expectedCount: 1,
+		},
+	}
+
+	for _, test := range testCase {
+		t.Run(test.description, func(t *testing.T) {
+			var count atomic.Int32
+			s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.method, r.Method)
+				if count.Add(1) < 3 {
+					test.fail(t, w)
+					return
+				}
+				w.WriteHeader(http.StatusOK)
+				_, err := w.Write([]byte("{}"))
+				require.NoError(t, err)
+			}))
+			defer s.Close()
+
+			subject, err := NewHttpClient(s.Client(), s.URL, &testLogger{t: t})
+			require.NoError(t, err)
+			subject.retryDelay = time.Millisecond
+
+			ctx := context.Background()
+			if test.method == http.MethodGet {
+				err = subject.Get(ctx, "test request", "/", nil)
+			} else {
+				err = subject.Post(ctx, "test request", "/", nil, nil)
+			}
+			switch {
+			case test.expectedError != "":
+				assert.EqualError(t, err, test.expectedError)
+			case test.expectedCount > 1:
+				assert.NoError(t, err)
+			default:
+				assert.Error(t, err)
+			}
+			assert.Equal(t, test.expectedCount, count.Load())
+		})
+	}
+}
+
+func TestHttpClient_Get_doesNotRetryDecodeErrors(t *testing.T) {
+	var count atomic.Int32
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		count.Add(1)
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer s.Close()
+
+	subject, err := NewHttpClient(s.Client(), s.URL, &testLogger{t: t})
+	require.NoError(t, err)
+	subject.retryDelay = time.Millisecond
+
+	var destination struct {
+		ID string `json:"id"`
+	}
+	err = subject.Get(context.Background(), "test request", "/", &destination)
+	require.ErrorIs(t, err, io.EOF)
+	assert.Equal(t, int32(1), count.Load())
+}
+
+func TestHttpClient_RetryStopsOnContextCancel(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	var count atomic.Int32
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		count.Add(1)
+		cancel()
+		w.WriteHeader(521)
+	}))
+	defer s.Close()
+
+	subject, err := NewHttpClient(s.Client(), s.URL, &testLogger{t: t})
+	require.NoError(t, err)
+	subject.retryDelay = time.Millisecond
+
+	err = subject.Get(ctx, "test request", "/", nil)
+	require.Error(t, err)
+	assert.Equal(t, int32(1), count.Load())
 }
 
 type testLogger struct {
