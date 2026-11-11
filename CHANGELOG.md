@@ -2,10 +2,44 @@
 All notable changes to this project will be documented in this file.
 See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 
+## 0.54.0 (Unreleased)
+
+### Added:
+* Added `databases.StatusBDBUpdatePending` for the `bdb-update-pending` database status.
+
+### Changed:
+* Updated the Go toolchain and Nix development environment to Go `1.26.11` to address `GO-2026-6859` in the standard library.
+
 ## 0.53.1 (4th November 2026)
 
 ### Fixed:
 * `GET` requests are now retried on connection reset errors and on Cloudflare `520`-`524` responses, using the same backoff as `429`. Non-idempotent methods are not retried.
+
+## 0.53.0 (2nd November 2026)
+
+### Added:
+* Added Agent Memory store management and data-plane API key management through `Client.AgentMemory`.
+* Added `subscriptions.SubscriptionStatusDeleted` for the `deleted` subscription status.
+* Added `redis.Int64` and `redis.Int64Value` pointer helpers.
+
+### Changed:
+* Raised the minimum Go version to `1.26.0` and updated the toolchain to `go1.26.10`.
+* Added a pinned Nix development environment shared by local development and CI.
+* Updated dependencies and consolidated vulnerability scanning, module-tidy validation, linting, and tests under `make ci`.
+
+### Fixed:
+* Redacted JSON `apiKey` values in request and response logs.
+* Included task IDs and additional API validation details in task errors.
+* Returned errors when completed tasks lack a required resource ID or resource payload.
+* Accepted empty successful HTTP responses when no response body is expected.
+
+## 0.52.1 (3rd July 2026)
+
+### Added:
+* Added the `RedisCloudUrlEnvVar` constant for the `REDISCLOUD_URL` environment variable.
+
+### Changed:
+* Updated `actions/checkout` to `v7.0.0` in GitHub Actions workflows.
 
 ## 0.52.0 (1st July 2026)
 
