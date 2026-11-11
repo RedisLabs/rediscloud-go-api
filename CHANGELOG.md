@@ -7,6 +7,9 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/).
 ### Added:
 * Added `databases.StatusBDBUpdatePending` for the `bdb-update-pending` database status.
 
+### Changed:
+* Updated the Go toolchain and Nix development environment to Go `1.26.11` to address `GO-2026-6859` in the standard library.
+
 ## 0.53.1 (4th November 2026)
 
 ### Fixed:

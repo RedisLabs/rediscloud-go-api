@@ -18,13 +18,20 @@
         pkgs = import nixpkgs {
           inherit system;
         };
+        go = pkgs.go_1_26.overrideAttrs (finalAttrs: _: {
+          version = "1.26.11";
+          src = pkgs.fetchurl {
+            url = "https://go.dev/dl/go${finalAttrs.version}.src.tar.gz";
+            hash = "sha256-1EEBsP8n7SpMda1GwXucdDWSCeLrLKfJ32y0/baOGWk=";
+          };
+        });
       in
       {
         devShells.default = pkgs.mkShell {
           buildInputs = [
             pkgs.gnumake
 
-            pkgs.go_1_26
+            go
             pkgs.golangci-lint
             pkgs.gotools
             pkgs.govulncheck
