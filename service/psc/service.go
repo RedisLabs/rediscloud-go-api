@@ -261,6 +261,9 @@ func (a *API) getService(ctx context.Context, message string, path string) (*Pri
 	if err != nil {
 		return nil, err
 	}
+	if err := validateReadTaskID(task.ID); err != nil {
+		return nil, err
+	}
 
 	a.logger.Printf("Waiting for private service connect request %d to complete", task.ID)
 
@@ -277,6 +280,9 @@ func (a *API) getEndpoints(ctx context.Context, message string, path string) (*P
 	var task internal.TaskResponse
 	err := a.client.Get(ctx, message, path, &task)
 	if err != nil {
+		return nil, err
+	}
+	if err := validateReadTaskID(task.ID); err != nil {
 		return nil, err
 	}
 
@@ -297,6 +303,9 @@ func (a *API) getCreationScript(ctx context.Context, message string, path string
 	if err != nil {
 		return nil, err
 	}
+	if err := validateReadTaskID(task.ID); err != nil {
+		return nil, err
+	}
 
 	a.logger.Printf("Waiting for private service connect creation script request %d to complete", task.ID)
 
@@ -315,6 +324,9 @@ func (a *API) getDeletionScript(ctx context.Context, message string, path string
 	if err != nil {
 		return nil, err
 	}
+	if err := validateReadTaskID(task.ID); err != nil {
+		return nil, err
+	}
 
 	a.logger.Printf("Waiting for private service connect deletion script request %d to complete", task.ID)
 
@@ -325,6 +337,15 @@ func (a *API) getDeletionScript(ctx context.Context, message string, path string
 	}
 
 	return &response, nil
+}
+
+// validateReadTaskID rejects incomplete read responses before waiting for a task.
+// Mutations require separate accepted-but-unknown recovery and are not handled here.
+func validateReadTaskID(id *string) error {
+	if id == nil || *id == "" {
+		return errors.New("private service connect task response did not contain a task ID")
+	}
+	return nil
 }
 
 func (a *API) create(ctx context.Context, message string, path string) (int, error) {
